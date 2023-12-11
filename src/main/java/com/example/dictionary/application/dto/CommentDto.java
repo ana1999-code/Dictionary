@@ -12,6 +12,8 @@ public class CommentDto {
 
     private LocalDate commentedAt;
 
+    private WordDto word;
+
     public Integer getId() {
         return id;
     }
@@ -42,5 +44,13 @@ public class CommentDto {
 
     public void setCommentedAt(LocalDate commentedAt) {
         this.commentedAt = commentedAt;
+    }
+
+    public WordDto getWord() {
+        return word;
+    }
+
+    public void setWord(WordDto word) {
+        this.word = word;
     }
 }

@@ -21,6 +21,8 @@ public class WordDto {
 
     private final Set<UserDto> contributors = new HashSet<>();
 
+    private final Set<CommentDto> comments = new HashSet<>();
+
     public WordDto() {
     }
 
@@ -71,5 +73,9 @@ public class WordDto {
 
     public Set<UserDto> getContributors() {
         return contributors;
+    }
+
+    public Set<CommentDto> getComments() {
+        return comments;
     }
 }

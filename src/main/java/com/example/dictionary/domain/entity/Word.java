@@ -10,11 +10,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -29,39 +31,42 @@ public class Word {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = EAGER)
     @JoinTable(name = "word_definition",
             joinColumns = @JoinColumn(name = "word_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "definition_id", referencedColumnName = "id"))
     private final Set<Definition> definitions = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = EAGER)
     @JoinTable(name = "word_example",
             joinColumns = @JoinColumn(name = "word_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "example_id", referencedColumnName = "id"))
     private final Set<Example> examples = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = EAGER)
     @JoinTable(name = "word_synonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "synonym_id"))
     private final Set<Word> synonyms = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = EAGER)
     @JoinTable(name = "word_antonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "antonym_id"))
     private final Set<Word> antonyms = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(nullable = false)
     private Category category;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = EAGER)
     @JoinTable(name = "word_contributors",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private final Set<User> contributors = new HashSet<>();
+
+    @OneToMany(mappedBy = "word", fetch = EAGER)
+    private final Set<Comment> comments = new HashSet<>();
 
     public Word() {
     }
