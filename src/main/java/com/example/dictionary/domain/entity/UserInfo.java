@@ -1,6 +1,7 @@
 package com.example.dictionary.domain.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -28,7 +29,7 @@ public class UserInfo {
     @OneToMany(mappedBy = "id.userInfo")
     private Set<UserAchievement> achievement;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_favorites",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "word_id"))

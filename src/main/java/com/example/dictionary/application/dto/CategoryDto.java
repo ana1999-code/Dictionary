@@ -1,14 +1,10 @@
 package com.example.dictionary.application.dto;
 
-import java.util.Set;
-
 public class CategoryDto {
 
     private Integer id;
 
     private String name;
-
-    private Set<WordDto> words;
 
     public CategoryDto() {
     }
@@ -31,13 +27,5 @@ public class CategoryDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Set<WordDto> getWords() {
-        return words;
-    }
-
-    public void setWords(Set<WordDto> words) {
-        this.words = words;
     }
 }

@@ -2,6 +2,7 @@ package com.example.dictionary.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
@@ -22,7 +23,7 @@ public class Definition {
     @Column(nullable = false, unique = true)
     private String text;
 
-    @ManyToMany(mappedBy = "definitions")
+    @ManyToMany(mappedBy = "definitions", fetch = FetchType.EAGER)
     private Set<Word> words;
 
     public Definition() {

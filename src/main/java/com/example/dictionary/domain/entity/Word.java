@@ -3,6 +3,7 @@ package com.example.dictionary.domain.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -28,35 +29,35 @@ public class Word {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(name = "word_definition",
             joinColumns = @JoinColumn(name = "word_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "definition_id", referencedColumnName = "id"))
     private final Set<Definition> definitions = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(name = "word_example",
             joinColumns = @JoinColumn(name = "word_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "example_id", referencedColumnName = "id"))
     private final Set<Example> examples = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(name = "word_synonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "synonym_id"))
     private final Set<Word> synonyms = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(name = "word_antonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "antonym_id"))
     private final Set<Word> antonyms = new HashSet<>();
 
-    @ManyToOne
-    @JoinColumn(name = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false)
     private Category category;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "word_contributors",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
