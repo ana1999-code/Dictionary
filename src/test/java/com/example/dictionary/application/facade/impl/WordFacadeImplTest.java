@@ -3,6 +3,7 @@ package com.example.dictionary.application.facade.impl;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.mapper.WordMapper;
+import com.example.dictionary.application.validator.WordValidator;
 import com.example.dictionary.domain.entity.Word;
 import com.example.dictionary.domain.service.WordService;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,6 +39,9 @@ class WordFacadeImplTest {
 
     @Mock
     private WordMapper wordMapper;
+
+    @Mock
+    private WordValidator wordValidator;
 
     @Test
     void testGetAllWords() {
@@ -74,5 +79,21 @@ class WordFacadeImplTest {
         assertEquals(WORD_NOT_FOUND, resourceNotFoundException.getMessage());
         verify(wordService).getWordByName(anyString());
         verify(wordMapper, times(0)).wordToWordDto(any(Word.class));
+    }
+
+    @Test
+    void testAddWord() {
+        doNothing().when(wordValidator).validate(TEST_DTO);
+        when(wordMapper.wordDtoToWord(any(WordDto.class))).thenReturn(TEST);
+        when(wordService.addWord(TEST)).thenReturn(Optional.of(TEST));
+        when(wordMapper.wordToWordDto(any(Word.class))).thenReturn(TEST_DTO);
+
+        WordDto actualWord = wordFacade.addWord(TEST_DTO);
+
+        assertEquals(TEST_DTO, actualWord);
+        verify(wordValidator).validate(TEST_DTO);
+        verify(wordService).addWord(TEST);
+        verify(wordMapper).wordToWordDto(any(Word.class));
+        verify(wordMapper).wordDtoToWord(any(WordDto.class));
     }
 }

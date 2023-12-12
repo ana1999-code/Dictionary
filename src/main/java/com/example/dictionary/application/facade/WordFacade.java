@@ -9,4 +9,6 @@ public interface WordFacade {
     List<WordDto> getAllWords();
 
     WordDto getWordByName(String name);
+
+    WordDto addWord(WordDto wordDto);
 }
