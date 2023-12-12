@@ -14,4 +14,6 @@ public class TestUtils {
     public static final WordDto TEST_DTO = new WordDto("test", TEST_CATEGORY_DTO);
 
     public static final Word TEST = new Word("test", TEST_CATEGORY);
+
+    public static final String WORD_NOT_FOUND = "Word %s not found".formatted(TEST.getName());
 }
