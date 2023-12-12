@@ -28,4 +28,10 @@ public class WordServiceImpl implements WordService {
     public Optional<Word> getWordByName(String name) {
         return wordRepository.findByName(name);
     }
+
+    @Override
+    public Optional<Word> addWord(Word word) {
+        Word saved = wordRepository.save(word);
+        return Optional.of(saved);
+    }
 }

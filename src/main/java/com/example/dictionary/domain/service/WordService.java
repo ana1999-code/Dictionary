@@ -10,4 +10,6 @@ public interface WordService {
     List<Word> getAllWords();
 
     Optional<Word> getWordByName(String name);
+
+    Optional<Word> addWord(Word word);
 }

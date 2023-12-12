@@ -15,6 +15,7 @@ import static com.example.dictionary.utils.TestUtils.TEST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -58,5 +59,15 @@ class WordServiceImplTest {
 
         assertTrue(actualWord.isEmpty());
         verify(wordRepository).findByName(anyString());
+    }
+
+    @Test
+    void testAddWord() {
+        when(wordRepository.save(any(Word.class))).thenReturn(TEST);
+
+        Optional<Word> addedWord = wordService.addWord(TEST);
+
+        assertEquals(TEST, addedWord.get());
+        verify(wordRepository).save(any(Word.class));
     }
 }
