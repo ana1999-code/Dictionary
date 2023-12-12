@@ -1,11 +1,14 @@
 package com.example.dictionary.application.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.util.Objects;
 
 public class CategoryDto {
 
     private Integer id;
 
+    @NotBlank
     private String name;
 
     public CategoryDto() {

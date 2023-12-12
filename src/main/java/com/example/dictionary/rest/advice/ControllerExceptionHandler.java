@@ -18,7 +18,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException exception) {
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("not_found", exception.getMessage());
+        errorMap.put("error", exception.getMessage());
         return new ResponseEntity<>(errorMap, NOT_FOUND);
     }
 }

@@ -88,7 +88,7 @@ class WordControllerImplTest {
 
         Map<String, String> actualErrorMap = mapper.readValue(contentAsString, HashMap.class);
 
-        assertEquals(WORD_NOT_FOUND, actualErrorMap.get("not_found"));
+        assertEquals(WORD_NOT_FOUND, actualErrorMap.get("error"));
         verify(wordFacade).getWordByName(anyString());
     }
 }

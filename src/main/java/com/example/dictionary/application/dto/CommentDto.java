@@ -1,17 +1,24 @@
 package com.example.dictionary.application.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 
 public class CommentDto {
 
     private Integer id;
 
+    @NotBlank
     private String text;
 
+    @NotNull
     private UserDto commenter;
 
+    @NotNull
     private LocalDate commentedAt;
 
+    @NotNull
     private WordDto word;
 
     public Integer getId() {
