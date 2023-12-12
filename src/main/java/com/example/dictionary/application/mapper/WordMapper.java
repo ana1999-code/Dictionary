@@ -8,5 +8,6 @@ import org.mapstruct.Mapper;
 public interface WordMapper {
 
     Word wordDtoToWord(WordDto wordDto);
+
     WordDto wordToWordDto(Word word);
 }
