@@ -85,11 +85,11 @@ public class WordDto {
         return comments;
     }
 
-    public void addDefinition(DefinitionDto definition){
+    public void addDefinition(DefinitionDto definition) {
         definitions.add(definition);
     }
 
-    public void addExample(ExampleDto example){
+    public void addExample(ExampleDto example) {
         examples.add(example);
     }
 

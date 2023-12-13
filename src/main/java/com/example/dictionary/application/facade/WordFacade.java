@@ -11,4 +11,6 @@ public interface WordFacade {
     WordDto getWordByName(String name);
 
     WordDto addWord(WordDto wordDto);
+
+    void deleteWordByName(String name);
 }

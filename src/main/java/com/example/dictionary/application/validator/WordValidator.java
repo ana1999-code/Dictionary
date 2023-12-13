@@ -1,6 +1,5 @@
 package com.example.dictionary.application.validator;
 
-import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.exception.DuplicateResourceException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
@@ -16,18 +15,18 @@ public class WordValidator {
         this.wordService = wordService;
     }
 
-    public void validate(WordDto wordDto){
+    public void validate(WordDto wordDto) {
         String name = wordDto.getName();
 
-        if (wordService.getWordByName(name).isPresent()){
+        if (wordService.getWordByName(name).isPresent()) {
             throw new DuplicateResourceException("Word %s already exists".formatted(name));
         }
 
-        if (wordDto.getDefinitions().isEmpty()){
+        if (wordDto.getDefinitions().isEmpty()) {
             throw new ResourceNotFoundException("Word %s should have at least one definition".formatted(name));
         }
 
-        if (!wordDto.getExamples().isEmpty()){
+        if (!wordDto.getExamples().isEmpty()) {
             wordDto.getExamples()
                     .stream()
                     .filter(example -> !example.getText().contains(name))

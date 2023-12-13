@@ -34,4 +34,14 @@ public class WordServiceImpl implements WordService {
         Word saved = wordRepository.save(word);
         return Optional.of(saved);
     }
+
+    @Override
+    public boolean existsWordByName(String name) {
+        return wordRepository.existsByName(name);
+    }
+
+    @Override
+    public void deleteWordByName(String name) {
+        wordRepository.deleteByName(name);
+    }
 }

@@ -2,7 +2,6 @@ package com.example.dictionary.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
@@ -10,6 +9,7 @@ import jakarta.persistence.Table;
 
 import java.util.Set;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -23,10 +23,14 @@ public class Definition {
     @Column(nullable = false, unique = true)
     private String text;
 
-    @ManyToMany(mappedBy = "definitions", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "definitions", fetch = LAZY)
     private Set<Word> words;
 
     public Definition() {
+    }
+
+    public Definition(String text) {
+        this.text = text;
     }
 
     public Integer getId() {

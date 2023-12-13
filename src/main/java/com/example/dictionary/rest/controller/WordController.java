@@ -8,4 +8,10 @@ import java.util.List;
 public interface WordController {
 
     ResponseEntity<List<WordDto>> getAllWords();
+
+    ResponseEntity<WordDto> getWordByName(String name);
+
+    ResponseEntity<WordDto> addWord(WordDto wordDto);
+
+    void deleteWordByName(String name);
 }

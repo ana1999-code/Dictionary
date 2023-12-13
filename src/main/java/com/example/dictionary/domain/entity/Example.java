@@ -29,6 +29,10 @@ public class Example {
     public Example() {
     }
 
+    public Example(String text) {
+        this.text = text;
+    }
+
     public Integer getId() {
         return id;
     }

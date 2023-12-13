@@ -12,4 +12,8 @@ public interface WordService {
     Optional<Word> getWordByName(String name);
 
     Optional<Word> addWord(Word word);
+
+    boolean existsWordByName(String name);
+
+    void deleteWordByName(String name);
 }

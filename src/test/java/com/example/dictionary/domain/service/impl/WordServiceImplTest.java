@@ -11,12 +11,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.dictionary.utils.TestUtils.TEST;
+import static com.example.dictionary.utils.TestUtils.WORD;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,7 +34,7 @@ class WordServiceImplTest {
 
     @Test
     void testGetAllWords() {
-        List<Word> expectedList = List.of(TEST);
+        List<Word> expectedList = List.of(WORD);
         when(wordRepository.findAll()).thenReturn(expectedList);
 
         List<Word> actualList = wordService.getAllWords();
@@ -42,12 +45,12 @@ class WordServiceImplTest {
 
     @Test
     void testGetWordByName_whenProvideValidName_thenReturnTheWord() {
-        when(wordRepository.findByName(anyString())).thenReturn(Optional.of(TEST));
+        when(wordRepository.findByName(anyString())).thenReturn(Optional.of(WORD));
 
-        Optional<Word> actualWord = wordService.getWordByName(TEST.getName());
+        Optional<Word> actualWord = wordService.getWordByName(WORD.getName());
 
         assertNotNull(actualWord);
-        assertEquals(TEST, actualWord.get());
+        assertEquals(WORD, actualWord.get());
         verify(wordRepository).findByName(anyString());
     }
 
@@ -55,7 +58,7 @@ class WordServiceImplTest {
     void testGetWordByName_whenProvideInvalidName_thenReturnEmpty() {
         when(wordRepository.findByName(anyString())).thenReturn(Optional.empty());
 
-        Optional<Word> actualWord = wordService.getWordByName(TEST.getName());
+        Optional<Word> actualWord = wordService.getWordByName(WORD.getName());
 
         assertTrue(actualWord.isEmpty());
         verify(wordRepository).findByName(anyString());
@@ -63,11 +66,39 @@ class WordServiceImplTest {
 
     @Test
     void testAddWord() {
-        when(wordRepository.save(any(Word.class))).thenReturn(TEST);
+        when(wordRepository.save(any(Word.class))).thenReturn(WORD);
 
-        Optional<Word> addedWord = wordService.addWord(TEST);
+        Optional<Word> addedWord = wordService.addWord(WORD);
 
-        assertEquals(TEST, addedWord.get());
+        assertEquals(WORD, addedWord.get());
         verify(wordRepository).save(any(Word.class));
+    }
+
+    @Test
+    void testExistsByName_whenWordExists_thenReturnTrue() {
+        when(wordRepository.existsByName(anyString())).thenReturn(true);
+
+        boolean existsWordByName = wordService.existsWordByName(WORD.getName());
+
+        assertTrue(existsWordByName);
+        verify(wordRepository).existsByName(anyString());
+    }
+
+    @Test
+    void testExistsByName_whenWordDoesNotExist_thenReturnFalse() {
+        when(wordRepository.existsByName(anyString())).thenReturn(false);
+
+        boolean existsWordByName = wordService.existsWordByName(WORD.getName());
+
+        assertFalse(existsWordByName);
+        verify(wordRepository).existsByName(anyString());
+    }
+
+    @Test
+    void testDeleteByName() {
+        doNothing().when(wordRepository).deleteByName(anyString());
+
+        assertDoesNotThrow(() -> wordService.deleteWordByName(WORD.getName()));
+        verify(wordRepository).deleteByName(anyString());
     }
 }

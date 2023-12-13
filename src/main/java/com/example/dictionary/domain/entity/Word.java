@@ -1,6 +1,5 @@
 package com.example.dictionary.domain.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,13 +8,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -30,42 +33,40 @@ public class Word {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = EAGER)
+    @ManyToMany(cascade = PERSIST, fetch = LAZY)
     @JoinTable(name = "word_definition",
             joinColumns = @JoinColumn(name = "word_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "definition_id", referencedColumnName = "id"))
     private final Set<Definition> definitions = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = EAGER)
+    @ManyToMany(cascade = PERSIST, fetch = LAZY)
     @JoinTable(name = "word_example",
             joinColumns = @JoinColumn(name = "word_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "example_id", referencedColumnName = "id"))
     private final Set<Example> examples = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = EAGER)
+    @ManyToMany(cascade = {PERSIST, MERGE, REMOVE}, fetch = LAZY)
     @JoinTable(name = "word_synonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "synonym_id"))
     private final Set<Word> synonyms = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = EAGER)
+    @ManyToMany(cascade = {PERSIST, MERGE}, fetch = LAZY)
     @JoinTable(name = "word_antonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "antonym_id"))
+    @Cascade({CascadeType.PERSIST, CascadeType.MERGE})
     private final Set<Word> antonyms = new HashSet<>();
 
-    @ManyToOne(fetch = EAGER)
+    @ManyToOne(fetch = LAZY, cascade = {PERSIST, MERGE})
     @JoinColumn(nullable = false)
     private Category category;
 
-    @ManyToMany(fetch = EAGER)
+    @ManyToMany(fetch = LAZY)
     @JoinTable(name = "word_contributors",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private final Set<User> contributors = new HashSet<>();
-
-    @OneToMany(mappedBy = "word", fetch = EAGER)
-    private final Set<Comment> comments = new HashSet<>();
 
     public Word() {
     }
@@ -117,5 +118,25 @@ public class Word {
 
     public Set<User> getContributors() {
         return contributors;
+    }
+
+    public void addDefinition(Definition definition) {
+        definitions.add(definition);
+    }
+
+    public void removeDefinition(Definition definition) {
+        definitions.remove(definition);
+    }
+
+    public void removeSynonym(Word word) {
+        synonyms.remove(word);
+    }
+
+    public void addExample(Example example) {
+        examples.add(example);
+    }
+
+    public void removeExample(Example example) {
+        examples.remove(example);
     }
 }
