@@ -135,6 +135,9 @@
 	<profiles>
 		<profile>
 			<id>production</id>
+			<properties>
+				<spring.profiles.active>view</spring.profiles.active>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -154,6 +157,15 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>rest</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<spring.profiles.active>rest</spring.profiles.active>
+			</properties>
 		</profile>
 	</profiles>
 

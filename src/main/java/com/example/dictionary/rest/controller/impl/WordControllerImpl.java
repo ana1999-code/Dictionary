@@ -4,6 +4,7 @@ import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.rest.controller.WordController;
 import jakarta.validation.Valid;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("")
+@Profile("rest")
 public class WordControllerImpl implements WordController {
 
     private final WordFacade wordFacade;
