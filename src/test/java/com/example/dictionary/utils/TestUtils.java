@@ -36,4 +36,6 @@ public class TestUtils {
     public static final Example EXAMPLE = new Example("Test example");
 
     public static final Definition DEFINITION = new Definition("Definition test");
+
+    public static final String INVALID_WORD = "Word must contain only letters";
 }

@@ -19,6 +19,7 @@ import java.util.Map;
 import static com.example.dictionary.utils.TestUtils.DEFINITION_NOT_FOUND;
 import static com.example.dictionary.utils.TestUtils.DUPLICATE_WORD;
 import static com.example.dictionary.utils.TestUtils.EXAMPLE_WITHOUT_WORD;
+import static com.example.dictionary.utils.TestUtils.INVALID_WORD;
 import static com.example.dictionary.utils.TestUtils.WORD;
 import static com.example.dictionary.utils.TestUtils.WORD_DTO;
 import static com.example.dictionary.utils.TestUtils.WORD_NOT_FOUND;
@@ -177,6 +178,22 @@ class WordControllerImplTest {
 
         assertEquals(EXAMPLE_WITHOUT_WORD, actualErrorMap.get("error"));
         verify(wordFacade).addWord(any(WordDto.class));
+    }
+
+    @Test
+    void testAddWord_whenAddWordWithInvalidName_thenThrow() throws Exception {
+        WORD_DTO.setName("test123");
+
+        String response = mockMvc.perform(post(URL)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(WORD_DTO)))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        Map<String, String> actualErrorMap = mapper.readValue(response, HashMap.class);
+
+        assertEquals(INVALID_WORD, actualErrorMap.get("name"));
     }
 
     @Test
