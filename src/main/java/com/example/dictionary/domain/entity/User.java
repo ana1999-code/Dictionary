@@ -31,6 +31,9 @@ public class User {
     @Email
     private String email;
 
+    @Column(nullable = false)
+    private String password;
+
     @Enumerated(value = STRING)
     @Column(nullable = false)
     private Role role;
@@ -87,5 +90,13 @@ public class User {
 
     public void setUserInfo(UserInfo userInfo) {
         this.userInfo = userInfo;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
