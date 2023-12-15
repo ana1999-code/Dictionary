@@ -1,6 +1,7 @@
 package com.example.dictionary.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.Objects;
 
@@ -8,7 +9,7 @@ public class CategoryDto {
 
     private Integer id;
 
-    @NotBlank
+    @NotEmpty(message = "Category should be completed")
     private String name;
 
     public CategoryDto() {

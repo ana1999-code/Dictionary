@@ -5,6 +5,7 @@ import com.example.dictionary.domain.repository.CategoryRepository;
 import com.example.dictionary.domain.service.CategoryService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,5 +20,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Optional<Category> getCategoryByName(String name) {
         return categoryRepository.getCategoryByName(name);
+    }
+
+    @Override
+    public List<Category> getAllCategories() {
+        return categoryRepository.findAll();
     }
 }

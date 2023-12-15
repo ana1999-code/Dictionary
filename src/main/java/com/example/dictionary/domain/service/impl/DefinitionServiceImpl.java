@@ -5,6 +5,7 @@ import com.example.dictionary.domain.repository.DefinitionRepository;
 import com.example.dictionary.domain.service.DefinitionService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,5 +20,10 @@ public class DefinitionServiceImpl implements DefinitionService {
     @Override
     public Optional<Definition> getDefinitionByText(String text) {
         return definitionRepository.getDefinitionByText(text);
+    }
+
+    @Override
+    public List<Definition> getAllDefinitions() {
+        return definitionRepository.findAll();
     }
 }

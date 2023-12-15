@@ -1,10 +1,17 @@
 package com.example.dictionary.application.facade.impl;
 
+import com.example.dictionary.application.dto.CategoryDto;
+import com.example.dictionary.application.dto.DefinitionDto;
+import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.facade.WordFacade;
+import com.example.dictionary.application.mapper.CategoryMapper;
+import com.example.dictionary.application.mapper.DefinitionMapper;
+import com.example.dictionary.application.mapper.ExampleMapper;
 import com.example.dictionary.application.mapper.WordMapper;
 import com.example.dictionary.application.validator.WordValidator;
+import com.example.dictionary.domain.entity.Category;
 import com.example.dictionary.domain.entity.Definition;
 import com.example.dictionary.domain.entity.Example;
 import com.example.dictionary.domain.entity.Word;
@@ -32,17 +39,30 @@ public class WordFacadeImpl implements WordFacade {
 
     private final ExampleService exampleService;
 
+    private final CategoryMapper categoryMapper;
+
+    private final DefinitionMapper definitionMapper;
+
+    private final ExampleMapper exampleMapper;
+
     public WordFacadeImpl(WordService wordService,
                           WordMapper wordMapper,
                           WordValidator validator,
                           CategoryService categoryService,
-                          DefinitionService definitionService, ExampleService exampleService) {
+                          DefinitionService definitionService,
+                          ExampleService exampleService,
+                          CategoryMapper categoryMapper,
+                          DefinitionMapper definitionMapper,
+                          ExampleMapper exampleMapper) {
         this.wordService = wordService;
         this.wordMapper = wordMapper;
         this.validator = validator;
         this.categoryService = categoryService;
         this.definitionService = definitionService;
         this.exampleService = exampleService;
+        this.categoryMapper = categoryMapper;
+        this.definitionMapper = definitionMapper;
+        this.exampleMapper = exampleMapper;
     }
 
     @Override
@@ -83,6 +103,30 @@ public class WordFacadeImpl implements WordFacade {
         decoupleFromSynonyms(wordToDelete);
 
         wordService.deleteWordByName(name);
+    }
+
+    @Override
+    public List<CategoryDto> getAllCategories() {
+        List<Category> categories = categoryService.getAllCategories();
+        return categories.stream()
+                .map(categoryMapper::categoryToCategoryDto)
+                .toList();
+    }
+
+    @Override
+    public List<DefinitionDto> getAllDefinitions() {
+        List<Definition> definitions = definitionService.getAllDefinitions();
+        return definitions.stream()
+                .map(definitionMapper::definitionToDefinitionDto)
+                .toList();
+    }
+
+    @Override
+    public List<ExampleDto> getAllExamples() {
+        List<Example> examples = exampleService.getAllExamples();
+        return examples.stream()
+                .map(exampleMapper::exampleToExampleDto)
+                .toList();
     }
 
     private static void decoupleFromSynonyms(Word wordToDelete) {

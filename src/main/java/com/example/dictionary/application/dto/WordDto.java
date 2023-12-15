@@ -1,7 +1,9 @@
 package com.example.dictionary.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -11,7 +13,8 @@ public class WordDto {
 
     private Integer id;
 
-    @NotBlank
+    @NotEmpty(message = "Word field must be completed")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Word must contain only letters")
     private String name;
 
     private final Set<DefinitionDto> definitions = new HashSet<>();
@@ -22,7 +25,7 @@ public class WordDto {
 
     private final Set<WordDto> antonyms = new HashSet<>();
 
-    @NotNull
+    @NotNull(message = "Category must be completed")
     private CategoryDto category;
 
     private final Set<UserDto> contributors = new HashSet<>();
