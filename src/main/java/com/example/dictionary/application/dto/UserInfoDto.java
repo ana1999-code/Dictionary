@@ -6,8 +6,6 @@ public class UserInfoDto {
 
     private Integer id;
 
-    private Integer level;
-
     private Integer progress;
 
     private Set<AchievementDto> achievements;
@@ -20,14 +18,6 @@ public class UserInfoDto {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
     }
 
     public Integer getProgress() {

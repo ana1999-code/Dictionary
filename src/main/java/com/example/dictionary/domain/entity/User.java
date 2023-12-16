@@ -1,6 +1,7 @@
 package com.example.dictionary.domain.entity;
 
 import com.example.dictionary.application.security.role.Role;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -38,7 +39,7 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private UserInfo userInfo;
 
     public User() {

@@ -22,8 +22,6 @@ public class UserInfo {
     @GeneratedValue(strategy = IDENTITY)
     private Integer id;
 
-    private Integer level;
-
     private Integer progress;
 
     @OneToMany(mappedBy = "id.userInfo")
@@ -44,14 +42,6 @@ public class UserInfo {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
     }
 
     public Integer getProgress() {

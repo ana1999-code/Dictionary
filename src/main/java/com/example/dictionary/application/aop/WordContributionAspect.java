@@ -5,6 +5,7 @@ import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.facade.WordFacade;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -28,7 +29,8 @@ public class WordContributionAspect {
     }
 
     @Pointcut("@annotation(com.example.dictionary.application.annotation.ContributeByUser)")
-    public void contributeByUserAnnotation(){}
+    public void contributeByUserAnnotation() {
+    }
 
 
     @Before("contributeByUserAnnotation()")
@@ -36,16 +38,24 @@ public class WordContributionAspect {
         String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
         UserDto user = userFacade.findUserByEmail(loggedInUser);
 
-        WordDto wordDto = (WordDto) Arrays.stream(joinPoint.getArgs()).toList().get(0);
-        wordDto.getContributors().add(user);
+        Object arg = Arrays.stream(joinPoint.getArgs()).toList().get(0);
+
+        if (arg instanceof WordDto wordDto) {
+            wordDto.getContributors().add(user);
+        } else {
+            String wordName = (String) Arrays.stream(joinPoint.getArgs()).toList().get(0);
+            wordFacade.getWordByName(wordName).getContributors().add(user);
+        }
     }
 
-    @Before("contributeByUserAnnotation()")
-    public void setWordModificationUser(JoinPoint joinPoint) {
+    @AfterReturning("contributeByUserAnnotation()")
+    public void setUserProgress() {
         String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
         UserDto user = userFacade.findUserByEmail(loggedInUser);
 
-        String word = (String) Arrays.stream(joinPoint.getArgs()).toList().get(0);
-        wordFacade.getWordByName(word).getContributors().add(user);
+        Integer progress = user.getUserInfo().getProgress();
+        user.getUserInfo().setProgress(progress + 1);
+
+        userFacade.updateUserProgress(user);
     }
 }

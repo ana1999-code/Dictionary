@@ -7,4 +7,6 @@ public interface UserFacade {
     void registerUser(UserDto userDto);
 
     UserDto findUserByEmail(String email);
+
+    void updateUserProgress(UserDto user);
 }

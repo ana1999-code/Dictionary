@@ -6,6 +6,7 @@ import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.mapper.UserMapper;
 import com.example.dictionary.application.validator.UserValidator;
 import com.example.dictionary.domain.entity.User;
+import com.example.dictionary.domain.entity.UserInfo;
 import com.example.dictionary.domain.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,10 @@ public class UserFacadeImpl implements UserFacade {
         userValidator.validate(userDto);
 
         User user = userMapper.userDtoToUser(userDto);
+        UserInfo userInfo = new UserInfo();
+        userInfo.setProgress(0);
+        user.setUserInfo(userInfo);
+
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         userService.registerUser(user);
@@ -47,5 +52,15 @@ public class UserFacadeImpl implements UserFacade {
                 .orElseThrow(() -> new ResourceNotFoundException("User with email %s not found".formatted(email)));
 
         return userMapper.userToUserDto(user);
+    }
+
+    @Override
+    public void updateUserProgress(UserDto user) {
+        String email = user.getEmail();
+        User userToUpdate = userService.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User with email %s not found".formatted(email)));
+
+        userToUpdate.getUserInfo().setProgress(user.getUserInfo().getProgress());
+        userService.registerUser(userToUpdate);
     }
 }
