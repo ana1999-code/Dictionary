@@ -5,4 +5,6 @@ import com.example.dictionary.application.dto.UserDto;
 public interface UserFacade {
 
     void registerUser(UserDto userDto);
+
+    UserDto findUserByEmail(String email);
 }

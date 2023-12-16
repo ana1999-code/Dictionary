@@ -24,7 +24,7 @@ public class WordDto {
 
     private final Set<WordDto> antonyms = new HashSet<>();
 
-    @NotNull(message = "Category must be completed")
+    @NotNull(message = "Category is required")
     private CategoryDto category;
 
     private final Set<UserDto> contributors = new HashSet<>();

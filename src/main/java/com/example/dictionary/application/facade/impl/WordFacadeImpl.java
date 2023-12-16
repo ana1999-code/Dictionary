@@ -1,5 +1,6 @@
 package com.example.dictionary.application.facade.impl;
 
+import com.example.dictionary.application.annotation.ContributeByUser;
 import com.example.dictionary.application.dto.CategoryDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
@@ -82,6 +83,7 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
+    @ContributeByUser
     public WordDto addWord(WordDto wordDto) {
         validator.validate(wordDto);
 

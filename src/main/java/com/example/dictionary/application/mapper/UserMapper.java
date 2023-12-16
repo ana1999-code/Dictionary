@@ -19,6 +19,8 @@ public interface UserMapper {
 
     User userDtoToUser(UserDto userDto);
 
+    UserDto userToUserDto(User user);
+
     @Named("roleToGrantedAuthorities")
     static Set<GrantedAuthority> roleToGrantedAuthorities(Role role) {
         return role.getGrantedAuthorities();

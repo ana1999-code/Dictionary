@@ -1,6 +1,7 @@
 package com.example.dictionary.application.facade.impl;
 
 import com.example.dictionary.application.dto.UserDto;
+import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.mapper.UserMapper;
 import com.example.dictionary.application.validator.UserValidator;
@@ -38,5 +39,13 @@ public class UserFacadeImpl implements UserFacade {
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         userService.registerUser(user);
+    }
+
+    @Override
+    public UserDto findUserByEmail(String email) {
+        User user = userService.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User with email %s not found".formatted(email)));
+
+        return userMapper.userToUserDto(user);
     }
 }
