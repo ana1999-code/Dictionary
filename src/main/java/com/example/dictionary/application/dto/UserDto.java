@@ -1,6 +1,6 @@
 package com.example.dictionary.application.dto;
 
-import com.example.dictionary.domain.enums.Role;
+import com.example.dictionary.application.security.role.Role;
 
 public class UserDto {
 

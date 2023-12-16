@@ -4,9 +4,6 @@ import com.example.dictionary.application.dto.CategoryDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
-import com.example.dictionary.domain.entity.Category;
-import com.example.dictionary.domain.entity.Definition;
-import com.example.dictionary.domain.entity.Example;
 
 import java.util.List;
 

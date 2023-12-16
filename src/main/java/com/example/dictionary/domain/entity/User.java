@@ -1,6 +1,6 @@
 package com.example.dictionary.domain.entity;
 
-import com.example.dictionary.domain.enums.Role;
+import com.example.dictionary.application.security.role.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;

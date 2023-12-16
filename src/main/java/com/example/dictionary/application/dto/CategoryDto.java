@@ -1,6 +1,5 @@
 package com.example.dictionary.application.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.util.Objects;
