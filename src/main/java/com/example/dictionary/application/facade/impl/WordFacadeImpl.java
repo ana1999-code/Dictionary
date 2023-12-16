@@ -5,6 +5,8 @@ import com.example.dictionary.application.dto.CategoryDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
+import com.example.dictionary.application.exception.DuplicateResourceException;
+import com.example.dictionary.application.exception.IllegalOperationException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.application.mapper.CategoryMapper;
@@ -23,6 +25,7 @@ import com.example.dictionary.domain.service.WordService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -76,8 +79,7 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     public WordDto getWordByName(String name) {
-        Word word = wordService.getWordByName(name)
-                .orElseThrow(() -> new ResourceNotFoundException("Word %s not found".formatted(name)));
+        Word word = getWord(name);
 
         return wordMapper.wordToWordDto(word);
     }
@@ -99,10 +101,7 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     public void deleteWordByName(String name) {
-        Word wordToDelete = wordService.getWordByName(name)
-                .orElseThrow(() -> new ResourceNotFoundException("Word %s not found".formatted(name)));
-
-        decoupleFromSynonyms(wordToDelete);
+        getWord(name);
 
         wordService.deleteWordByName(name);
     }
@@ -131,13 +130,33 @@ public class WordFacadeImpl implements WordFacade {
                 .toList();
     }
 
-    private static void decoupleFromSynonyms(Word wordToDelete) {
-        wordToDelete.getSynonyms().forEach(
-                synonym -> {
-                    synonym.removeSynonym(wordToDelete);
-                    wordToDelete.removeSynonym(synonym);
-                }
-        );
+    @Override
+    @ContributeByUser
+    public void addDefinitionToWord(String name, DefinitionDto definitionDto) {
+        Word word = getWord(name);
+
+        Definition definition = getOrCreateDefinition(definitionDto);
+        verifyDefinitionIsNotPresent(word, definition);
+
+        word.addDefinition(definition);
+        wordService.addWord(word);
+    }
+
+    @Override
+    @ContributeByUser
+    public void removeDefinitionFromWord(String name, DefinitionDto definitionDto) {
+        Definition definition = definitionMapper.definitionDtoToDefinition(definitionDto);
+        Word word = getWord(name);
+
+        Definition definitionToDelete = getDefinitionToDelete(definition, word);
+
+        word.removeDefinition(definitionToDelete);
+        wordService.addWord(word);
+    }
+
+    private Word getWord(String name) {
+        return wordService.getWordByName(name)
+                .orElseThrow(() -> new ResourceNotFoundException("Word %s not found".formatted(name)));
     }
 
     private void addToDefinitions(Word word) {
@@ -172,5 +191,43 @@ public class WordFacadeImpl implements WordFacade {
                                     word.addExample(value);
                                 })
         );
+    }
+
+    private Definition getOrCreateDefinition(DefinitionDto definitionDto) {
+        Optional<Definition> existingDefinition = definitionService.getDefinitionByText(definitionDto.getText());
+
+        return existingDefinition.orElseGet(() -> {
+            Definition newDefinition = definitionMapper.definitionDtoToDefinition(definitionDto);
+            definitionService.saveDefinition(newDefinition);
+            return newDefinition;
+        });
+    }
+
+
+    private static void verifyDefinitionIsNotPresent(Word word, Definition definition) {
+        if (word.getDefinitions().contains(definition)) {
+            throw new DuplicateResourceException(
+                    "Definition %s is already present in word definitions".formatted(definition.getText())
+            );
+        }
+    }
+
+
+    private Definition getDefinitionToDelete(Definition definition, Word word) {
+        String text = definition.getText();
+
+        Definition definitionToDelete = definitionService.getDefinitionByText(text)
+                .orElseThrow(() -> new ResourceNotFoundException("Definition %s not found".formatted(text)));
+
+        if (word.getDefinitions().size() == 1) {
+            throw new IllegalOperationException(
+                    "Word %s have only one definition that is required".formatted(word.getName())
+            );
+        } else if (!word.getDefinitions().contains(definitionToDelete)) {
+            throw new ResourceNotFoundException("Definition %s not found for the word %s"
+                    .formatted(text, word.getName())
+            );
+        }
+        return definitionToDelete;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.dictionary.rest.controller.impl;
 
 import com.example.dictionary.application.dto.CategoryDto;
+import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.rest.controller.WordController;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -72,5 +74,23 @@ public class WordControllerImpl implements WordController {
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
         List<CategoryDto> categories = wordFacade.getAllCategories();
         return new ResponseEntity<>(categories, OK);
+    }
+
+    @Override
+    @PutMapping("{name}/definitions")
+    @ResponseStatus(value = OK)
+    @PreAuthorize("hasAuthority('word:write')")
+    public void addDefinitionToWord(@PathVariable("name") String name,
+                                    @RequestBody @Valid DefinitionDto definitionDto) {
+        wordFacade.addDefinitionToWord(name, definitionDto);
+    }
+
+    @Override
+    @DeleteMapping("{name}/definitions")
+    @ResponseStatus(value = NO_CONTENT)
+    @PreAuthorize("hasAuthority('word:write')")
+    public void removeDefinitionFromWord(@PathVariable("name") String name,
+                                         @RequestBody @Valid DefinitionDto definitionDto) {
+        wordFacade.removeDefinitionFromWord(name, definitionDto);
     }
 }

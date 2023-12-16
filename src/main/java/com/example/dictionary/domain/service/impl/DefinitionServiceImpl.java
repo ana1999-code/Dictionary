@@ -26,4 +26,9 @@ public class DefinitionServiceImpl implements DefinitionService {
     public List<Definition> getAllDefinitions() {
         return definitionRepository.findAll();
     }
+
+    @Override
+    public void saveDefinition(Definition definition) {
+        definitionRepository.save(definition);
+    }
 }

@@ -122,21 +122,36 @@ public class Word {
 
     public void addDefinition(Definition definition) {
         definitions.add(definition);
+        definition.addWord(this);
     }
 
     public void removeDefinition(Definition definition) {
         definitions.remove(definition);
+        definition.getWords().remove(this);
     }
 
-    public void removeSynonym(Word word) {
-        synonyms.remove(word);
+    public void addSynonym(Word synonym) {
+        synonyms.add(synonym);
+        synonym.addSynonym(this);
+    }
+
+    public void removeSynonym(Word synonym) {
+        synonyms.remove(synonym);
+        synonym.removeSynonym(this);
+    }
+
+    public void addAntonym(Word antonym) {
+        antonyms.add(antonym);
+        antonym.addAntonym(this);
     }
 
     public void addExample(Example example) {
         examples.add(example);
+        example.addWord(this);
     }
 
     public void removeExample(Example example) {
         examples.remove(example);
+        example.getWords().remove(this);
     }
 }

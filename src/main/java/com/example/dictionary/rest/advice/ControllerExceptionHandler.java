@@ -1,11 +1,11 @@
 package com.example.dictionary.rest.advice;
 
 import com.example.dictionary.application.exception.DuplicateResourceException;
+import com.example.dictionary.application.exception.IllegalOperationException;
 import com.example.dictionary.application.exception.IncorrectUsernameException;
 import com.example.dictionary.application.exception.InvalidPasswordException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,7 +50,7 @@ public class ControllerExceptionHandler {
 
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(IncorrectUsernameException.class)
-    public ResponseEntity<Map<String, String>> handleUsernameNotFoundException(IncorrectUsernameException exception){
+    public ResponseEntity<Map<String, String>> handleUsernameNotFoundException(IncorrectUsernameException exception) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error", exception.getMessage());
         return new ResponseEntity<>(errorMap, NOT_FOUND);
@@ -58,7 +58,15 @@ public class ControllerExceptionHandler {
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<Map<String, String>> handleInvalidPasswordException(InvalidPasswordException exception){
+    public ResponseEntity<Map<String, String>> handleInvalidPasswordException(InvalidPasswordException exception) {
         return new ResponseEntity<>(exception.getErrorMap(), BAD_REQUEST);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(IllegalOperationException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalOperationException(IllegalOperationException exception) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", exception.getMessage());
+        return new ResponseEntity<>(errorMap, BAD_REQUEST);
     }
 }

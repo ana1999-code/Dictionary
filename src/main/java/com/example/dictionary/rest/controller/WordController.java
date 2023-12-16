@@ -1,6 +1,7 @@
 package com.example.dictionary.rest.controller;
 
 import com.example.dictionary.application.dto.CategoryDto;
+import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.WordDto;
 import org.springframework.http.ResponseEntity;
 
@@ -17,4 +18,8 @@ public interface WordController {
     void deleteWordByName(String name);
 
     ResponseEntity<List<CategoryDto>> getAllCategories();
+
+    void addDefinitionToWord(String name, DefinitionDto definitionDto);
+
+    void removeDefinitionFromWord(String name, DefinitionDto definitionDto);
 }

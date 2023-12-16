@@ -10,4 +10,6 @@ public interface DefinitionService {
     Optional<Definition> getDefinitionByText(String text);
 
     List<Definition> getAllDefinitions();
+
+    void saveDefinition(Definition definition);
 }

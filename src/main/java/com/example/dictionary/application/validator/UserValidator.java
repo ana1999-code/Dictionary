@@ -14,7 +14,7 @@ public class UserValidator {
         this.userService = userService;
     }
 
-    public void validate(UserDto userDto){
+    public void validate(UserDto userDto) {
         String email = userDto.getEmail();
 
         if (userService.existsUserByEmail(email)) {

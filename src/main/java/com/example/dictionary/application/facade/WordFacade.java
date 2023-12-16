@@ -22,4 +22,8 @@ public interface WordFacade {
     List<DefinitionDto> getAllDefinitions();
 
     List<ExampleDto> getAllExamples();
+
+    void addDefinitionToWord(String name, DefinitionDto definitionDto);
+
+    public void removeDefinitionFromWord(String name, DefinitionDto definitionDto);
 }
