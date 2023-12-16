@@ -1,6 +1,7 @@
 package com.example.dictionary.rest.controller.impl;
 
 import com.example.dictionary.application.dto.CategoryDto;
+import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -111,5 +113,75 @@ public class WordControllerImpl implements WordController {
     public void removeExampleFromWord(@PathVariable("name") String name,
                                       @RequestBody @Valid ExampleDto exampleDto) {
         wordFacade.removeExampleFromWord(name, exampleDto);
+    }
+
+    @Override
+    @GetMapping("{name}/synonyms")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_LEARNER', 'ROLE_EDITOR')")
+    public ResponseEntity<Set<WordDto>> getAllSynonyms(@PathVariable String name) {
+        Set<WordDto> synonyms = wordFacade.getAllSynonyms(name);
+        return new ResponseEntity<>(synonyms, OK);
+    }
+
+    @Override
+    @GetMapping("{name}/antonyms")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_LEARNER', 'ROLE_EDITOR')")
+    public ResponseEntity<Set<WordDto>> getAllAntonyms(@PathVariable String name) {
+        Set<WordDto> antonyms = wordFacade.getAllAntonyms(name);
+        return new ResponseEntity<>(antonyms, OK);
+    }
+
+    @Override
+    @PutMapping("{name}/synonyms")
+    @ResponseStatus(value = CREATED)
+    @PreAuthorize("hasAuthority('word:write')")
+    public void addSynonym(@PathVariable("name") String name,
+                           @RequestBody WordDto synonym) {
+        wordFacade.addSynonym(name, synonym);
+    }
+
+    @Override
+    @DeleteMapping("{name}/synonyms")
+    @ResponseStatus(value = NO_CONTENT)
+    @PreAuthorize("hasAuthority('word:write')")
+    public void removeSynonym(@PathVariable("name") String name,
+                              @RequestBody WordDto synonym) {
+        wordFacade.removeSynonym(name, synonym);
+    }
+
+    @Override
+    @PutMapping("{name}/antonyms")
+    @ResponseStatus(value = CREATED)
+    @PreAuthorize("hasAuthority('word:write')")
+    public void addAntonym(@PathVariable("name") String name,
+                           @RequestBody WordDto antonym) {
+        wordFacade.addAntonym(name, antonym);
+    }
+
+    @Override
+    @DeleteMapping("{name}/antonyms")
+    @ResponseStatus(value = NO_CONTENT)
+    @PreAuthorize("hasAuthority('word:write')")
+    public void removeAntonym(@PathVariable("name") String name,
+                              @RequestBody WordDto antonym) {
+        wordFacade.removeAntonym(name, antonym);
+    }
+
+    @Override
+    @PutMapping("{name}/comments")
+    @ResponseStatus(value = CREATED)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_LEARNER', 'ROLE_EDITOR')")
+    public void addComment(@PathVariable("name") String name,
+                           @RequestBody @Valid CommentDto commentDto) {
+        wordFacade.addComment(name, commentDto);
+    }
+
+    @Override
+    @DeleteMapping("{name}/comments")
+    @ResponseStatus(value = NO_CONTENT)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_LEARNER', 'ROLE_EDITOR')")
+    public void removeComment(@PathVariable String name,
+                              @RequestBody CommentDto commentDto) {
+        wordFacade.removeComment(name, commentDto);
     }
 }

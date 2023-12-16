@@ -2,6 +2,7 @@ package com.example.dictionary.application.facade.impl;
 
 import com.example.dictionary.application.annotation.ContributeByUser;
 import com.example.dictionary.application.dto.CategoryDto;
+import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class WordFacadeImpl implements WordFacade {
@@ -178,6 +180,86 @@ public class WordFacadeImpl implements WordFacade {
         wordService.addWord(word);
     }
 
+    @Override
+    public Set<WordDto> getAllSynonyms(String name) {
+        Word word = getWord(name);
+        Set<Word> synonyms = word.getSynonyms();
+
+        return synonyms.stream()
+                .map(wordMapper::wordToWordDto)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<WordDto> getAllAntonyms(String name) {
+        Word word = getWord(name);
+        Set<Word> antonyms = word.getAntonyms();
+
+        return antonyms.stream()
+                .map(wordMapper::wordToWordDto)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    @ContributeByUser
+    public void addSynonym(String name, WordDto synonym) {
+        Word word = getWord(name);
+        Word synonymToAdd = getWord(synonym.getName());
+
+        verifyWordIsNotPresent(word, synonymToAdd);
+
+        word.addSynonym(synonymToAdd);
+        wordService.addWord(word);
+    }
+
+    @Override
+    @ContributeByUser
+    public void removeSynonym(String name, WordDto synonym) {
+        Word word = getWord(name);
+        Word synonymToRemove = getWord(synonym.getName());
+
+        verifyWordIsPresent(synonymToRemove, word.getSynonyms());
+
+        word.removeSynonym(synonymToRemove);
+        wordService.addWord(word);
+    }
+
+    @Override
+    @ContributeByUser
+    public void addAntonym(String name, WordDto antonym) {
+        Word word = getWord(name);
+        Word antonymToAdd = getWord(antonym.getName());
+
+        verifyWordIsNotPresent(word, antonymToAdd);
+
+        word.addAntonym(antonymToAdd);
+        wordService.addWord(word);
+    }
+
+    @Override
+    @ContributeByUser
+    public void removeAntonym(String name, WordDto antonym) {
+        Word word = getWord(name);
+        Word antonymToRemove = getWord(antonym.getName());
+
+        verifyWordIsPresent(antonymToRemove, word.getAntonyms());
+
+        word.removeAntonym(antonymToRemove);
+        wordService.addWord(word);
+    }
+
+    //todo: implement add comment
+    @Override
+    public void addComment(String name, CommentDto commentDto) {
+
+    }
+
+    //todo: implement remove comment
+    @Override
+    public void removeComment(String name, CommentDto commentDto) {
+
+    }
+
     private Word getWord(String name) {
         return wordService.getWordByName(name)
                 .orElseThrow(() -> new ResourceNotFoundException("Word %s not found".formatted(name)));
@@ -290,6 +372,27 @@ public class WordFacadeImpl implements WordFacade {
             throw new DuplicateResourceException(
                     "Example %s is already present in word examples".formatted(example.getText())
             );
+        }
+    }
+
+    private static void verifyWordIsNotPresent(Word word, Word wordToAdd) {
+        if (isWordContaining(word, wordToAdd)) {
+            throw new DuplicateResourceException("%s is already present for word %s"
+                    .formatted(wordToAdd.getName(), word.getName()));
+        }
+    }
+
+    private static boolean isWordContaining(Word word, Word linkedWord) {
+        return word.getSynonyms().contains(linkedWord)
+                && !word.getAntonyms().contains(linkedWord)
+                || !word.getSynonyms().contains(linkedWord)
+                && word.getAntonyms().contains(linkedWord);
+    }
+
+    private static void verifyWordIsPresent(Word wordToRemove, Set<Word> synonyms) {
+        if (!synonyms.contains(wordToRemove)) {
+            throw new ResourceNotFoundException("Synonym|Antonym %s is not present"
+                    .formatted(wordToRemove.getName()));
         }
     }
 }

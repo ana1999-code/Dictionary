@@ -8,11 +8,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static jakarta.persistence.CascadeType.MERGE;
@@ -67,6 +70,9 @@ public class Word {
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private final Set<User> contributors = new HashSet<>();
+
+    @OneToMany(mappedBy = "word", orphanRemoval = true)
+    private final List<Comment> comments = new ArrayList<>();
 
     public Word() {
     }
@@ -131,18 +137,31 @@ public class Word {
     }
 
     public void addSynonym(Word synonym) {
-        synonyms.add(synonym);
-        synonym.addSynonym(this);
+        if (!synonyms.contains(synonym)) {
+            synonyms.add(synonym);
+            synonym.addSynonym(this);
+        }
     }
 
     public void removeSynonym(Word synonym) {
-        synonyms.remove(synonym);
-        synonym.removeSynonym(this);
+        if (synonyms.contains(synonym)) {
+            synonyms.remove(synonym);
+            synonym.removeSynonym(this);
+        }
     }
 
     public void addAntonym(Word antonym) {
-        antonyms.add(antonym);
-        antonym.addAntonym(this);
+        if (!antonyms.contains(antonym)) {
+            antonyms.add(antonym);
+            antonym.addAntonym(this);
+        }
+    }
+
+    public void removeAntonym(Word antonym) {
+        if (antonyms.contains(antonym)) {
+            antonyms.remove(antonym);
+            antonym.removeAntonym(this);
+        }
     }
 
     public void addExample(Example example) {
@@ -153,5 +172,19 @@ public class Word {
     public void removeExample(Example example) {
         examples.remove(example);
         example.getWords().remove(this);
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setWord(this);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+        comment.setWord(null);
     }
 }
