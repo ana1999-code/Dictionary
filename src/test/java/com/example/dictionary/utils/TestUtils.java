@@ -3,6 +3,7 @@ package com.example.dictionary.utils;
 import com.example.dictionary.application.dto.CategoryDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
+import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.domain.entity.Category;
 import com.example.dictionary.domain.entity.Definition;
@@ -38,4 +39,6 @@ public class TestUtils {
     public static final Definition DEFINITION = new Definition("Definition test");
 
     public static final String INVALID_WORD = "Word must contain only letters";
+
+    public static final UserDto USER_DTO = new UserDto();
 }

@@ -2,6 +2,7 @@ package com.example.dictionary.rest.advice;
 
 import com.example.dictionary.application.exception.DuplicateResourceException;
 import com.example.dictionary.application.exception.IncorrectUsernameException;
+import com.example.dictionary.application.exception.InvalidPasswordException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -53,5 +54,11 @@ public class ControllerExceptionHandler {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error", exception.getMessage());
         return new ResponseEntity<>(errorMap, NOT_FOUND);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPasswordException(InvalidPasswordException exception){
+        return new ResponseEntity<>(exception.getErrorMap(), BAD_REQUEST);
     }
 }
