@@ -2,6 +2,7 @@ package com.example.dictionary.application.validator;
 
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.exception.DuplicateResourceException;
+import com.example.dictionary.application.exception.IllegalOperationException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.domain.service.WordService;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class WordValidator {
                     .filter(example -> !example.getText().contains(name))
                     .findAny()
                     .ifPresent(example -> {
-                        throw new ResourceNotFoundException(
+                        throw new IllegalOperationException(
                                 "Provided example does not contain the word %s".formatted(name));
                     });
         }

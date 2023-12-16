@@ -154,6 +154,30 @@ public class WordFacadeImpl implements WordFacade {
         wordService.addWord(word);
     }
 
+    @Override
+    @ContributeByUser
+    public void removeExampleFromWord(String name, ExampleDto exampleDto) {
+        Example example = exampleMapper.exampleDtoToExample(exampleDto);
+        Word word = getWord(name);
+
+        Example exampleToDelete = getExampleToDelete(example, word);
+
+        word.removeExample(exampleToDelete);
+        wordService.addWord(word);
+    }
+
+    @Override
+    @ContributeByUser
+    public void addExampleToWord(String name, ExampleDto exampleDto) {
+        Word word = getWord(name);
+        Example example = getOrCreateExample(exampleDto);
+
+        verifyExampleIsValid(word, example);
+
+        word.addExample(example);
+        wordService.addWord(word);
+    }
+
     private Word getWord(String name) {
         return wordService.getWordByName(name)
                 .orElseThrow(() -> new ResourceNotFoundException("Word %s not found".formatted(name)));
@@ -229,5 +253,43 @@ public class WordFacadeImpl implements WordFacade {
             );
         }
         return definitionToDelete;
+    }
+
+
+    private Example getExampleToDelete(Example example, Word word) {
+        String text = example.getText();
+
+        Example exampleToDelete = exampleService.getExampleByText(text)
+                .orElseThrow(() -> new ResourceNotFoundException("Example %s not found".formatted(text)));
+
+        if (!word.getExamples().contains(exampleToDelete)) {
+            throw new ResourceNotFoundException("Example %s not found for the word %s"
+                    .formatted(text, word.getName())
+            );
+        }
+
+        return exampleToDelete;
+    }
+
+    private Example getOrCreateExample(ExampleDto exampleDto) {
+        Optional<Example> example = exampleService.getExampleByText(exampleDto.getText());
+
+        return example.orElseGet(() -> {
+            Example newExample = exampleMapper.exampleDtoToExample(exampleDto);
+            exampleService.saveExample(newExample);
+            return newExample;
+        });
+    }
+
+    private void verifyExampleIsValid(Word word, Example example) {
+        if (!example.getText().contains(word.getName())) {
+            throw new IllegalOperationException(
+                    "Provided example does not contain the word %s".formatted(word.getName())
+            );
+        } else if (word.getExamples().contains(example)) {
+            throw new DuplicateResourceException(
+                    "Example %s is already present in word examples".formatted(example.getText())
+            );
+        }
     }
 }

@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -24,7 +25,7 @@ public class Example {
     private String text;
 
     @ManyToMany(mappedBy = "examples", fetch = FetchType.EAGER)
-    private Set<Word> words;
+    private Set<Word> words = new HashSet<>();
 
     public Example() {
     }

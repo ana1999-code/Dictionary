@@ -26,4 +26,9 @@ public class ExampleServiceImpl implements ExampleService {
     public List<Example> getAllExamples() {
         return exampleRepository.findAll();
     }
+
+    @Override
+    public void saveExample(Example example) {
+        exampleRepository.save(example);
+    }
 }

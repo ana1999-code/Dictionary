@@ -26,4 +26,8 @@ public interface WordFacade {
     void addDefinitionToWord(String name, DefinitionDto definitionDto);
 
     public void removeDefinitionFromWord(String name, DefinitionDto definitionDto);
+
+    void removeExampleFromWord(String name, ExampleDto exampleDto);
+
+    void addExampleToWord(String name, ExampleDto exampleDto);
 }

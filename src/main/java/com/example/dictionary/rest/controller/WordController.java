@@ -2,6 +2,7 @@ package com.example.dictionary.rest.controller;
 
 import com.example.dictionary.application.dto.CategoryDto;
 import com.example.dictionary.application.dto.DefinitionDto;
+import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
 import org.springframework.http.ResponseEntity;
 
@@ -22,4 +23,8 @@ public interface WordController {
     void addDefinitionToWord(String name, DefinitionDto definitionDto);
 
     void removeDefinitionFromWord(String name, DefinitionDto definitionDto);
+
+    void addExampleToWord(String name, ExampleDto exampleDto);
+
+    void removeExampleFromWord(String name, ExampleDto exampleDto);
 }
