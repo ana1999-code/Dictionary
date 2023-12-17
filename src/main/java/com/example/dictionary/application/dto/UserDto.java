@@ -21,8 +21,8 @@ public class UserDto {
     @NotEmpty(message = "Password is required")
     private String password;
 
-    @NotNull(message = "Role is required")
-    private Role role;
+    @NotEmpty(message = "Key is required")
+    private String key;
 
     private UserInfoDto userInfo;
 
@@ -58,14 +58,6 @@ public class UserDto {
         this.email = email;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     public UserInfoDto getUserInfo() {
         return userInfo;
     }
@@ -80,5 +72,13 @@ public class UserDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

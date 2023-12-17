@@ -17,8 +17,10 @@ public interface UserMapper {
     @Mapping(source = "role", target = "grantedAuthorities", qualifiedByName = "roleToGrantedAuthorities")
     ApplicationUser userToApplicationUser(User user);
 
+    @Mapping(target = "role", ignore = true)
     User userDtoToUser(UserDto userDto);
 
+    @Mapping(target = "key", ignore = true)
     UserDto userToUserDto(User user);
 
     @Named("roleToGrantedAuthorities")

@@ -4,6 +4,7 @@ import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.mapper.UserMapper;
+import com.example.dictionary.application.security.key.KeyRoleExtractor;
 import com.example.dictionary.application.validator.UserValidator;
 import com.example.dictionary.domain.entity.User;
 import com.example.dictionary.domain.entity.UserInfo;
@@ -40,6 +41,7 @@ public class UserFacadeImpl implements UserFacade {
         UserInfo userInfo = new UserInfo();
         userInfo.setProgress(0);
         user.setUserInfo(userInfo);
+        user.setRole(KeyRoleExtractor.getRole(userDto.getKey()));
 
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
