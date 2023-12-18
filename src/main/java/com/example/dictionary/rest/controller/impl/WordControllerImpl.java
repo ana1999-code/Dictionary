@@ -91,11 +91,12 @@ public class WordControllerImpl implements WordController {
 
     @Override
     @PutMapping("{name}/examples")
-    @ResponseStatus(value = CREATED)
     @PreAuthorize("hasAuthority('word:write')")
-    public void addExampleToWord(@PathVariable("name") String name,
+    public ResponseEntity<WordDto> addExampleToWord(@PathVariable("name") String name,
                                  @RequestBody @Valid ExampleDto exampleDto) {
-        wordFacade.addExampleToWord(name, exampleDto);
+        WordDto updatedWord = wordFacade.addExampleToWord(name, exampleDto);
+
+        return new ResponseEntity<>(updatedWord, OK);
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.example.dictionary.application.mapper.CategoryMapper;
 import com.example.dictionary.application.mapper.DefinitionMapper;
 import com.example.dictionary.application.mapper.ExampleMapper;
 import com.example.dictionary.application.mapper.WordMapper;
+import com.example.dictionary.application.validator.ExampleValidator;
 import com.example.dictionary.application.validator.WordValidator;
 import com.example.dictionary.domain.entity.Definition;
 import com.example.dictionary.domain.entity.Example;
@@ -138,6 +139,19 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     @ContributeByUser
+    public WordDto addExampleToWord(String name, ExampleDto exampleDto) {
+        Word word = getWord(name);
+        Example example = getOrCreateExample(exampleDto);
+
+        verifyExampleIsValid(word, example);
+
+        word.addExample(example);
+        Word updatedWord = wordService.addWord(word).orElseThrow();
+        return wordMapper.wordToWordDto(updatedWord);
+    }
+
+    @Override
+    @ContributeByUser
     public void removeExampleFromWord(String name, ExampleDto exampleDto) {
         Example example = exampleMapper.exampleDtoToExample(exampleDto);
         Word word = getWord(name);
@@ -145,18 +159,6 @@ public class WordFacadeImpl implements WordFacade {
         Example exampleToDelete = getExampleToDelete(example, word);
 
         word.removeExample(exampleToDelete);
-        wordService.addWord(word);
-    }
-
-    @Override
-    @ContributeByUser
-    public void addExampleToWord(String name, ExampleDto exampleDto) {
-        Word word = getWord(name);
-        Example example = getOrCreateExample(exampleDto);
-
-        verifyExampleIsValid(word, example);
-
-        word.addExample(example);
         wordService.addWord(word);
     }
 
@@ -344,11 +346,9 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     private void verifyExampleIsValid(Word word, Example example) {
-        if (!example.getText().contains(word.getName())) {
-            throw new IllegalOperationException(
-                    "Provided example does not contain the word %s".formatted(word.getName())
-            );
-        } else if (word.getExamples().contains(example)) {
+        ExampleValidator.validate(word.getName(), example.getText());
+
+        if (word.getExamples().contains(example)) {
             throw new DuplicateResourceException(
                     "Example [%s] is already present in word examples".formatted(example.getText())
             );

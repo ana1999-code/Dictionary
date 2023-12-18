@@ -29,13 +29,7 @@ public class WordValidator {
 
         if (!wordDto.getExamples().isEmpty()) {
             wordDto.getExamples()
-                    .stream()
-                    .filter(example -> !example.getText().toLowerCase().contains(name.toLowerCase()))
-                    .findAny()
-                    .ifPresent(example -> {
-                        throw new IllegalOperationException(
-                                "Provided example does not contain the word %s".formatted(name));
-                    });
+                    .forEach(example -> ExampleValidator.validate(name, example.getText()));
         }
     }
 }

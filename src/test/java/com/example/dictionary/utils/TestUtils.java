@@ -44,13 +44,14 @@ public class TestUtils {
     public static final String DEFINITION_NOT_FOUND_FOR_WORD =
             "Word %s should have at least one definition".formatted(WORD.getName());
 
-    public static final ExampleDto EXAMPLE_DTO = new ExampleDto("Example without word");
+    public static final ExampleDto EXAMPLE_DTO_WITHOUT_WORD = new ExampleDto("Example without word");
 
-    public static final String EXAMPLE_NOT_CONTAINS_TEST =
+    public static final ExampleDto EXAMPLE_DTO = new ExampleDto("Test example");
+
+    public static final String EXAMPLE_NOT_CONTAINS_WORD =
             "Provided example does not contain the word %s".formatted(WORD.getName());
 
-    public static final String EXAMPLE_WITHOUT_WORD =
-            "Provided example does not contain the word %s".formatted(WORD.getName());
+    public static final Example EXAMPLE_WITHOUT_WORD = new Example("Example without word");
 
     public static final Example EXAMPLE = new Example("Test example");
 
@@ -97,4 +98,7 @@ public class TestUtils {
 
     public static final String DEFINITION_NOT_FOUND_FOR_THE_WORD = "Definition [%s] not found for the word %s"
             .formatted(NON_EXISTING_DEFINITION_FOR_WORD.getText(), WORD.getName());
+
+    public static final String EXAMPLE_ALREADY_PRESENT = "Example [%s] is already present in word examples"
+            .formatted(EXAMPLE.getText());
 }

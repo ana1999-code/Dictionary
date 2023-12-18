@@ -23,7 +23,7 @@ public interface WordController {
 
     ResponseEntity<WordDto> removeDefinitionFromWord(String name, DefinitionDto definitionDto);
 
-    void addExampleToWord(String name, ExampleDto exampleDto);
+    ResponseEntity<WordDto> addExampleToWord(String name, ExampleDto exampleDto);
 
     void removeExampleFromWord(String name, ExampleDto exampleDto);
 

@@ -22,9 +22,9 @@ public interface WordFacade {
 
     WordDto removeDefinitionFromWord(String name, DefinitionDto definitionDto);
 
-    void removeExampleFromWord(String name, ExampleDto exampleDto);
+    WordDto addExampleToWord(String name, ExampleDto exampleDto);
 
-    void addExampleToWord(String name, ExampleDto exampleDto);
+    void removeExampleFromWord(String name, ExampleDto exampleDto);
 
     Set<WordDto> getAllSynonyms(String name);
 

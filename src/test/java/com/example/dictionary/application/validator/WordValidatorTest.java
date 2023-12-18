@@ -16,8 +16,8 @@ import java.util.Optional;
 import static com.example.dictionary.utils.TestUtils.DEFINITION_DTO;
 import static com.example.dictionary.utils.TestUtils.DEFINITION_NOT_FOUND_FOR_WORD;
 import static com.example.dictionary.utils.TestUtils.DUPLICATE_WORD;
-import static com.example.dictionary.utils.TestUtils.EXAMPLE_DTO;
-import static com.example.dictionary.utils.TestUtils.EXAMPLE_NOT_CONTAINS_TEST;
+import static com.example.dictionary.utils.TestUtils.EXAMPLE_DTO_WITHOUT_WORD;
+import static com.example.dictionary.utils.TestUtils.EXAMPLE_NOT_CONTAINS_WORD;
 import static com.example.dictionary.utils.TestUtils.WORD;
 import static com.example.dictionary.utils.TestUtils.WORD_DTO;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -78,7 +78,7 @@ class WordValidatorTest {
 
     @Test
     void testValidate_whenProvidingExampleWithoutWord_thenThrow() {
-        WORD_DTO.addExample(EXAMPLE_DTO);
+        WORD_DTO.addExample(EXAMPLE_DTO_WITHOUT_WORD);
         WORD_DTO.addDefinition(DEFINITION_DTO);
         when(wordService.getWordByName(anyString())).thenReturn(Optional.empty());
 
@@ -86,7 +86,7 @@ class WordValidatorTest {
                 IllegalOperationException.class,
                 () -> wordValidator.validate(WORD_DTO));
 
-        assertEquals(EXAMPLE_NOT_CONTAINS_TEST, illegalOperationException.getMessage());
+        assertEquals(EXAMPLE_NOT_CONTAINS_WORD, illegalOperationException.getMessage());
         verify(wordService).getWordByName(anyString());
     }
 }
