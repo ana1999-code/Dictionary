@@ -12,6 +12,8 @@ import com.example.dictionary.domain.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class UserFacadeImpl implements UserFacade {
 
@@ -42,6 +44,7 @@ public class UserFacadeImpl implements UserFacade {
         userInfo.setProgress(0);
         user.setUserInfo(userInfo);
         user.setRole(KeyRoleExtractor.getRole(userDto.getKey()));
+        user.setRegisteredAt(LocalDate.now());
 
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 

@@ -10,9 +10,12 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +26,7 @@ import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static jakarta.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name = "words")
@@ -74,6 +78,10 @@ public class Word {
     @OneToMany(mappedBy = "word", orphanRemoval = true)
     private final List<Comment> comments = new ArrayList<>();
 
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @Temporal(value = DATE)
+    private LocalDate addedAt;
+
     public Word() {
     }
 
@@ -124,6 +132,14 @@ public class Word {
 
     public Set<User> getContributors() {
         return contributors;
+    }
+
+    public LocalDate getAddedAt() {
+        return addedAt;
+    }
+
+    public void setAddedAt(LocalDate addedAt) {
+        this.addedAt = addedAt;
     }
 
     public void addDefinition(Definition definition) {

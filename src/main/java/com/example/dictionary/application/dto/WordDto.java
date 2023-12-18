@@ -1,12 +1,16 @@
 package com.example.dictionary.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 public class WordDto {
 
@@ -30,6 +34,9 @@ public class WordDto {
     private final Set<UserDto> contributors = new HashSet<>();
 
     private final Set<CommentDto> comments = new HashSet<>();
+
+    @JsonFormat(shape = STRING, pattern = "dd-MM-yyyy")
+    private LocalDate addedAt;
 
     public WordDto() {
     }
@@ -93,6 +100,14 @@ public class WordDto {
 
     public void addExample(ExampleDto example) {
         examples.add(example);
+    }
+
+    public LocalDate getAddedAt() {
+        return addedAt;
+    }
+
+    public void setAddedAt(LocalDate addedAt) {
+        this.addedAt = addedAt;
     }
 
     @Override

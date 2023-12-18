@@ -10,16 +10,16 @@ public class KeyRoleExtractor {
 
     private final static Map<String, Role> KEY_ROLE_MAP = new HashMap<>();
 
-    static  {
+    static {
         KEY_ROLE_MAP.put("admin", Role.ADMIN);
         KEY_ROLE_MAP.put("editor", Role.EDITOR);
         KEY_ROLE_MAP.put("teacher", Role.TEACHER);
         KEY_ROLE_MAP.put("learner", Role.LEARNER);
     }
 
-    public static Role getRole(String key){
+    public static Role getRole(String key) {
         Role role = KEY_ROLE_MAP.get(key);
-        if (role == null){
+        if (role == null) {
             throw new ResourceNotFoundException("Invalid key");
         }
 

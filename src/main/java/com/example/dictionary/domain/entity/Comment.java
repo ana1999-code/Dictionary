@@ -9,11 +9,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static jakarta.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name = "comments")
@@ -29,7 +30,8 @@ public class Comment {
     @OneToOne
     private User commenter;
 
-    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @Temporal(value = DATE)
     private LocalDate commentedAt;
 
     @ManyToOne

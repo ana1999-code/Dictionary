@@ -25,6 +25,7 @@ import com.example.dictionary.domain.service.ExampleService;
 import com.example.dictionary.domain.service.WordService;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -96,6 +97,7 @@ public class WordFacadeImpl implements WordFacade {
         addToDefinitions(word);
         addToExamples(word);
 
+        word.setAddedAt(LocalDate.now());
         Word addedWord = wordService.addWord(word).orElseThrow();
 
         return wordMapper.wordToWordDto(addedWord);

@@ -1,9 +1,12 @@
 package com.example.dictionary.application.dto;
 
-import com.example.dictionary.application.security.role.Role;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDate;
+
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 public class UserDto {
 
@@ -25,6 +28,9 @@ public class UserDto {
     private String key;
 
     private UserInfoDto userInfo;
+
+    @JsonFormat(shape = STRING, pattern = "dd-MM-yyyy")
+    private LocalDate registeredAt;
 
     public Integer getId() {
         return id;
@@ -80,5 +86,13 @@ public class UserDto {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public LocalDate getRegisteredAt() {
+        return registeredAt;
+    }
+
+    public void setRegisteredAt(LocalDate registeredAt) {
+        this.registeredAt = registeredAt;
     }
 }

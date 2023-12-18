@@ -9,10 +9,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
 import jakarta.validation.constraints.Email;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static jakarta.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name = "users")
@@ -41,6 +46,10 @@ public class User {
 
     @OneToOne(cascade = CascadeType.ALL)
     private UserInfo userInfo;
+
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @Temporal(value = DATE)
+    private LocalDate registeredAt;
 
     public User() {
     }
@@ -99,5 +108,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public LocalDate getRegisteredAt() {
+        return registeredAt;
+    }
+
+    public void setRegisteredAt(LocalDate registeredAt) {
+        this.registeredAt = registeredAt;
     }
 }
