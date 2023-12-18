@@ -54,6 +54,8 @@ import static com.example.dictionary.utils.TestUtils.SYNONYM;
 import static com.example.dictionary.utils.TestUtils.SYNONYM_DTO;
 import static com.example.dictionary.utils.TestUtils.WORD;
 import static com.example.dictionary.utils.TestUtils.WORD_DTO;
+import static com.example.dictionary.utils.TestUtils.WORD_IS_ALREADY_LINKED;
+import static com.example.dictionary.utils.TestUtils.WORD_IS_NOT_LINKED;
 import static com.example.dictionary.utils.TestUtils.WORD_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -106,6 +108,8 @@ class WordFacadeImplTest {
         WORD.getDefinitions().clear();
         WORD.addDefinition(EXISTING_DEFINITION_FOR_WORD);
         WORD.getExamples().clear();
+        WORD.getSynonyms().clear();
+        WORD.getAntonyms().clear();
 
         WORD_DTO.getDefinitions().clear();
         WORD_DTO.addDefinition(EXISTING_DEFINITION_DTO_FOR_WORD);
@@ -443,6 +447,118 @@ class WordFacadeImplTest {
         Set<WordDto> antonyms = wordFacade.getAllAntonyms(WORD.getName());
 
         assertTrue(antonyms.contains(ANTONYM_DTO));
+    }
+
+    @Test
+    void testAddSynonym() {
+        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByName(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
+        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+
+        wordFacade.addSynonym(WORD.getName(), SYNONYM_DTO);
+
+        verify(wordService).addWord(wordArgumentCaptor.capture());
+        Word updatedWord = wordArgumentCaptor.getValue();
+        assertTrue(updatedWord.getSynonyms().contains(SYNONYM));
+    }
+
+    @Test
+    void testAddSynonym_whenAddExistingSynonym_thenThrow() {
+        WORD.addSynonym(SYNONYM);
+        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByName(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
+
+        DuplicateResourceException duplicateResourceException = assertThrows(
+                DuplicateResourceException.class,
+                () -> wordFacade.addSynonym(WORD.getName(), SYNONYM_DTO)
+        );
+
+        assertEquals(WORD_IS_ALREADY_LINKED.formatted(SYNONYM.getName(), WORD.getName()),
+                duplicateResourceException.getMessage());
+    }
+
+    @Test
+    void testRemoveSynonym() {
+        WORD.addSynonym(SYNONYM);
+        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByName(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
+        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+
+        wordFacade.removeSynonym(WORD.getName(), SYNONYM_DTO);
+
+        verify(wordService).addWord(wordArgumentCaptor.capture());
+        Word updatedWord = wordArgumentCaptor.getValue();
+        assertFalse(updatedWord.getSynonyms().contains(SYNONYM));
+    }
+
+    @Test
+    void testRemoveSynonym_whenRemoveNonSynonym_thenThrow() {
+        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByName(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
+
+        ResourceNotFoundException resourceNotFoundException = assertThrows(
+                ResourceNotFoundException.class,
+                () -> wordFacade.removeSynonym(WORD.getName(), SYNONYM_DTO)
+        );
+
+        assertEquals(WORD_IS_NOT_LINKED.formatted(SYNONYM.getName()),
+                resourceNotFoundException.getMessage());
+    }
+
+    @Test
+    void testAddAntonym() {
+        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByName(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
+        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+
+        wordFacade.addAntonym(WORD.getName(), ANTONYM_DTO);
+
+        verify(wordService).addWord(wordArgumentCaptor.capture());
+        Word updatedWord = wordArgumentCaptor.getValue();
+        assertTrue(updatedWord.getAntonyms().contains(ANTONYM));
+    }
+
+    @Test
+    void testAddAntonym_whenAddExistingSynonym_thenThrow() {
+        WORD.addSynonym(ANTONYM);
+        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByName(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
+
+        DuplicateResourceException duplicateResourceException = assertThrows(
+                DuplicateResourceException.class,
+                () -> wordFacade.addSynonym(WORD.getName(), ANTONYM_DTO)
+        );
+
+        assertEquals(WORD_IS_ALREADY_LINKED.formatted(ANTONYM.getName(), WORD.getName()),
+                duplicateResourceException.getMessage());
+    }
+
+    @Test
+    void testRemoveAntonym() {
+        WORD.addAntonym(ANTONYM);
+        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByName(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
+        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+
+        wordFacade.removeAntonym(WORD.getName(), ANTONYM_DTO);
+
+        verify(wordService).addWord(wordArgumentCaptor.capture());
+        Word updatedWord = wordArgumentCaptor.getValue();
+        assertFalse(updatedWord.getAntonyms().contains(ANTONYM));
+    }
+
+    @Test
+    void testRemoveAntonym_whenRemoveNonSynonym_thenThrow() {
+        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByName(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
+
+        ResourceNotFoundException resourceNotFoundException = assertThrows(
+                ResourceNotFoundException.class,
+                () -> wordFacade.removeAntonym(WORD.getName(), ANTONYM_DTO)
+        );
+
+        assertEquals(WORD_IS_NOT_LINKED.formatted(ANTONYM.getName()),
+                resourceNotFoundException.getMessage());
     }
 
     @AfterAll

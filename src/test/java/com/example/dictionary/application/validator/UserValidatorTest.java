@@ -14,7 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.example.dictionary.utils.TestUtils.EMAIL_IS_TAKEN;
 import static com.example.dictionary.utils.TestUtils.PASSWORD_VALIDATION_ERRORS;
 import static com.example.dictionary.utils.TestUtils.USER_DTO;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -57,14 +59,14 @@ class UserValidatorTest {
     @Test
     void testValidate_whenIncorrectPassword_thenThrow() {
         try (MockedStatic<PasswordValidator> passwordValidatorMocked =
-                mockStatic(PasswordValidator.class)) {
+                     mockStatic(PasswordValidator.class)) {
             passwordValidatorMocked.when(() -> PasswordValidator.validate(anyString()))
                     .thenThrow(new InvalidPasswordException(PASSWORD_VALIDATION_ERRORS));
 
             InvalidPasswordException invalidPasswordException = assertThrows(InvalidPasswordException.class,
                     () -> userValidator.validate(USER_DTO));
 
-        assertEquals(PASSWORD_VALIDATION_ERRORS, invalidPasswordException.getErrorMap());
+            assertEquals(PASSWORD_VALIDATION_ERRORS, invalidPasswordException.getErrorMap());
         }
     }
 }
