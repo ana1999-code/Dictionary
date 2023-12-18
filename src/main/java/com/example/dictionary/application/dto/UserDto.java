@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
@@ -94,5 +95,24 @@ public class UserDto {
 
     public void setRegisteredAt(LocalDate registeredAt) {
         this.registeredAt = registeredAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserDto userDto = (UserDto) o;
+        return Objects.equals(firstName, userDto.firstName)
+                && Objects.equals(lastName, userDto.lastName)
+                && Objects.equals(email, userDto.email)
+                && Objects.equals(password, userDto.password)
+                && Objects.equals(key, userDto.key)
+                && Objects.equals(userInfo, userDto.userInfo)
+                && Objects.equals(registeredAt, userDto.registeredAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName, email, password, key, userInfo, registeredAt);
     }
 }
