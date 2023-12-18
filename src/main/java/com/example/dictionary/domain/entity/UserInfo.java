@@ -36,6 +36,10 @@ public class UserInfo {
     public UserInfo() {
     }
 
+    public UserInfo(Integer progress) {
+        this.progress = progress;
+    }
+
     public Integer getId() {
         return id;
     }

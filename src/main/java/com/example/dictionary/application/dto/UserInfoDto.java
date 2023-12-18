@@ -12,6 +12,13 @@ public class UserInfoDto {
 
     private Set<WordDto> favorites;
 
+    public UserInfoDto() {
+    }
+
+    public UserInfoDto(Integer progress) {
+        this.progress = progress;
+    }
+
     public Integer getId() {
         return id;
     }

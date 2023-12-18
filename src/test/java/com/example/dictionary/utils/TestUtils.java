@@ -44,4 +44,8 @@ public class TestUtils {
     public static final UserDto USER_DTO = new UserDto();
 
     public static final User USER = new User();
+
+    public static final String EMAIL_IS_TAKEN = "Email %s is already taken";
+
+    public static final String USER_NOT_FOUND = "User with email %s not found";
 }

@@ -36,36 +36,42 @@ public class UserFacadeImpl implements UserFacade {
     }
 
     @Override
-    public void registerUser(UserDto userDto) {
+    public UserDto registerUser(UserDto userDto) {
         userValidator.validate(userDto);
 
         User user = userMapper.userDtoToUser(userDto);
-        UserInfo userInfo = new UserInfo();
-        userInfo.setProgress(0);
+        UserInfo userInfo = new UserInfo(0);
         user.setUserInfo(userInfo);
         user.setRole(KeyRoleExtractor.getRole(userDto.getKey()));
         user.setRegisteredAt(LocalDate.now());
 
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
-        userService.registerUser(user);
+        User registeredUser = userService.registerUser(user);
+        return userMapper.userToUserDto(registeredUser);
     }
 
     @Override
     public UserDto findUserByEmail(String email) {
-        User user = userService.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User with email %s not found".formatted(email)));
+        User user = getUser(email);
 
         return userMapper.userToUserDto(user);
     }
 
     @Override
-    public void updateUserProgress(UserDto user) {
+    public Integer updateUserProgress(UserDto user) {
         String email = user.getEmail();
-        User userToUpdate = userService.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User with email %s not found".formatted(email)));
+        User userToUpdate = getUser(email);
 
-        userToUpdate.getUserInfo().setProgress(user.getUserInfo().getProgress());
-        userService.registerUser(userToUpdate);
+        Integer progress = userToUpdate.getUserInfo().getProgress() + 1;
+
+        userToUpdate.getUserInfo().setProgress(progress);
+        User updatedUser = userService.registerUser(userToUpdate);
+        return updatedUser.getUserInfo().getProgress();
+    }
+
+    private User getUser(String email) {
+        return userService.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User with email %s not found".formatted(email)));
     }
 }
