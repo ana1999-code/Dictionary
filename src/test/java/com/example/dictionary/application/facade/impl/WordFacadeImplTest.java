@@ -28,7 +28,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import static com.example.dictionary.utils.TestUtils.ANTONYM;
+import static com.example.dictionary.utils.TestUtils.ANTONYM_DTO;
 import static com.example.dictionary.utils.TestUtils.DEFINITION;
 import static com.example.dictionary.utils.TestUtils.DEFINITION_DTO;
 import static com.example.dictionary.utils.TestUtils.DEFINITION_IS_PRESENT;
@@ -47,6 +50,8 @@ import static com.example.dictionary.utils.TestUtils.EXISTING_DEFINITION_FOR_WOR
 import static com.example.dictionary.utils.TestUtils.NON_EXISTING_DEFINITION_DTO_FOR_WORD;
 import static com.example.dictionary.utils.TestUtils.NON_EXISTING_DEFINITION_FOR_WORD;
 import static com.example.dictionary.utils.TestUtils.ONLY_ONE_DEFINITION;
+import static com.example.dictionary.utils.TestUtils.SYNONYM;
+import static com.example.dictionary.utils.TestUtils.SYNONYM_DTO;
 import static com.example.dictionary.utils.TestUtils.WORD;
 import static com.example.dictionary.utils.TestUtils.WORD_DTO;
 import static com.example.dictionary.utils.TestUtils.WORD_NOT_FOUND;
@@ -416,6 +421,28 @@ class WordFacadeImplTest {
         );
 
         assertEquals(EXAMPLE_NOT_FOUND_FOR_THE_WORD, resourceNotFoundException.getMessage());
+    }
+
+    @Test
+    void testGetAllSynonyms() {
+        WORD.addSynonym(SYNONYM);
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordMapper.wordToWordDto(any())).thenReturn(SYNONYM_DTO);
+
+        Set<WordDto> synonyms = wordFacade.getAllSynonyms(WORD.getName());
+
+        assertTrue(synonyms.contains(SYNONYM_DTO));
+    }
+
+    @Test
+    void testGetAllAntonyms() {
+        WORD.addAntonym(ANTONYM);
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordMapper.wordToWordDto(any())).thenReturn(ANTONYM_DTO);
+
+        Set<WordDto> antonyms = wordFacade.getAllAntonyms(WORD.getName());
+
+        assertTrue(antonyms.contains(ANTONYM_DTO));
     }
 
     @AfterAll

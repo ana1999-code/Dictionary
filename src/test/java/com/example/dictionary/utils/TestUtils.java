@@ -103,6 +103,15 @@ public class TestUtils {
             .formatted(EXAMPLE.getText());
 
     public static final String EXAMPLE_NOT_FOUND = "Example [%s] not found".formatted(EXAMPLE.getText());
+
     public static final String EXAMPLE_NOT_FOUND_FOR_THE_WORD = "Example [%s] not found for the word %s"
             .formatted(EXAMPLE.getText(), WORD.getName());
+
+    public static final Word SYNONYM = new Word("synonym", CATEGORY);
+
+    public static final WordDto SYNONYM_DTO = new WordDto("synonym", CATEGORY_DTO);
+
+    public static final Word ANTONYM = new Word("antonym", CATEGORY);
+
+    public static final WordDto ANTONYM_DTO = new WordDto("antonym", CATEGORY_DTO);
 }
