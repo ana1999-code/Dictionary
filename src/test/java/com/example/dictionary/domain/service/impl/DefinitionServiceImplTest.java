@@ -8,10 +8,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.dictionary.utils.TestUtils.DEFINITION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -31,5 +34,23 @@ class DefinitionServiceImplTest {
         Optional<Definition> definitionByText = definitionService.getDefinitionByText(DEFINITION.getText());
 
         assertEquals(DEFINITION, definitionByText.get());
+    }
+
+    @Test
+    void testGetAllDefinitions() {
+        when(definitionRepository.findAll()).thenReturn(List.of(DEFINITION));
+
+        List<Definition> definitions = definitionService.getAllDefinitions();
+
+        assertTrue(definitions.contains(DEFINITION));
+    }
+
+    @Test
+    void testSaveDefinition() {
+        when(definitionRepository.save(any(Definition.class))).thenReturn(DEFINITION);
+
+        Definition savedDefinition = definitionService.saveDefinition(DEFINITION);
+
+        assertEquals(DEFINITION, savedDefinition);
     }
 }

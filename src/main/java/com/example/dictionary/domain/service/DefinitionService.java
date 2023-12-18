@@ -11,5 +11,5 @@ public interface DefinitionService {
 
     List<Definition> getAllDefinitions();
 
-    void saveDefinition(Definition definition);
+    Definition saveDefinition(Definition definition);
 }

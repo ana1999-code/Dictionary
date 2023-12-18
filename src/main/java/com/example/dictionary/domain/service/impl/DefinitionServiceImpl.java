@@ -28,7 +28,7 @@ public class DefinitionServiceImpl implements DefinitionService {
     }
 
     @Override
-    public void saveDefinition(Definition definition) {
-        definitionRepository.save(definition);
+    public Definition saveDefinition(Definition definition) {
+        return definitionRepository.save(definition);
     }
 }
