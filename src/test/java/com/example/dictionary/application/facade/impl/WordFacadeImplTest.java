@@ -366,18 +366,18 @@ class WordFacadeImplTest {
         try (MockedStatic<ExampleValidator> exampleValidatorMocked = mockStatic(ExampleValidator.class)) {
             exampleValidatorMocked.when(() -> ExampleValidator
                             .validate(WORD.getName(), EXAMPLE_WITHOUT_WORD.getText()))
-                    .thenThrow(new DuplicateResourceException(EXAMPLE_NOT_CONTAINS_WORD));
+                    .thenThrow(new IllegalOperationException(EXAMPLE_NOT_CONTAINS_WORD));
 
             when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
             when(exampleService.getExampleByText(anyString())).thenReturn(Optional.empty());
             when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE_WITHOUT_WORD);
 
-            DuplicateResourceException duplicateResourceException = assertThrows(
-                    DuplicateResourceException.class,
+            IllegalOperationException illegalOperationException = assertThrows(
+                    IllegalOperationException.class,
                     () -> wordFacade.addExampleToWord(WORD.getName(), EXAMPLE_DTO_WITHOUT_WORD)
             );
 
-            assertEquals(EXAMPLE_NOT_CONTAINS_WORD, duplicateResourceException.getMessage());
+            assertEquals(EXAMPLE_NOT_CONTAINS_WORD, illegalOperationException.getMessage());
         }
     }
 
