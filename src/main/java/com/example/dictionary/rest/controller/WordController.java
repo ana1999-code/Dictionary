@@ -1,6 +1,5 @@
 package com.example.dictionary.rest.controller;
 
-import com.example.dictionary.application.dto.CategoryDto;
 import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
@@ -19,8 +18,6 @@ public interface WordController {
     ResponseEntity<WordDto> addWord(WordDto wordDto);
 
     void deleteWordByName(String name);
-
-    ResponseEntity<List<CategoryDto>> getAllCategories();
 
     void addDefinitionToWord(String name, DefinitionDto definitionDto);
 

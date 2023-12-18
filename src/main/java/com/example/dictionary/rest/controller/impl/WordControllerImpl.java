@@ -1,6 +1,5 @@
 package com.example.dictionary.rest.controller.impl;
 
-import com.example.dictionary.application.dto.CategoryDto;
 import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
@@ -69,14 +68,6 @@ public class WordControllerImpl implements WordController {
     @PreAuthorize("hasAuthority('word:write')")
     public void deleteWordByName(@PathVariable("name") String name) {
         wordFacade.deleteWordByName(name);
-    }
-
-    @Override
-    @GetMapping("${api.get.categories}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_LEARNER', 'ROLE_EDITOR')")
-    public ResponseEntity<List<CategoryDto>> getAllCategories() {
-        List<CategoryDto> categories = wordFacade.getAllCategories();
-        return new ResponseEntity<>(categories, OK);
     }
 
     @Override

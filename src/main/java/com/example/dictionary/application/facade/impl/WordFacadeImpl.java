@@ -1,7 +1,6 @@
 package com.example.dictionary.application.facade.impl;
 
 import com.example.dictionary.application.annotation.ContributeByUser;
-import com.example.dictionary.application.dto.CategoryDto;
 import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
@@ -15,7 +14,6 @@ import com.example.dictionary.application.mapper.DefinitionMapper;
 import com.example.dictionary.application.mapper.ExampleMapper;
 import com.example.dictionary.application.mapper.WordMapper;
 import com.example.dictionary.application.validator.WordValidator;
-import com.example.dictionary.domain.entity.Category;
 import com.example.dictionary.domain.entity.Definition;
 import com.example.dictionary.domain.entity.Example;
 import com.example.dictionary.domain.entity.Word;
@@ -108,30 +106,6 @@ public class WordFacadeImpl implements WordFacade {
         getWord(name);
 
         wordService.deleteWordByName(name);
-    }
-
-    @Override
-    public List<CategoryDto> getAllCategories() {
-        List<Category> categories = categoryService.getAllCategories();
-        return categories.stream()
-                .map(categoryMapper::categoryToCategoryDto)
-                .toList();
-    }
-
-    @Override
-    public List<DefinitionDto> getAllDefinitions() {
-        List<Definition> definitions = definitionService.getAllDefinitions();
-        return definitions.stream()
-                .map(definitionMapper::definitionToDefinitionDto)
-                .toList();
-    }
-
-    @Override
-    public List<ExampleDto> getAllExamples() {
-        List<Example> examples = exampleService.getAllExamples();
-        return examples.stream()
-                .map(exampleMapper::exampleToExampleDto)
-                .toList();
     }
 
     @Override

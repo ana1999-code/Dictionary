@@ -1,6 +1,5 @@
 package com.example.dictionary.application.facade;
 
-import com.example.dictionary.application.dto.CategoryDto;
 import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
@@ -18,12 +17,6 @@ public interface WordFacade {
     WordDto addWord(WordDto wordDto);
 
     void deleteWordByName(String name);
-
-    List<CategoryDto> getAllCategories();
-
-    List<DefinitionDto> getAllDefinitions();
-
-    List<ExampleDto> getAllExamples();
 
     void addDefinitionToWord(String name, DefinitionDto definitionDto);
 
