@@ -39,6 +39,8 @@ import static com.example.dictionary.utils.TestUtils.EXAMPLE_ALREADY_PRESENT;
 import static com.example.dictionary.utils.TestUtils.EXAMPLE_DTO;
 import static com.example.dictionary.utils.TestUtils.EXAMPLE_DTO_WITHOUT_WORD;
 import static com.example.dictionary.utils.TestUtils.EXAMPLE_NOT_CONTAINS_WORD;
+import static com.example.dictionary.utils.TestUtils.EXAMPLE_NOT_FOUND;
+import static com.example.dictionary.utils.TestUtils.EXAMPLE_NOT_FOUND_FOR_THE_WORD;
 import static com.example.dictionary.utils.TestUtils.EXAMPLE_WITHOUT_WORD;
 import static com.example.dictionary.utils.TestUtils.EXISTING_DEFINITION_DTO_FOR_WORD;
 import static com.example.dictionary.utils.TestUtils.EXISTING_DEFINITION_FOR_WORD;
@@ -205,7 +207,7 @@ class WordFacadeImplTest {
 
     @Test
     void testAddDefinitionToWord_whenAddExistingDefinitionInDatabase_thenReturnWordWithDefinition() {
-       when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(DEFINITION));
         when(wordService.addWord(any(Word.class))).thenReturn(Optional.of(WORD));
         when(wordMapper.wordToWordDto(any(Word.class))).thenReturn(WORD_DTO);
@@ -352,7 +354,7 @@ class WordFacadeImplTest {
 
     @Test
     void testAddExampleToWord_whenAddExampleWithoutWord_thenThrow() {
-        try (MockedStatic<ExampleValidator> exampleValidatorMocked = mockStatic(ExampleValidator.class)){
+        try (MockedStatic<ExampleValidator> exampleValidatorMocked = mockStatic(ExampleValidator.class)) {
             exampleValidatorMocked.when(() -> ExampleValidator
                             .validate(WORD.getName(), EXAMPLE_WITHOUT_WORD.getText()))
                     .thenThrow(new DuplicateResourceException(EXAMPLE_NOT_CONTAINS_WORD));
@@ -368,6 +370,52 @@ class WordFacadeImplTest {
 
             assertEquals(EXAMPLE_NOT_CONTAINS_WORD, duplicateResourceException.getMessage());
         }
+    }
+
+    @Test
+    void testRemoveExample_whenRemoveExample_thenReturnWordWithoutExample() {
+        WORD.addExample(EXAMPLE);
+        WORD_DTO.addExample(EXAMPLE_DTO);
+
+        when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE);
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(exampleService.getExampleByText(anyString())).thenReturn(Optional.of(EXAMPLE));
+        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+        when(wordMapper.wordToWordDto(any())).thenReturn(WORD_DTO);
+
+        wordFacade.removeExampleFromWord(WORD.getName(), EXAMPLE_DTO);
+
+        verify(wordService).addWord(wordArgumentCaptor.capture());
+        Word capturedWord = wordArgumentCaptor.getValue();
+        assertFalse(capturedWord.getExamples().contains(EXAMPLE));
+    }
+
+    @Test
+    void testRemoveExample_whenRemoveNonExistingExample_thenThrow() {
+        when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE);
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(exampleService.getExampleByText(anyString())).thenReturn(Optional.empty());
+
+        ResourceNotFoundException resourceNotFoundException = assertThrows(
+                ResourceNotFoundException.class,
+                () -> wordFacade.removeExampleFromWord(WORD.getName(), EXAMPLE_DTO)
+        );
+
+        assertEquals(EXAMPLE_NOT_FOUND, resourceNotFoundException.getMessage());
+    }
+
+    @Test
+    void testRemoveExample_whenRemoveExampleThatIsNotPresentForTheWord_thenThrow() {
+        when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE);
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(exampleService.getExampleByText(anyString())).thenReturn(Optional.of(EXAMPLE));
+
+        ResourceNotFoundException resourceNotFoundException = assertThrows(
+                ResourceNotFoundException.class,
+                () -> wordFacade.removeExampleFromWord(WORD.getName(), EXAMPLE_DTO)
+        );
+
+        assertEquals(EXAMPLE_NOT_FOUND_FOR_THE_WORD, resourceNotFoundException.getMessage());
     }
 
     @AfterAll

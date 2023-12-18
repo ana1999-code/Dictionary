@@ -93,7 +93,7 @@ public class TestUtils {
     public static final String DEFINITION_NOT_FOUND = "Definition [%s] not found"
             .formatted(DEFINITION.getText());
 
-    public static final String ONLY_ONE_DEFINITION =  "Word %s has only one definition that is required"
+    public static final String ONLY_ONE_DEFINITION = "Word %s has only one definition that is required"
             .formatted(WORD.getName());
 
     public static final String DEFINITION_NOT_FOUND_FOR_THE_WORD = "Definition [%s] not found for the word %s"
@@ -101,4 +101,8 @@ public class TestUtils {
 
     public static final String EXAMPLE_ALREADY_PRESENT = "Example [%s] is already present in word examples"
             .formatted(EXAMPLE.getText());
+
+    public static final String EXAMPLE_NOT_FOUND = "Example [%s] not found".formatted(EXAMPLE.getText());
+    public static final String EXAMPLE_NOT_FOUND_FOR_THE_WORD = "Example [%s] not found for the word %s"
+            .formatted(EXAMPLE.getText(), WORD.getName());
 }

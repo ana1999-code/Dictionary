@@ -25,7 +25,7 @@ public interface WordController {
 
     ResponseEntity<WordDto> addExampleToWord(String name, ExampleDto exampleDto);
 
-    void removeExampleFromWord(String name, ExampleDto exampleDto);
+    ResponseEntity<WordDto> removeExampleFromWord(String name, ExampleDto exampleDto);
 
     ResponseEntity<Set<WordDto>> getAllSynonyms(String name);
 

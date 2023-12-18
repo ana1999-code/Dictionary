@@ -152,14 +152,15 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     @ContributeByUser
-    public void removeExampleFromWord(String name, ExampleDto exampleDto) {
+    public WordDto removeExampleFromWord(String name, ExampleDto exampleDto) {
         Example example = exampleMapper.exampleDtoToExample(exampleDto);
         Word word = getWord(name);
 
         Example exampleToDelete = getExampleToDelete(example, word);
 
         word.removeExample(exampleToDelete);
-        wordService.addWord(word);
+        Word updatedWord = wordService.addWord(word).orElseThrow();
+        return wordMapper.wordToWordDto(updatedWord);
     }
 
     @Override
@@ -327,7 +328,8 @@ public class WordFacadeImpl implements WordFacade {
                 .orElseThrow(() -> new ResourceNotFoundException("Example [%s] not found".formatted(text)));
 
         if (!word.getExamples().contains(exampleToDelete)) {
-            throw new ResourceNotFoundException("Example [%s] not found for the word %s"
+            throw new ResourceNotFoundException(
+                    "Example [%s] not found for the word %s"
                     .formatted(text, word.getName())
             );
         }
