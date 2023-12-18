@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static com.example.dictionary.utils.TestUtils.DEFINITION_DTO;
-import static com.example.dictionary.utils.TestUtils.DEFINITION_NOT_FOUND;
+import static com.example.dictionary.utils.TestUtils.DEFINITION_NOT_FOUND_FOR_WORD;
 import static com.example.dictionary.utils.TestUtils.DUPLICATE_WORD;
 import static com.example.dictionary.utils.TestUtils.EXAMPLE_DTO;
 import static com.example.dictionary.utils.TestUtils.EXAMPLE_NOT_CONTAINS_TEST;
@@ -72,7 +72,7 @@ class WordValidatorTest {
                 ResourceNotFoundException.class,
                 () -> wordValidator.validate(WORD_DTO));
 
-        assertEquals(DEFINITION_NOT_FOUND, resourceNotFoundException.getMessage());
+        assertEquals(DEFINITION_NOT_FOUND_FOR_WORD, resourceNotFoundException.getMessage());
         verify(wordService).getWordByName(anyString());
     }
 

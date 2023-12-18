@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static jakarta.persistence.CascadeType.MERGE;
@@ -202,5 +203,23 @@ public class Word {
     public void removeComment(Comment comment) {
         comments.remove(comment);
         comment.setWord(null);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Word word = (Word) o;
+        return Objects.equals(id, word.id)
+                && Objects.equals(name, word.name)
+                && Objects.equals(category, word.category)
+                && Objects.equals(contributors, word.contributors)
+                && Objects.equals(comments, word.comments)
+                && Objects.equals(addedAt, word.addedAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, category, contributors, comments, addedAt);
     }
 }

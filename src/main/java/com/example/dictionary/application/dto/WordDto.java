@@ -46,6 +46,8 @@ public class WordDto {
         this.category = category;
     }
 
+
+
     public Integer getId() {
         return id;
     }

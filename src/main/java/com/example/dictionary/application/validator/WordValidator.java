@@ -30,7 +30,7 @@ public class WordValidator {
         if (!wordDto.getExamples().isEmpty()) {
             wordDto.getExamples()
                     .stream()
-                    .filter(example -> !example.getText().contains(name))
+                    .filter(example -> !example.getText().toLowerCase().contains(name.toLowerCase()))
                     .findAny()
                     .ifPresent(example -> {
                         throw new IllegalOperationException(

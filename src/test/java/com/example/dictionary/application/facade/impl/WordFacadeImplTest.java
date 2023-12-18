@@ -1,32 +1,52 @@
 package com.example.dictionary.application.facade.impl;
 
+import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.WordDto;
+import com.example.dictionary.application.exception.DuplicateResourceException;
+import com.example.dictionary.application.exception.IllegalOperationException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
+import com.example.dictionary.application.mapper.DefinitionMapper;
 import com.example.dictionary.application.mapper.WordMapper;
 import com.example.dictionary.application.validator.WordValidator;
 import com.example.dictionary.domain.entity.Word;
 import com.example.dictionary.domain.service.CategoryService;
 import com.example.dictionary.domain.service.DefinitionService;
 import com.example.dictionary.domain.service.WordService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.dictionary.utils.TestUtils.DEFINITION;
+import static com.example.dictionary.utils.TestUtils.DEFINITION_DTO;
+import static com.example.dictionary.utils.TestUtils.DEFINITION_IS_PRESENT;
+import static com.example.dictionary.utils.TestUtils.DEFINITION_NOT_FOUND;
+import static com.example.dictionary.utils.TestUtils.DEFINITION_NOT_FOUND_FOR_THE_WORD;
+import static com.example.dictionary.utils.TestUtils.EXISTING_DEFINITION_FOR_WORD;
+import static com.example.dictionary.utils.TestUtils.EXISTING_DEFINITION_DTO_FOR_WORD;
+import static com.example.dictionary.utils.TestUtils.NON_EXISTING_DEFINITION_DTO_FOR_WORD;
+import static com.example.dictionary.utils.TestUtils.NON_EXISTING_DEFINITION_FOR_WORD;
+import static com.example.dictionary.utils.TestUtils.ONLY_ONE_DEFINITION;
 import static com.example.dictionary.utils.TestUtils.WORD;
 import static com.example.dictionary.utils.TestUtils.WORD_DTO;
 import static com.example.dictionary.utils.TestUtils.WORD_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,6 +71,21 @@ class WordFacadeImplTest {
 
     @Mock
     private WordValidator wordValidator;
+
+    @Mock
+    private DefinitionMapper definitionMapper;
+
+    @Captor
+    private ArgumentCaptor<Word> wordArgumentCaptor;
+
+    @BeforeEach
+    void setUp() {
+        WORD.getDefinitions().clear();
+        WORD.addDefinition(EXISTING_DEFINITION_FOR_WORD);
+
+        WORD_DTO.getDefinitions().clear();
+        WORD_DTO.addDefinition(EXISTING_DEFINITION_DTO_FOR_WORD);
+    }
 
     @Test
     void testGetAllWords() {
@@ -130,5 +165,122 @@ class WordFacadeImplTest {
                 () -> wordFacade.deleteWordByName(WORD.getName()));
 
         assertEquals(WORD_NOT_FOUND, resourceNotFoundException.getMessage());
+    }
+
+    @Test
+    void testAddDefinitionToWord_whenAddNewDefinition_thenReturnWordWithDefinition() {
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.empty());
+        when(definitionMapper.definitionDtoToDefinition(any(DefinitionDto.class))).thenReturn(DEFINITION);
+        when(wordService.addWord(any(Word.class))).thenReturn(Optional.of(WORD));
+        when(wordMapper.wordToWordDto(any(Word.class))).thenReturn(WORD_DTO);
+
+        wordFacade.addDefinitionToWord(WORD_DTO.getName(), DEFINITION_DTO);
+
+        verify(wordService).addWord(wordArgumentCaptor.capture());
+        Word capturedWord = wordArgumentCaptor.getValue();
+        assertTrue(capturedWord.getDefinitions().contains(DEFINITION));
+    }
+
+    @Test
+    void testAddDefinitionToWord_whenAddExistingDefinitionInDatabase_thenReturnWordWithDefinition() {
+       when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(DEFINITION));
+        when(wordService.addWord(any(Word.class))).thenReturn(Optional.of(WORD));
+        when(wordMapper.wordToWordDto(any(Word.class))).thenReturn(WORD_DTO);
+
+        wordFacade.addDefinitionToWord(WORD_DTO.getName(), DEFINITION_DTO);
+
+        verify(wordService).addWord(wordArgumentCaptor.capture());
+        Word capturedWord = wordArgumentCaptor.getValue();
+        assertTrue(capturedWord.getDefinitions().contains(DEFINITION));
+    }
+
+    @Test
+    void testAddDefinitionToWord_whenAddExistingDefinitionInWord_thenThrow() {
+        try (MockedStatic<WordFacadeImpl> wordFacadeMocked = mockStatic(WordFacadeImpl.class)) {
+            wordFacadeMocked.when(() -> WordFacadeImpl.verifyDefinitionIsNotPresent(any(), any()))
+                    .thenThrow(
+                            new DuplicateResourceException(
+                                    DEFINITION_IS_PRESENT
+                            )
+                    );
+            WORD_DTO.addDefinition(DEFINITION_DTO);
+            WORD.addDefinition(DEFINITION);
+
+            when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+            when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(DEFINITION));
+
+            assertThrows(
+                    DuplicateResourceException.class,
+                    () -> wordFacade.addDefinitionToWord(WORD.getName(), DEFINITION_DTO)
+            );
+        }
+    }
+
+    @Test
+    void testRemoveDefinition_whenRemoveExistingDefinition_thenReturnWordWithoutDefinition() {
+        WORD.addDefinition(DEFINITION);
+        WORD_DTO.addDefinition(DEFINITION_DTO);
+
+        when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(DEFINITION);
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(DEFINITION));
+        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+        when(wordMapper.wordToWordDto(any())).thenReturn(WORD_DTO);
+
+        wordFacade.removeDefinitionFromWord(WORD_DTO.getName(), DEFINITION_DTO);
+
+        verify(wordService).addWord(wordArgumentCaptor.capture());
+        Word capturedWord = wordArgumentCaptor.getValue();
+
+        assertFalse(capturedWord.getDefinitions().contains(DEFINITION));
+    }
+
+    @Test
+    void testRemoveDefinition_whenRemoveNonExistingDefinition_thenThrow() {
+        when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(DEFINITION);
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.empty());
+
+        ResourceNotFoundException resourceNotFoundException = assertThrows(
+                ResourceNotFoundException.class,
+                () -> wordFacade.removeDefinitionFromWord(WORD_DTO.getName(), DEFINITION_DTO)
+        );
+
+        assertEquals(DEFINITION_NOT_FOUND, resourceNotFoundException.getMessage());
+    }
+
+    @Test
+    void testRemoveDefinition_whenRemoveTheOnlyPresentDefinition_thenThrow() {
+        when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(EXISTING_DEFINITION_FOR_WORD);
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(EXISTING_DEFINITION_FOR_WORD));
+
+        IllegalOperationException illegalOperationException = assertThrows(
+                IllegalOperationException.class,
+                () -> wordFacade.removeDefinitionFromWord(WORD_DTO.getName(), EXISTING_DEFINITION_DTO_FOR_WORD)
+        );
+
+        assertEquals(ONLY_ONE_DEFINITION,
+                illegalOperationException.getMessage());
+    }
+
+    @Test
+    void testRemoveDefinition_whenRemoveDefinitionNotFoundForWord_thenThrow() {
+        WORD.addDefinition(DEFINITION);
+        WORD_DTO.addDefinition(DEFINITION_DTO);
+
+        when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(NON_EXISTING_DEFINITION_FOR_WORD);
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(NON_EXISTING_DEFINITION_FOR_WORD));
+
+        ResourceNotFoundException resourceNotFoundException = assertThrows(
+                ResourceNotFoundException.class,
+                () -> wordFacade.removeDefinitionFromWord(WORD_DTO.getName(), NON_EXISTING_DEFINITION_DTO_FOR_WORD)
+        );
+
+        assertEquals(DEFINITION_NOT_FOUND_FOR_THE_WORD,
+                resourceNotFoundException.getMessage());
     }
 }

@@ -110,26 +110,30 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     @ContributeByUser
-    public void addDefinitionToWord(String name, DefinitionDto definitionDto) {
+    public WordDto addDefinitionToWord(String name, DefinitionDto definitionDto) {
         Word word = getWord(name);
 
         Definition definition = getOrCreateDefinition(definitionDto);
         verifyDefinitionIsNotPresent(word, definition);
 
         word.addDefinition(definition);
-        wordService.addWord(word);
+        Word addedWord = wordService.addWord(word).orElseThrow();
+
+        return wordMapper.wordToWordDto(addedWord);
     }
 
     @Override
     @ContributeByUser
-    public void removeDefinitionFromWord(String name, DefinitionDto definitionDto) {
+    public WordDto removeDefinitionFromWord(String name, DefinitionDto definitionDto) {
         Definition definition = definitionMapper.definitionDtoToDefinition(definitionDto);
         Word word = getWord(name);
 
         Definition definitionToDelete = getDefinitionToDelete(definition, word);
 
         word.removeDefinition(definitionToDelete);
-        wordService.addWord(word);
+        Word updatedWord = wordService.addWord(word).orElseThrow();
+
+        return wordMapper.wordToWordDto(updatedWord);
     }
 
     @Override
@@ -286,10 +290,10 @@ public class WordFacadeImpl implements WordFacade {
     }
 
 
-    private static void verifyDefinitionIsNotPresent(Word word, Definition definition) {
+    public static void verifyDefinitionIsNotPresent(Word word, Definition definition) {
         if (word.getDefinitions().contains(definition)) {
             throw new DuplicateResourceException(
-                    "Definition %s is already present in word definitions".formatted(definition.getText())
+                    "Definition [%s] is already present in word definitions".formatted(definition.getText())
             );
         }
     }
@@ -299,14 +303,14 @@ public class WordFacadeImpl implements WordFacade {
         String text = definition.getText();
 
         Definition definitionToDelete = definitionService.getDefinitionByText(text)
-                .orElseThrow(() -> new ResourceNotFoundException("Definition %s not found".formatted(text)));
+                .orElseThrow(() -> new ResourceNotFoundException("Definition [%s] not found".formatted(text)));
 
         if (word.getDefinitions().size() == 1) {
             throw new IllegalOperationException(
-                    "Word %s have only one definition that is required".formatted(word.getName())
+                    "Word %s has only one definition that is required".formatted(word.getName())
             );
         } else if (!word.getDefinitions().contains(definitionToDelete)) {
-            throw new ResourceNotFoundException("Definition %s not found for the word %s"
+            throw new ResourceNotFoundException("Definition [%s] not found for the word %s"
                     .formatted(text, word.getName())
             );
         }
@@ -318,10 +322,10 @@ public class WordFacadeImpl implements WordFacade {
         String text = example.getText();
 
         Example exampleToDelete = exampleService.getExampleByText(text)
-                .orElseThrow(() -> new ResourceNotFoundException("Example %s not found".formatted(text)));
+                .orElseThrow(() -> new ResourceNotFoundException("Example [%s] not found".formatted(text)));
 
         if (!word.getExamples().contains(exampleToDelete)) {
-            throw new ResourceNotFoundException("Example %s not found for the word %s"
+            throw new ResourceNotFoundException("Example [%s] not found for the word %s"
                     .formatted(text, word.getName())
             );
         }
@@ -346,7 +350,7 @@ public class WordFacadeImpl implements WordFacade {
             );
         } else if (word.getExamples().contains(example)) {
             throw new DuplicateResourceException(
-                    "Example %s is already present in word examples".formatted(example.getText())
+                    "Example [%s] is already present in word examples".formatted(example.getText())
             );
         }
     }

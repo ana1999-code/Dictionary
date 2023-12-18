@@ -72,20 +72,21 @@ public class WordControllerImpl implements WordController {
 
     @Override
     @PutMapping("{name}/definitions")
-    @ResponseStatus(value = OK)
     @PreAuthorize("hasAuthority('word:write')")
-    public void addDefinitionToWord(@PathVariable("name") String name,
+    public ResponseEntity<WordDto> addDefinitionToWord(@PathVariable("name") String name,
                                     @RequestBody @Valid DefinitionDto definitionDto) {
-        wordFacade.addDefinitionToWord(name, definitionDto);
+        WordDto updatedWord = wordFacade.addDefinitionToWord(name, definitionDto);
+        return new ResponseEntity<>(updatedWord, OK);
     }
 
     @Override
     @DeleteMapping("{name}/definitions")
-    @ResponseStatus(value = NO_CONTENT)
     @PreAuthorize("hasAuthority('word:write')")
-    public void removeDefinitionFromWord(@PathVariable("name") String name,
+    public ResponseEntity<WordDto> removeDefinitionFromWord(@PathVariable("name") String name,
                                          @RequestBody @Valid DefinitionDto definitionDto) {
-        wordFacade.removeDefinitionFromWord(name, definitionDto);
+        WordDto updatedWord = wordFacade.removeDefinitionFromWord(name, definitionDto);
+
+        return new ResponseEntity<>(updatedWord, OK);
     }
 
     @Override

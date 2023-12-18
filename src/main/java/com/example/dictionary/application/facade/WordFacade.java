@@ -18,9 +18,9 @@ public interface WordFacade {
 
     void deleteWordByName(String name);
 
-    void addDefinitionToWord(String name, DefinitionDto definitionDto);
+    WordDto addDefinitionToWord(String name, DefinitionDto definitionDto);
 
-    public void removeDefinitionFromWord(String name, DefinitionDto definitionDto);
+    WordDto removeDefinitionFromWord(String name, DefinitionDto definitionDto);
 
     void removeExampleFromWord(String name, ExampleDto exampleDto);
 

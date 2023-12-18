@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.dictionary.utils.TestUtils.DEFINITION_NOT_FOUND;
+import static com.example.dictionary.utils.TestUtils.DEFINITION_NOT_FOUND_FOR_WORD;
 import static com.example.dictionary.utils.TestUtils.DUPLICATE_WORD;
 import static com.example.dictionary.utils.TestUtils.EXAMPLE_WITHOUT_WORD;
 import static com.example.dictionary.utils.TestUtils.INVALID_WORD;
@@ -152,7 +152,7 @@ class WordControllerImplTest {
     void testAddWord_whenAddWordWithoutDefinition_thenThrow() throws Exception {
         when(wordFacade.addWord(any(WordDto.class)))
                 .thenThrow(new ResourceNotFoundException(
-                        DEFINITION_NOT_FOUND
+                        DEFINITION_NOT_FOUND_FOR_WORD
                 ));
 
         String response = mockMvc.perform(post(URL)
@@ -164,7 +164,7 @@ class WordControllerImplTest {
                 .getContentAsString();
         Map<String, String> actualErrorMap = mapper.readValue(response, HashMap.class);
 
-        assertEquals(DEFINITION_NOT_FOUND, actualErrorMap.get("error"));
+        assertEquals(DEFINITION_NOT_FOUND_FOR_WORD, actualErrorMap.get("error"));
         verify(wordFacade).addWord(any(WordDto.class));
     }
 

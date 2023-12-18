@@ -68,11 +68,11 @@ public class Definition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Definition that = (Definition) o;
-        return Objects.equals(id, that.id) && Objects.equals(text, that.text) && Objects.equals(words, that.words);
+        return Objects.equals(id, that.id) && Objects.equals(text, that.text);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, text, words);
+        return Objects.hash(id, text);
     }
 }

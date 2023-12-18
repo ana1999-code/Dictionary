@@ -19,9 +19,9 @@ public interface WordController {
 
     void deleteWordByName(String name);
 
-    void addDefinitionToWord(String name, DefinitionDto definitionDto);
+    ResponseEntity<WordDto> addDefinitionToWord(String name, DefinitionDto definitionDto);
 
-    void removeDefinitionFromWord(String name, DefinitionDto definitionDto);
+    ResponseEntity<WordDto> removeDefinitionFromWord(String name, DefinitionDto definitionDto);
 
     void addExampleToWord(String name, ExampleDto exampleDto);
 
