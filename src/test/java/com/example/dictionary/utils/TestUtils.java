@@ -8,6 +8,7 @@ import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.domain.entity.Category;
 import com.example.dictionary.domain.entity.Definition;
 import com.example.dictionary.domain.entity.Example;
+import com.example.dictionary.domain.entity.User;
 import com.example.dictionary.domain.entity.Word;
 
 public class TestUtils {
@@ -41,4 +42,6 @@ public class TestUtils {
     public static final String INVALID_WORD = "Word must contain only letters";
 
     public static final UserDto USER_DTO = new UserDto();
+
+    public static final User USER = new User();
 }

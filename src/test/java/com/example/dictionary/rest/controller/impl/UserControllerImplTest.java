@@ -41,16 +41,18 @@ class UserControllerImplTest {
         USER_DTO.setLastName("Smith");
         USER_DTO.setEmail("john@mail.com");
         USER_DTO.setPassword("Pass111_");
-        USER_DTO.setRole(ADMIN);
+        USER_DTO.setKey("admin");
     }
 
     @Test
     void testRegisterUser_whenRegisterValidUser_thenStatusIsCreated() throws Exception {
         doNothing().when(userFacade).registerUser(USER_DTO);
 
-        mockMvc.perform(post(URL)
+        String content = mapper.writeValueAsString(USER_DTO);
+        System.out.println(content);
+        String response = mockMvc.perform(post(URL)
                         .contentType(APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(USER_DTO)))
+                        .content(content))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()

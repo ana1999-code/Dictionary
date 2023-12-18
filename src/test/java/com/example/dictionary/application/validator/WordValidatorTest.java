@@ -1,6 +1,7 @@
 package com.example.dictionary.application.validator;
 
 import com.example.dictionary.application.exception.DuplicateResourceException;
+import com.example.dictionary.application.exception.IllegalOperationException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.domain.service.WordService;
 import org.junit.jupiter.api.BeforeEach;
@@ -81,11 +82,11 @@ class WordValidatorTest {
         WORD_DTO.addDefinition(DEFINITION_DTO);
         when(wordService.getWordByName(anyString())).thenReturn(Optional.empty());
 
-        ResourceNotFoundException resourceNotFoundException = assertThrows(
-                ResourceNotFoundException.class,
+        IllegalOperationException illegalOperationException = assertThrows(
+                IllegalOperationException.class,
                 () -> wordValidator.validate(WORD_DTO));
 
-        assertEquals(EXAMPLE_NOT_CONTAINS_TEST, resourceNotFoundException.getMessage());
+        assertEquals(EXAMPLE_NOT_CONTAINS_TEST, illegalOperationException.getMessage());
         verify(wordService).getWordByName(anyString());
     }
 }
