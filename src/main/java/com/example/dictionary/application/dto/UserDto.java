@@ -1,20 +1,28 @@
 package com.example.dictionary.application.dto;
 
-import com.example.dictionary.domain.enums.Role;
+import com.example.dictionary.application.security.role.Role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 public class UserDto {
 
     private Integer id;
 
+    @NotEmpty(message = "First Name is required")
     private String firstName;
 
+    @NotEmpty(message = "Last Name is required")
     private String lastName;
 
+    @Email(message = "Incorrect email format")
     private String email;
 
+    @NotEmpty(message = "Password is required")
     private String password;
 
-    private Role role;
+    @NotEmpty(message = "Key is required")
+    private String key;
 
     private UserInfoDto userInfo;
 
@@ -50,14 +58,6 @@ public class UserDto {
         this.email = email;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     public UserInfoDto getUserInfo() {
         return userInfo;
     }
@@ -72,5 +72,13 @@ public class UserDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

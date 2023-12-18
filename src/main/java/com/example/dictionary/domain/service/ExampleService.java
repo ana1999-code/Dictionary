@@ -10,4 +10,6 @@ public interface ExampleService {
     Optional<Example> getExampleByText(String text);
 
     List<Example> getAllExamples();
+
+    void saveExample(Example example);
 }

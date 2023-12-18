@@ -70,4 +70,12 @@ public class Comment {
     public void setCommentedAt(LocalDate commentedAt) {
         this.commentedAt = commentedAt;
     }
+
+    public Word getWord() {
+        return word;
+    }
+
+    public void setWord(Word word) {
+        this.word = word;
+    }
 }

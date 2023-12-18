@@ -1,6 +1,5 @@
 package com.example.dictionary.application.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -25,7 +24,7 @@ public class WordDto {
 
     private final Set<WordDto> antonyms = new HashSet<>();
 
-    @NotNull(message = "Category must be completed")
+    @NotNull(message = "Category is required")
     private CategoryDto category;
 
     private final Set<UserDto> contributors = new HashSet<>();

@@ -1,9 +1,13 @@
 package com.example.dictionary.application.facade.impl;
 
+import com.example.dictionary.application.annotation.ContributeByUser;
 import com.example.dictionary.application.dto.CategoryDto;
+import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
+import com.example.dictionary.application.exception.DuplicateResourceException;
+import com.example.dictionary.application.exception.IllegalOperationException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.application.mapper.CategoryMapper;
@@ -22,7 +26,9 @@ import com.example.dictionary.domain.service.WordService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class WordFacadeImpl implements WordFacade {
@@ -75,13 +81,13 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     public WordDto getWordByName(String name) {
-        Word word = wordService.getWordByName(name)
-                .orElseThrow(() -> new ResourceNotFoundException("Word %s not found".formatted(name)));
+        Word word = getWord(name);
 
         return wordMapper.wordToWordDto(word);
     }
 
     @Override
+    @ContributeByUser
     public WordDto addWord(WordDto wordDto) {
         validator.validate(wordDto);
 
@@ -97,10 +103,7 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     public void deleteWordByName(String name) {
-        Word wordToDelete = wordService.getWordByName(name)
-                .orElseThrow(() -> new ResourceNotFoundException("Word %s not found".formatted(name)));
-
-        decoupleFromSynonyms(wordToDelete);
+        getWord(name);
 
         wordService.deleteWordByName(name);
     }
@@ -129,13 +132,137 @@ public class WordFacadeImpl implements WordFacade {
                 .toList();
     }
 
-    private static void decoupleFromSynonyms(Word wordToDelete) {
-        wordToDelete.getSynonyms().forEach(
-                synonym -> {
-                    synonym.removeSynonym(wordToDelete);
-                    wordToDelete.removeSynonym(synonym);
-                }
-        );
+    @Override
+    @ContributeByUser
+    public void addDefinitionToWord(String name, DefinitionDto definitionDto) {
+        Word word = getWord(name);
+
+        Definition definition = getOrCreateDefinition(definitionDto);
+        verifyDefinitionIsNotPresent(word, definition);
+
+        word.addDefinition(definition);
+        wordService.addWord(word);
+    }
+
+    @Override
+    @ContributeByUser
+    public void removeDefinitionFromWord(String name, DefinitionDto definitionDto) {
+        Definition definition = definitionMapper.definitionDtoToDefinition(definitionDto);
+        Word word = getWord(name);
+
+        Definition definitionToDelete = getDefinitionToDelete(definition, word);
+
+        word.removeDefinition(definitionToDelete);
+        wordService.addWord(word);
+    }
+
+    @Override
+    @ContributeByUser
+    public void removeExampleFromWord(String name, ExampleDto exampleDto) {
+        Example example = exampleMapper.exampleDtoToExample(exampleDto);
+        Word word = getWord(name);
+
+        Example exampleToDelete = getExampleToDelete(example, word);
+
+        word.removeExample(exampleToDelete);
+        wordService.addWord(word);
+    }
+
+    @Override
+    @ContributeByUser
+    public void addExampleToWord(String name, ExampleDto exampleDto) {
+        Word word = getWord(name);
+        Example example = getOrCreateExample(exampleDto);
+
+        verifyExampleIsValid(word, example);
+
+        word.addExample(example);
+        wordService.addWord(word);
+    }
+
+    @Override
+    public Set<WordDto> getAllSynonyms(String name) {
+        Word word = getWord(name);
+        Set<Word> synonyms = word.getSynonyms();
+
+        return synonyms.stream()
+                .map(wordMapper::wordToWordDto)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<WordDto> getAllAntonyms(String name) {
+        Word word = getWord(name);
+        Set<Word> antonyms = word.getAntonyms();
+
+        return antonyms.stream()
+                .map(wordMapper::wordToWordDto)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    @ContributeByUser
+    public void addSynonym(String name, WordDto synonym) {
+        Word word = getWord(name);
+        Word synonymToAdd = getWord(synonym.getName());
+
+        verifyWordIsNotPresent(word, synonymToAdd);
+
+        word.addSynonym(synonymToAdd);
+        wordService.addWord(word);
+    }
+
+    @Override
+    @ContributeByUser
+    public void removeSynonym(String name, WordDto synonym) {
+        Word word = getWord(name);
+        Word synonymToRemove = getWord(synonym.getName());
+
+        verifyWordIsPresent(synonymToRemove, word.getSynonyms());
+
+        word.removeSynonym(synonymToRemove);
+        wordService.addWord(word);
+    }
+
+    @Override
+    @ContributeByUser
+    public void addAntonym(String name, WordDto antonym) {
+        Word word = getWord(name);
+        Word antonymToAdd = getWord(antonym.getName());
+
+        verifyWordIsNotPresent(word, antonymToAdd);
+
+        word.addAntonym(antonymToAdd);
+        wordService.addWord(word);
+    }
+
+    @Override
+    @ContributeByUser
+    public void removeAntonym(String name, WordDto antonym) {
+        Word word = getWord(name);
+        Word antonymToRemove = getWord(antonym.getName());
+
+        verifyWordIsPresent(antonymToRemove, word.getAntonyms());
+
+        word.removeAntonym(antonymToRemove);
+        wordService.addWord(word);
+    }
+
+    //todo: implement add comment
+    @Override
+    public void addComment(String name, CommentDto commentDto) {
+
+    }
+
+    //todo: implement remove comment
+    @Override
+    public void removeComment(String name, CommentDto commentDto) {
+
+    }
+
+    private Word getWord(String name) {
+        return wordService.getWordByName(name)
+                .orElseThrow(() -> new ResourceNotFoundException("Word %s not found".formatted(name)));
     }
 
     private void addToDefinitions(Word word) {
@@ -170,5 +297,102 @@ public class WordFacadeImpl implements WordFacade {
                                     word.addExample(value);
                                 })
         );
+    }
+
+    private Definition getOrCreateDefinition(DefinitionDto definitionDto) {
+        Optional<Definition> existingDefinition = definitionService.getDefinitionByText(definitionDto.getText());
+
+        return existingDefinition.orElseGet(() -> {
+            Definition newDefinition = definitionMapper.definitionDtoToDefinition(definitionDto);
+            definitionService.saveDefinition(newDefinition);
+            return newDefinition;
+        });
+    }
+
+
+    private static void verifyDefinitionIsNotPresent(Word word, Definition definition) {
+        if (word.getDefinitions().contains(definition)) {
+            throw new DuplicateResourceException(
+                    "Definition %s is already present in word definitions".formatted(definition.getText())
+            );
+        }
+    }
+
+
+    private Definition getDefinitionToDelete(Definition definition, Word word) {
+        String text = definition.getText();
+
+        Definition definitionToDelete = definitionService.getDefinitionByText(text)
+                .orElseThrow(() -> new ResourceNotFoundException("Definition %s not found".formatted(text)));
+
+        if (word.getDefinitions().size() == 1) {
+            throw new IllegalOperationException(
+                    "Word %s have only one definition that is required".formatted(word.getName())
+            );
+        } else if (!word.getDefinitions().contains(definitionToDelete)) {
+            throw new ResourceNotFoundException("Definition %s not found for the word %s"
+                    .formatted(text, word.getName())
+            );
+        }
+        return definitionToDelete;
+    }
+
+
+    private Example getExampleToDelete(Example example, Word word) {
+        String text = example.getText();
+
+        Example exampleToDelete = exampleService.getExampleByText(text)
+                .orElseThrow(() -> new ResourceNotFoundException("Example %s not found".formatted(text)));
+
+        if (!word.getExamples().contains(exampleToDelete)) {
+            throw new ResourceNotFoundException("Example %s not found for the word %s"
+                    .formatted(text, word.getName())
+            );
+        }
+
+        return exampleToDelete;
+    }
+
+    private Example getOrCreateExample(ExampleDto exampleDto) {
+        Optional<Example> example = exampleService.getExampleByText(exampleDto.getText());
+
+        return example.orElseGet(() -> {
+            Example newExample = exampleMapper.exampleDtoToExample(exampleDto);
+            exampleService.saveExample(newExample);
+            return newExample;
+        });
+    }
+
+    private void verifyExampleIsValid(Word word, Example example) {
+        if (!example.getText().contains(word.getName())) {
+            throw new IllegalOperationException(
+                    "Provided example does not contain the word %s".formatted(word.getName())
+            );
+        } else if (word.getExamples().contains(example)) {
+            throw new DuplicateResourceException(
+                    "Example %s is already present in word examples".formatted(example.getText())
+            );
+        }
+    }
+
+    private static void verifyWordIsNotPresent(Word word, Word wordToAdd) {
+        if (isWordContaining(word, wordToAdd)) {
+            throw new DuplicateResourceException("%s is already present for word %s"
+                    .formatted(wordToAdd.getName(), word.getName()));
+        }
+    }
+
+    private static boolean isWordContaining(Word word, Word linkedWord) {
+        return word.getSynonyms().contains(linkedWord)
+                && !word.getAntonyms().contains(linkedWord)
+                || !word.getSynonyms().contains(linkedWord)
+                && word.getAntonyms().contains(linkedWord);
+    }
+
+    private static void verifyWordIsPresent(Word wordToRemove, Set<Word> synonyms) {
+        if (!synonyms.contains(wordToRemove)) {
+            throw new ResourceNotFoundException("Synonym|Antonym %s is not present"
+                    .formatted(wordToRemove.getName()));
+        }
     }
 }
