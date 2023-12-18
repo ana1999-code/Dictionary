@@ -8,10 +8,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.dictionary.utils.TestUtils.EXAMPLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -31,5 +34,23 @@ class ExampleServiceImplTest {
         Optional<Example> exampleByText = exampleService.getExampleByText(EXAMPLE.getText());
 
         assertEquals(EXAMPLE, exampleByText.get());
+    }
+
+    @Test
+    void testGetAllExamples() {
+        when(exampleRepository.findAll()).thenReturn(List.of(EXAMPLE));
+
+        List<Example> examples = exampleService.getAllExamples();
+
+        assertTrue(examples.contains(EXAMPLE));
+    }
+
+    @Test
+    void testSaveExample() {
+        when(exampleRepository.save(any(Example.class))).thenReturn(EXAMPLE);
+
+        Example savedExample = exampleService.saveExample(EXAMPLE);
+
+        assertEquals(EXAMPLE, savedExample);
     }
 }

@@ -11,5 +11,5 @@ public interface ExampleService {
 
     List<Example> getAllExamples();
 
-    void saveExample(Example example);
+    Example saveExample(Example example);
 }

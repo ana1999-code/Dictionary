@@ -28,7 +28,7 @@ public class ExampleServiceImpl implements ExampleService {
     }
 
     @Override
-    public void saveExample(Example example) {
-        exampleRepository.save(example);
+    public Example saveExample(Example example) {
+        return exampleRepository.save(example);
     }
 }
