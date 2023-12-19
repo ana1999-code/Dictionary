@@ -10,7 +10,10 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 
 @Route("login")
 @PageTitle("Login | Dictionary")
@@ -20,14 +23,19 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
     public LoginView() {
         LoginI18n loginI18n = LoginI18n.createDefault();
         loginI18n.setHeader(new LoginI18n.Header());
-        loginI18n.getHeader().setTitle("Dictionary");
+        loginI18n.getHeader().setTitle(APP_NAME);
         loginI18n.setAdditionalInformation(null);
         loginI18n.setForm(new LoginI18n.Form());
         loginI18n.getForm().setSubmit("Sign in");
         loginI18n.getForm().setUsername("Email");
         loginI18n.getForm().setPassword("Password");
+        loginI18n.getForm().setForgotPassword("Register");
+
+        addForgotPasswordListener( event -> {
+            getUI().ifPresent(ui -> ui.navigate(RegistrationView.class));
+        });
+
         setI18n(loginI18n);
-        setForgotPasswordButtonVisible(false);
         setAction("login");
     }
 
