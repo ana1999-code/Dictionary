@@ -1,6 +1,7 @@
 package com.example.dictionary.ui.login;
 
 import com.example.dictionary.application.security.utils.SecurityUtils;
+import com.example.dictionary.ui.registration.RegistrationView;
 import com.example.dictionary.ui.view.ProfileView;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
@@ -10,13 +11,12 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 
 @Route("login")
-@PageTitle("Login | Dictionary")
+@PageTitle("Login | " + APP_NAME)
 @AnonymousAllowed
 public class LoginView extends LoginOverlay implements AfterNavigationObserver, BeforeEnterObserver {
 
@@ -31,7 +31,7 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
         loginI18n.getForm().setPassword("Password");
         loginI18n.getForm().setForgotPassword("Register");
 
-        addForgotPasswordListener( event -> {
+        addForgotPasswordListener(event -> {
             getUI().ifPresent(ui -> ui.navigate(RegistrationView.class));
         });
 
@@ -41,7 +41,7 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        if (SecurityUtils.isUserLoggedIn()){
+        if (SecurityUtils.isUserLoggedIn()) {
             event.forwardTo(ProfileView.class);
         } else {
             setOpened(true);
