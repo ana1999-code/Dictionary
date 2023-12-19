@@ -35,21 +35,21 @@ public class TestUtils {
 
     public static final Word WORD = new Word("test", CATEGORY);
 
-    public static final String WORD_NOT_FOUND = "Word %s not found".formatted(WORD.getName());
+    public static final String WORD_NOT_FOUND = "Word [%s] not found".formatted(WORD.getName());
 
     public static final DefinitionDto DEFINITION_DTO = new DefinitionDto("Test definition");
 
-    public static final String DUPLICATE_WORD = "Word %s already exists".formatted(WORD.getName());
+    public static final String DUPLICATE_WORD = "Word [%s] already exists".formatted(WORD.getName());
 
     public static final String DEFINITION_NOT_FOUND_FOR_WORD =
-            "Word %s should have at least one definition".formatted(WORD.getName());
+            "Word [%s] should have at least one definition".formatted(WORD.getName());
 
     public static final ExampleDto EXAMPLE_DTO_WITHOUT_WORD = new ExampleDto("Example without word");
 
     public static final ExampleDto EXAMPLE_DTO = new ExampleDto("Test example");
 
     public static final String EXAMPLE_NOT_CONTAINS_WORD =
-            "Provided example does not contain the word %s".formatted(WORD.getName());
+            "Provided example does not contain the word [%s]".formatted(WORD.getName());
 
     public static final Example EXAMPLE_WITHOUT_WORD = new Example("Example without word");
 
@@ -63,9 +63,9 @@ public class TestUtils {
 
     public static final User USER = new User();
 
-    public static final String EMAIL_IS_TAKEN = "Email %s is already taken";
+    public static final String EMAIL_IS_TAKEN = "Email [%s] is already taken";
 
-    public static final String USER_NOT_FOUND = "User with email %s not found";
+    public static final String USER_NOT_FOUND = "User with email [%s] not found";
 
     public static final String FIRST_NAME_IS_REQUIRED = "First Name is required";
 
@@ -93,12 +93,29 @@ public class TestUtils {
     public static final String DEFINITION_NOT_FOUND = "Definition [%s] not found"
             .formatted(DEFINITION.getText());
 
-    public static final String ONLY_ONE_DEFINITION =  "Word %s has only one definition that is required"
+    public static final String ONLY_ONE_DEFINITION = "Word [%s] has only one definition that is required"
             .formatted(WORD.getName());
 
-    public static final String DEFINITION_NOT_FOUND_FOR_THE_WORD = "Definition [%s] not found for the word %s"
+    public static final String DEFINITION_NOT_FOUND_FOR_THE_WORD = "Definition [%s] not found for the word [%s]"
             .formatted(NON_EXISTING_DEFINITION_FOR_WORD.getText(), WORD.getName());
 
     public static final String EXAMPLE_ALREADY_PRESENT = "Example [%s] is already present in word examples"
             .formatted(EXAMPLE.getText());
+
+    public static final String EXAMPLE_NOT_FOUND = "Example [%s] not found".formatted(EXAMPLE.getText());
+
+    public static final String EXAMPLE_NOT_FOUND_FOR_THE_WORD = "Example [%s] not found for the word [%s]"
+            .formatted(EXAMPLE.getText(), WORD.getName());
+
+    public static final Word SYNONYM = new Word("synonym", CATEGORY);
+
+    public static final WordDto SYNONYM_DTO = new WordDto("synonym", CATEGORY_DTO);
+
+    public static final Word ANTONYM = new Word("antonym", CATEGORY);
+
+    public static final WordDto ANTONYM_DTO = new WordDto("antonym", CATEGORY_DTO);
+
+    public static final String WORD_IS_ALREADY_LINKED = "Synonym or Antonym [%s] is already linked with word [%s]";
+
+    public static final String WORD_IS_NOT_LINKED = "Synonym or Antonym [%s] is not present";
 }

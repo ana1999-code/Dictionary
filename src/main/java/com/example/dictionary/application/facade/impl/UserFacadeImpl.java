@@ -72,6 +72,6 @@ public class UserFacadeImpl implements UserFacade {
 
     private User getUser(String email) {
         return userService.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User with email %s not found".formatted(email)));
+                .orElseThrow(() -> new ResourceNotFoundException("User with email [%s] not found".formatted(email)));
     }
 }

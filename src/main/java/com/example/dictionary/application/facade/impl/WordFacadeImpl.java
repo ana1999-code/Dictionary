@@ -152,14 +152,15 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     @ContributeByUser
-    public void removeExampleFromWord(String name, ExampleDto exampleDto) {
+    public WordDto removeExampleFromWord(String name, ExampleDto exampleDto) {
         Example example = exampleMapper.exampleDtoToExample(exampleDto);
         Word word = getWord(name);
 
         Example exampleToDelete = getExampleToDelete(example, word);
 
         word.removeExample(exampleToDelete);
-        wordService.addWord(word);
+        Word updatedWord = wordService.addWord(word).orElseThrow();
+        return wordMapper.wordToWordDto(updatedWord);
     }
 
     @Override
@@ -244,7 +245,7 @@ public class WordFacadeImpl implements WordFacade {
 
     private Word getWord(String name) {
         return wordService.getWordByName(name)
-                .orElseThrow(() -> new ResourceNotFoundException("Word %s not found".formatted(name)));
+                .orElseThrow(() -> new ResourceNotFoundException("Word [%s] not found".formatted(name)));
     }
 
     private void addToDefinitions(Word word) {
@@ -309,10 +310,10 @@ public class WordFacadeImpl implements WordFacade {
 
         if (word.getDefinitions().size() == 1) {
             throw new IllegalOperationException(
-                    "Word %s has only one definition that is required".formatted(word.getName())
+                    "Word [%s] has only one definition that is required".formatted(word.getName())
             );
         } else if (!word.getDefinitions().contains(definitionToDelete)) {
-            throw new ResourceNotFoundException("Definition [%s] not found for the word %s"
+            throw new ResourceNotFoundException("Definition [%s] not found for the word [%s]"
                     .formatted(text, word.getName())
             );
         }
@@ -327,7 +328,8 @@ public class WordFacadeImpl implements WordFacade {
                 .orElseThrow(() -> new ResourceNotFoundException("Example [%s] not found".formatted(text)));
 
         if (!word.getExamples().contains(exampleToDelete)) {
-            throw new ResourceNotFoundException("Example [%s] not found for the word %s"
+            throw new ResourceNotFoundException(
+                    "Example [%s] not found for the word [%s]"
                     .formatted(text, word.getName())
             );
         }
@@ -357,7 +359,7 @@ public class WordFacadeImpl implements WordFacade {
 
     private static void verifyWordIsNotPresent(Word word, Word wordToAdd) {
         if (isWordContaining(word, wordToAdd)) {
-            throw new DuplicateResourceException("%s is already present for word %s"
+            throw new DuplicateResourceException("Synonym or Antonym [%s] is already linked with word [%s]"
                     .formatted(wordToAdd.getName(), word.getName()));
         }
     }
@@ -371,7 +373,7 @@ public class WordFacadeImpl implements WordFacade {
 
     private static void verifyWordIsPresent(Word wordToRemove, Set<Word> synonyms) {
         if (!synonyms.contains(wordToRemove)) {
-            throw new ResourceNotFoundException("Synonym|Antonym %s is not present"
+            throw new ResourceNotFoundException("Synonym or Antonym [%s] is not present"
                     .formatted(wordToRemove.getName()));
         }
     }

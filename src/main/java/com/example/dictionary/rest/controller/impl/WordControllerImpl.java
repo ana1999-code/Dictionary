@@ -101,11 +101,11 @@ public class WordControllerImpl implements WordController {
 
     @Override
     @DeleteMapping("{name}/examples")
-    @ResponseStatus(value = NO_CONTENT)
     @PreAuthorize("hasAuthority('word:write')")
-    public void removeExampleFromWord(@PathVariable("name") String name,
+    public ResponseEntity<WordDto> removeExampleFromWord(@PathVariable("name") String name,
                                       @RequestBody @Valid ExampleDto exampleDto) {
-        wordFacade.removeExampleFromWord(name, exampleDto);
+        WordDto updatedWord = wordFacade.removeExampleFromWord(name, exampleDto);
+        return new ResponseEntity<>(updatedWord, OK);
     }
 
     @Override

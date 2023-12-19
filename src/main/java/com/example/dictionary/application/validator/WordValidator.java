@@ -20,11 +20,11 @@ public class WordValidator {
         String name = wordDto.getName();
 
         if (wordService.getWordByName(name).isPresent()) {
-            throw new DuplicateResourceException("Word %s already exists".formatted(name));
+            throw new DuplicateResourceException("Word [%s] already exists".formatted(name));
         }
 
         if (wordDto.getDefinitions().isEmpty()) {
-            throw new ResourceNotFoundException("Word %s should have at least one definition".formatted(name));
+            throw new ResourceNotFoundException("Word [%s] should have at least one definition".formatted(name));
         }
 
         if (!wordDto.getExamples().isEmpty()) {

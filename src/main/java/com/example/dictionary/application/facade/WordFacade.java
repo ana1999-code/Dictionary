@@ -24,7 +24,7 @@ public interface WordFacade {
 
     WordDto addExampleToWord(String name, ExampleDto exampleDto);
 
-    void removeExampleFromWord(String name, ExampleDto exampleDto);
+    WordDto removeExampleFromWord(String name, ExampleDto exampleDto);
 
     Set<WordDto> getAllSynonyms(String name);
 
