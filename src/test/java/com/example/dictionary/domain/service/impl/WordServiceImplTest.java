@@ -68,9 +68,9 @@ class WordServiceImplTest {
     void testAddWord() {
         when(wordRepository.save(any(Word.class))).thenReturn(WORD);
 
-        Optional<Word> addedWord = wordService.addWord(WORD);
+        Word addedWord = wordService.addWord(WORD);
 
-        assertEquals(WORD, addedWord.get());
+        assertEquals(WORD, addedWord);
         verify(wordRepository).save(any(Word.class));
     }
 

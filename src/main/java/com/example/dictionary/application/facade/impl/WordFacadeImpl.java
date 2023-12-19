@@ -97,7 +97,7 @@ public class WordFacadeImpl implements WordFacade {
         addToExamples(word);
 
         word.setAddedAt(LocalDate.now());
-        Word addedWord = wordService.addWord(word).orElseThrow();
+        Word addedWord = wordService.addWord(word);
 
         return wordMapper.wordToWordDto(addedWord);
     }
@@ -118,7 +118,7 @@ public class WordFacadeImpl implements WordFacade {
         verifyDefinitionIsNotPresent(word, definition);
 
         word.addDefinition(definition);
-        Word addedWord = wordService.addWord(word).orElseThrow();
+        Word addedWord = wordService.addWord(word);
 
         return wordMapper.wordToWordDto(addedWord);
     }
@@ -132,7 +132,7 @@ public class WordFacadeImpl implements WordFacade {
         Definition definitionToDelete = getDefinitionToDelete(definition, word);
 
         word.removeDefinition(definitionToDelete);
-        Word updatedWord = wordService.addWord(word).orElseThrow();
+        Word updatedWord = wordService.addWord(word);
 
         return wordMapper.wordToWordDto(updatedWord);
     }
@@ -146,7 +146,7 @@ public class WordFacadeImpl implements WordFacade {
         verifyExampleIsValid(word, example);
 
         word.addExample(example);
-        Word updatedWord = wordService.addWord(word).orElseThrow();
+        Word updatedWord = wordService.addWord(word);
         return wordMapper.wordToWordDto(updatedWord);
     }
 
@@ -159,7 +159,7 @@ public class WordFacadeImpl implements WordFacade {
         Example exampleToDelete = getExampleToDelete(example, word);
 
         word.removeExample(exampleToDelete);
-        Word updatedWord = wordService.addWord(word).orElseThrow();
+        Word updatedWord = wordService.addWord(word);
         return wordMapper.wordToWordDto(updatedWord);
     }
 

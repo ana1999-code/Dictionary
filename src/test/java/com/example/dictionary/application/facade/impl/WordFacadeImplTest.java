@@ -161,7 +161,7 @@ class WordFacadeImplTest {
 
         doNothing().when(wordValidator).validate(WORD_DTO);
         when(wordMapper.wordDtoToWord(any(WordDto.class))).thenReturn(WORD);
-        when(wordService.addWord(WORD)).thenReturn(Optional.of(WORD));
+        when(wordService.addWord(WORD)).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any(Word.class))).thenReturn(WORD_DTO);
         when(categoryService.getCategoryByName(anyString())).thenReturn(Optional.of(WORD.getCategory()));
 
@@ -204,7 +204,7 @@ class WordFacadeImplTest {
         when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.empty());
         when(definitionMapper.definitionDtoToDefinition(any(DefinitionDto.class))).thenReturn(DEFINITION);
-        when(wordService.addWord(any(Word.class))).thenReturn(Optional.of(WORD));
+        when(wordService.addWord(any(Word.class))).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any(Word.class))).thenReturn(WORD_DTO);
 
         wordFacade.addDefinitionToWord(WORD_DTO.getName(), DEFINITION_DTO);
@@ -218,7 +218,7 @@ class WordFacadeImplTest {
     void testAddDefinitionToWord_whenAddExistingDefinitionInDatabase_thenReturnWordWithDefinition() {
         when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(DEFINITION));
-        when(wordService.addWord(any(Word.class))).thenReturn(Optional.of(WORD));
+        when(wordService.addWord(any(Word.class))).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any(Word.class))).thenReturn(WORD_DTO);
 
         wordFacade.addDefinitionToWord(WORD_DTO.getName(), DEFINITION_DTO);
@@ -258,7 +258,7 @@ class WordFacadeImplTest {
         when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(DEFINITION);
         when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(DEFINITION));
-        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+        when(wordService.addWord(any())).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any())).thenReturn(WORD_DTO);
 
         wordFacade.removeDefinitionFromWord(WORD_DTO.getName(), DEFINITION_DTO);
@@ -321,7 +321,7 @@ class WordFacadeImplTest {
         when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.empty());
         when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE);
-        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+        when(wordService.addWord(any())).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any())).thenReturn(WORD_DTO);
 
         wordFacade.addExampleToWord(WORD.getName(), EXAMPLE_DTO);
@@ -336,7 +336,7 @@ class WordFacadeImplTest {
     void testAddExampleToWord_whenAddExistingExampleInDb_thenExampleIsAdded() {
         when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.of(EXAMPLE));
-        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+        when(wordService.addWord(any())).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any())).thenReturn(WORD_DTO);
 
         wordFacade.addExampleToWord(WORD.getName(), EXAMPLE_DTO);
@@ -389,7 +389,7 @@ class WordFacadeImplTest {
         when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE);
         when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.of(EXAMPLE));
-        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+        when(wordService.addWord(any())).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any())).thenReturn(WORD_DTO);
 
         wordFacade.removeExampleFromWord(WORD.getName(), EXAMPLE_DTO);
@@ -453,7 +453,7 @@ class WordFacadeImplTest {
     void testAddSynonym() {
         when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
         when(wordService.getWordByName(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
-        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+        when(wordService.addWord(any())).thenReturn(WORD);
 
         wordFacade.addSynonym(WORD.getName(), SYNONYM_DTO);
 
@@ -482,7 +482,7 @@ class WordFacadeImplTest {
         WORD.addSynonym(SYNONYM);
         when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
         when(wordService.getWordByName(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
-        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+        when(wordService.addWord(any())).thenReturn(WORD);
 
         wordFacade.removeSynonym(WORD.getName(), SYNONYM_DTO);
 
@@ -509,7 +509,7 @@ class WordFacadeImplTest {
     void testAddAntonym() {
         when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
         when(wordService.getWordByName(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
-        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+        when(wordService.addWord(any())).thenReturn(WORD);
 
         wordFacade.addAntonym(WORD.getName(), ANTONYM_DTO);
 
@@ -538,7 +538,7 @@ class WordFacadeImplTest {
         WORD.addAntonym(ANTONYM);
         when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
         when(wordService.getWordByName(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
-        when(wordService.addWord(any())).thenReturn(Optional.of(WORD));
+        when(wordService.addWord(any())).thenReturn(WORD);
 
         wordFacade.removeAntonym(WORD.getName(), ANTONYM_DTO);
 

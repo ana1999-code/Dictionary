@@ -30,9 +30,8 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
-    public Optional<Word> addWord(Word word) {
-        Word saved = wordRepository.save(word);
-        return Optional.of(saved);
+    public Word addWord(Word word) {
+        return wordRepository.save(word);
     }
 
     @Override
