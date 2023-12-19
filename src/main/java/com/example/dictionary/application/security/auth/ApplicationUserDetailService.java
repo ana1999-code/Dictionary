@@ -24,7 +24,10 @@ public class ApplicationUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         User user = userService.findByEmail(username)
-                .orElseThrow(() -> new IncorrectUsernameException("User with email %s not found".formatted(username)));
+                .orElseThrow(() -> new
+                        IncorrectUsernameException("User with email %s not found"
+                        .formatted(username))
+                );
 
         return userMapper.userToApplicationUser(user);
     }

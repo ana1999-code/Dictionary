@@ -4,6 +4,7 @@ import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.facade.WordFacade;
+import com.example.dictionary.application.security.utils.SecurityUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -35,7 +36,7 @@ public class WordContributionAspect {
 
     @Before("contributeByUserAnnotation()")
     public void setWordContributor(JoinPoint joinPoint) {
-        String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        String loggedInUser = SecurityUtils.getUsername();
         UserDto user = userFacade.findUserByEmail(loggedInUser);
 
         Object arg = Arrays.stream(joinPoint.getArgs()).toList().get(0);
@@ -50,7 +51,7 @@ public class WordContributionAspect {
 
     @AfterReturning("contributeByUserAnnotation()")
     public void setUserProgress() {
-        String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        String loggedInUser = SecurityUtils.getUsername();
         UserDto user = userFacade.findUserByEmail(loggedInUser);
 
         Integer progress = user.getUserInfo().getProgress();
