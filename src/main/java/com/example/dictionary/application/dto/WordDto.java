@@ -47,7 +47,6 @@ public class WordDto {
     }
 
 
-
     public Integer getId() {
         return id;
     }

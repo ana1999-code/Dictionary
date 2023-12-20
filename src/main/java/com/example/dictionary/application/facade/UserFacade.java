@@ -1,7 +1,9 @@
 package com.example.dictionary.application.facade;
 
 import com.example.dictionary.application.dto.UserDto;
-import com.example.dictionary.domain.entity.User;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface UserFacade {
 
@@ -10,4 +12,8 @@ public interface UserFacade {
     UserDto findUserByEmail(String email);
 
     Integer updateUserProgress(UserDto user);
+
+    UserDto uploadLogo(MultipartFile file) throws IOException;
+
+    UserDto getUserProfile();
 }

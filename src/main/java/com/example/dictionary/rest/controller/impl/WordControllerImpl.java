@@ -74,7 +74,7 @@ public class WordControllerImpl implements WordController {
     @PutMapping("{name}/definitions")
     @PreAuthorize("hasAuthority('word:write')")
     public ResponseEntity<WordDto> addDefinitionToWord(@PathVariable("name") String name,
-                                    @RequestBody @Valid DefinitionDto definitionDto) {
+                                                       @RequestBody @Valid DefinitionDto definitionDto) {
         WordDto updatedWord = wordFacade.addDefinitionToWord(name, definitionDto);
         return new ResponseEntity<>(updatedWord, OK);
     }
@@ -83,7 +83,7 @@ public class WordControllerImpl implements WordController {
     @DeleteMapping("{name}/definitions")
     @PreAuthorize("hasAuthority('word:write')")
     public ResponseEntity<WordDto> removeDefinitionFromWord(@PathVariable("name") String name,
-                                         @RequestBody @Valid DefinitionDto definitionDto) {
+                                                            @RequestBody @Valid DefinitionDto definitionDto) {
         WordDto updatedWord = wordFacade.removeDefinitionFromWord(name, definitionDto);
 
         return new ResponseEntity<>(updatedWord, OK);
@@ -93,7 +93,7 @@ public class WordControllerImpl implements WordController {
     @PutMapping("{name}/examples")
     @PreAuthorize("hasAuthority('word:write')")
     public ResponseEntity<WordDto> addExampleToWord(@PathVariable("name") String name,
-                                 @RequestBody @Valid ExampleDto exampleDto) {
+                                                    @RequestBody @Valid ExampleDto exampleDto) {
         WordDto updatedWord = wordFacade.addExampleToWord(name, exampleDto);
 
         return new ResponseEntity<>(updatedWord, OK);
@@ -103,7 +103,7 @@ public class WordControllerImpl implements WordController {
     @DeleteMapping("{name}/examples")
     @PreAuthorize("hasAuthority('word:write')")
     public ResponseEntity<WordDto> removeExampleFromWord(@PathVariable("name") String name,
-                                      @RequestBody @Valid ExampleDto exampleDto) {
+                                                         @RequestBody @Valid ExampleDto exampleDto) {
         WordDto updatedWord = wordFacade.removeExampleFromWord(name, exampleDto);
         return new ResponseEntity<>(updatedWord, OK);
     }

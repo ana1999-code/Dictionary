@@ -330,7 +330,7 @@ public class WordFacadeImpl implements WordFacade {
         if (!word.getExamples().contains(exampleToDelete)) {
             throw new ResourceNotFoundException(
                     "Example [%s] not found for the word [%s]"
-                    .formatted(text, word.getName())
+                            .formatted(text, word.getName())
             );
         }
 

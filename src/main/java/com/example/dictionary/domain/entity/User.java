@@ -7,10 +7,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.validation.constraints.Email;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.type.descriptor.jdbc.VarbinaryJdbcType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -43,6 +46,10 @@ public class User {
     @Enumerated(value = STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Lob
+    @JdbcType(VarbinaryJdbcType.class)
+    private byte[] logo;
 
     @OneToOne(cascade = CascadeType.ALL)
     private UserInfo userInfo;
@@ -116,5 +123,13 @@ public class User {
 
     public void setRegisteredAt(LocalDate registeredAt) {
         this.registeredAt = registeredAt;
+    }
+
+    public byte[] getLogo() {
+        return logo;
+    }
+
+    public void setLogo(byte[] logo) {
+        this.logo = logo;
     }
 }

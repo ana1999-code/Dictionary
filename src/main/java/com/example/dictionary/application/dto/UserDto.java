@@ -28,6 +28,7 @@ public class UserDto {
     @NotEmpty(message = "Key is required")
     private String key;
 
+    private byte[] logo;
     private UserInfoDto userInfo;
 
     @JsonFormat(shape = STRING, pattern = "dd-MM-yyyy")
@@ -95,6 +96,14 @@ public class UserDto {
 
     public void setRegisteredAt(LocalDate registeredAt) {
         this.registeredAt = registeredAt;
+    }
+
+    public byte[] getLogo() {
+        return logo;
+    }
+
+    public void setLogo(byte[] logo) {
+        this.logo = logo;
     }
 
     @Override

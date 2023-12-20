@@ -5,13 +5,17 @@ import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.mapper.UserMapper;
 import com.example.dictionary.application.security.key.KeyRoleExtractor;
+import com.example.dictionary.application.security.utils.SecurityUtils;
+import com.example.dictionary.application.util.ImageUtil;
 import com.example.dictionary.application.validator.UserValidator;
 import com.example.dictionary.domain.entity.User;
 import com.example.dictionary.domain.entity.UserInfo;
 import com.example.dictionary.domain.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 @Component
@@ -68,6 +72,36 @@ public class UserFacadeImpl implements UserFacade {
         userToUpdate.getUserInfo().setProgress(progress);
         User updatedUser = userService.registerUser(userToUpdate);
         return updatedUser.getUserInfo().getProgress();
+    }
+
+    @Override
+    public UserDto uploadLogo(MultipartFile file) throws IOException {
+        User user = getUser(SecurityUtils.getUsername());
+        user.setLogo(ImageUtil.compressImage(file.getBytes()));
+
+        User updatedUser = userService.registerUser(user);
+        byte[] addedLogo = ImageUtil.decompressImage(updatedUser.getLogo());
+
+        UserDto userDto = userMapper.userToUserDto(user);
+        userDto.setLogo(addedLogo);
+        return userDto;
+    }
+
+    @Override
+    public UserDto getUserProfile() {
+        User user = getUser(SecurityUtils.getUsername());
+
+        byte[] logo = null;
+        byte[] dbLogo = user.getLogo();
+
+        if (dbLogo != null) {
+            logo = ImageUtil.decompressImage(dbLogo);
+        }
+
+        UserDto userDto = userMapper.userToUserDto(user);
+        userDto.setLogo(logo);
+
+        return userDto;
     }
 
     private User getUser(String email) {
