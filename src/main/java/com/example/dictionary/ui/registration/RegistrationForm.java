@@ -13,6 +13,8 @@ import com.vaadin.flow.component.textfield.TextField;
 
 import java.util.Arrays;
 
+import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
+
 public class RegistrationForm extends FormLayout {
 
     private H2 title;
@@ -36,14 +38,14 @@ public class RegistrationForm extends FormLayout {
     private Button login;
 
     public RegistrationForm() {
-        title = new H2("Register");
+        title = new H2(APP_NAME + " Registration");
         title.getStyle()
                 .set("color", "var(--_lumo-button-primary-color, var(--lumo-primary-contrast-color))");
 
         Div titleSpace = new Div(title);
         titleSpace.getStyle()
                 .set("background-color", "var(--_lumo-button-primary-background-color, var(--lumo-primary-color))")
-                .set("padding", "30px 0")
+                .set("padding", "40px 0")
                 .set("text-align", "center")
                 .set("border-radius", "5px")
         ;
@@ -66,6 +68,7 @@ public class RegistrationForm extends FormLayout {
         );
 
         errorMessageField = new Span();
+
         register = new Button("Register");
         register.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         login.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -118,5 +121,9 @@ public class RegistrationForm extends FormLayout {
 
     public Button getLogin() {
         return login;
+    }
+
+    public EmailField getEmail() {
+        return email;
     }
 }
