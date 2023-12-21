@@ -3,6 +3,8 @@ package com.example.dictionary.application.dto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Objects;
+
 public class AchievementDto {
 
     private Integer id;
@@ -35,5 +37,18 @@ public class AchievementDto {
 
     public void setNumberOfWordsRequired(Integer numberOfWordsRequired) {
         this.numberOfWordsRequired = numberOfWordsRequired;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AchievementDto that = (AchievementDto) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(numberOfWordsRequired, that.numberOfWordsRequired);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, numberOfWordsRequired);
     }
 }

@@ -9,7 +9,7 @@ public class UiUtils {
 
     public static final String LOGOUT_SUCCESS_URL = "/api/dictionary/login";
 
-    public static final String APP_COLOR = "#005fdb";
+    public static final String APP_COLOR = "var(--_lumo-button-primary-background-color, var(--lumo-primary-color))";
 
     public static void showNotification(String message) {
         Notification notification = new Notification(message, 5000, Notification.Position.TOP_CENTER);

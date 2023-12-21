@@ -13,6 +13,7 @@ import com.vaadin.flow.component.textfield.TextField;
 
 import java.util.Arrays;
 
+import static com.example.dictionary.ui.util.UiUtils.APP_COLOR;
 import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 
 public class RegistrationForm extends FormLayout {
@@ -44,7 +45,7 @@ public class RegistrationForm extends FormLayout {
 
         Div titleSpace = new Div(title);
         titleSpace.getStyle()
-                .set("background-color", "var(--_lumo-button-primary-background-color, var(--lumo-primary-color))")
+                .set("background-color", APP_COLOR)
                 .set("padding", "40px 0")
                 .set("text-align", "center")
                 .set("border-radius", "5px");

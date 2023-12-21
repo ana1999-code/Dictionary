@@ -25,7 +25,13 @@ public class ViewSecurityConfig extends VaadinWebSecurity {
         super.configure(web);
         web.ignoring().requestMatchers(
                 new AntPathRequestMatcher("/icons/**"),
-                new AntPathRequestMatcher("/images/**")
+                new AntPathRequestMatcher("/images/**"),
+                new AntPathRequestMatcher("/robots.txt"),
+                new AntPathRequestMatcher("/manifest.webmanifest"),
+                new AntPathRequestMatcher("/sw.js"),
+                new AntPathRequestMatcher("/offline.html"),
+                new AntPathRequestMatcher("/styles/**"),
+                new AntPathRequestMatcher("/h2-console/**")
         );
     }
 }

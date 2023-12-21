@@ -2,6 +2,7 @@ package com.example.dictionary.ui;
 
 import com.example.dictionary.application.security.ui.SecurityService;
 import com.example.dictionary.ui.profile.ProfileView;
+import com.example.dictionary.ui.profile.UserProgressLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.html.H1;
@@ -43,7 +44,7 @@ public class MainLayout extends AppLayout {
         tabs.getStyle().set("margin", "auto");
 
         tabs.add(createTab("Profile", ProfileView.class), createTab("Words", ProfileView.class),
-                createTab("Users", ProfileView.class), createTab("Logout", new RouterLink()));
+                createTab("Users", UserProgressLayout.class), createTab("Logout", new RouterLink()));
 
         return tabs;
     }
