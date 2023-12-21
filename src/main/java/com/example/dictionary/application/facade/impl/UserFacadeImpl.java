@@ -1,8 +1,10 @@
 package com.example.dictionary.application.facade.impl;
 
+import com.example.dictionary.application.dto.AchievementDto;
 import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.facade.UserFacade;
+import com.example.dictionary.application.mapper.AchievementMapper;
 import com.example.dictionary.application.mapper.UserMapper;
 import com.example.dictionary.application.security.key.KeyRoleExtractor;
 import com.example.dictionary.application.security.utils.SecurityUtils;
@@ -29,14 +31,18 @@ public class UserFacadeImpl implements UserFacade {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final AchievementMapper achievementMapper;
+
     public UserFacadeImpl(UserService userService,
                           UserMapper userMapper,
                           UserValidator userValidator,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          AchievementMapper achievementMapper) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.userValidator = userValidator;
         this.passwordEncoder = passwordEncoder;
+        this.achievementMapper = achievementMapper;
     }
 
     @Override
@@ -44,13 +50,13 @@ public class UserFacadeImpl implements UserFacade {
         userValidator.validate(userDto);
 
         User user = userMapper.userDtoToUser(userDto);
-        UserInfo userInfo = new UserInfo(0);
-        user.setUserInfo(userInfo);
+
         user.setRole(KeyRoleExtractor.getRole(userDto.getKey()));
         user.setRegisteredAt(LocalDate.now());
 
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
+        user.setUserInfo(new UserInfo(0));
         User registeredUser = userService.registerUser(user);
         return userMapper.userToUserDto(registeredUser);
     }
@@ -112,6 +118,17 @@ public class UserFacadeImpl implements UserFacade {
 
         userService.registerUser(user);
         return isChanged;
+    }
+
+    @Override
+    public void addAchievement(AchievementDto achievement) {
+        User user = getUser(SecurityUtils.getUsername());
+
+        user.getUserInfo()
+                .getAchievements()
+                .add(achievementMapper.achievementDtoToAchievement(achievement));
+
+        userService.registerUser(user);
     }
 
     private static boolean setUserCredentials(UserDto userDto, User user) {

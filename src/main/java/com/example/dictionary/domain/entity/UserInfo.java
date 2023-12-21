@@ -7,9 +7,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -24,14 +24,17 @@ public class UserInfo {
 
     private Integer progress;
 
-    @OneToMany(mappedBy = "id.userInfo")
-    private Set<UserAchievement> achievement;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_achievements",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "achievement_id"))
+    private Set<Achievement> achievements = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_favorites",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "word_id"))
-    private Set<Word> favorites;
+    private Set<Word> favorites = new HashSet<>();
 
     public UserInfo() {
     }
@@ -56,12 +59,12 @@ public class UserInfo {
         this.progress = progress;
     }
 
-    public Set<UserAchievement> getAchievement() {
-        return achievement;
+    public Set<Achievement> getAchievements() {
+        return achievements;
     }
 
-    public void setAchievement(Set<UserAchievement> achievement) {
-        this.achievement = achievement;
+    public void setAchievements(Set<Achievement> achievements) {
+        this.achievements = achievements;
     }
 
     public Set<Word> getFavorites() {

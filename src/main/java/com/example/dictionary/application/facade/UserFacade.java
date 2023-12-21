@@ -1,5 +1,6 @@
 package com.example.dictionary.application.facade;
 
+import com.example.dictionary.application.dto.AchievementDto;
 import com.example.dictionary.application.dto.UserDto;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,4 +19,6 @@ public interface UserFacade {
     UserDto getUserProfile();
 
     boolean updateUser(UserDto userDto);
+
+    void addAchievement(AchievementDto achievement);
 }

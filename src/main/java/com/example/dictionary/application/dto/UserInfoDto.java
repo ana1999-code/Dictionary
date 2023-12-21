@@ -1,5 +1,6 @@
 package com.example.dictionary.application.dto;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class UserInfoDto {
@@ -8,9 +9,9 @@ public class UserInfoDto {
 
     private Integer progress;
 
-    private Set<AchievementDto> achievements;
+    private Set<AchievementDto> achievements = new HashSet<>();
 
-    private Set<WordDto> favorites;
+    private Set<WordDto> favorites = new HashSet<>();
 
     public UserInfoDto() {
     }
@@ -19,11 +20,11 @@ public class UserInfoDto {
         this.progress = progress;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

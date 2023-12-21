@@ -19,6 +19,9 @@ public class Achievement {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private Integer numberOfWordsRequired;
+
     public Achievement() {
     }
 
@@ -36,5 +39,13 @@ public class Achievement {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getNumberOfWordsRequired() {
+        return numberOfWordsRequired;
+    }
+
+    public void setNumberOfWordsRequired(Integer numberOfWordsRequired) {
+        this.numberOfWordsRequired = numberOfWordsRequired;
     }
 }

@@ -1,7 +1,10 @@
 package com.example.dictionary.application.aop;
 
+import com.example.dictionary.application.dto.AchievementDto;
 import com.example.dictionary.application.dto.UserDto;
+import com.example.dictionary.application.dto.UserInfoDto;
 import com.example.dictionary.application.dto.WordDto;
+import com.example.dictionary.application.facade.AchievementFacade;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.application.security.utils.SecurityUtils;
@@ -13,6 +16,8 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 @Component
 @Aspect
@@ -22,10 +27,14 @@ public class WordContributionAspect {
 
     private final WordFacade wordFacade;
 
+    private final AchievementFacade achievementFacade;
+
     public WordContributionAspect(UserFacade userFacade,
-                                  WordFacade wordFacade) {
+                                  WordFacade wordFacade,
+                                  AchievementFacade achievementFacade) {
         this.userFacade = userFacade;
         this.wordFacade = wordFacade;
+        this.achievementFacade = achievementFacade;
     }
 
     @Pointcut("@annotation(com.example.dictionary.application.annotation.ContributeByUser)")
@@ -35,8 +44,7 @@ public class WordContributionAspect {
 
     @Before("contributeByUserAnnotation()")
     public void setWordContributor(JoinPoint joinPoint) {
-        String loggedInUser = SecurityUtils.getUsername();
-        UserDto user = userFacade.findUserByEmail(loggedInUser);
+        UserDto user = getUser();
 
         Object arg = Arrays.stream(joinPoint.getArgs()).toList().get(0);
 
@@ -50,12 +58,33 @@ public class WordContributionAspect {
 
     @AfterReturning("contributeByUserAnnotation()")
     public void setUserProgress() {
-        String loggedInUser = SecurityUtils.getUsername();
-        UserDto user = userFacade.findUserByEmail(loggedInUser);
+        UserDto user = getUser();
 
-        Integer progress = user.getUserInfo().getProgress();
+        int progress = user.getUserInfo().getProgress();
         user.getUserInfo().setProgress(progress + 1);
 
         userFacade.updateUserProgress(user);
+    }
+
+    @AfterReturning("execution(* com.example.dictionary.application.facade.UserFacade.updateUserProgress(..))")
+    public void setUserAchievements() {
+        UserDto user = getUser();
+
+        UserInfoDto userInfo = user.getUserInfo();
+        Integer progress = userInfo.getProgress();
+        Set<AchievementDto> userAchievements = userInfo.getAchievements();
+        List<AchievementDto> allAchievements = achievementFacade.getAllAchievements();
+
+        allAchievements.forEach(achievement -> {
+            if (achievement.getNumberOfWordsRequired().equals(progress)
+                    && !userAchievements.contains(achievement)){
+                userFacade.addAchievement(achievement);
+            }
+        });
+    }
+
+    private UserDto getUser() {
+        String loggedInUser = SecurityUtils.getUsername();
+        return userFacade.findUserByEmail(loggedInUser);
     }
 }
