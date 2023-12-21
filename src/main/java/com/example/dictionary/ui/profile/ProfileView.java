@@ -1,5 +1,6 @@
 package com.example.dictionary.ui.profile;
 
+import com.example.dictionary.application.facade.AchievementFacade;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.ui.MainLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -14,14 +15,25 @@ public class ProfileView extends VerticalLayout {
 
     private final UserFacade userFacade;
 
-    public ProfileView(UserFacade userFacade) {
+    private final AchievementFacade achievementFacade;
+
+    public ProfileView(UserFacade userFacade, AchievementFacade achievementFacade) {
         this.userFacade = userFacade;
+        this.achievementFacade = achievementFacade;
+
+
+        VerticalLayout layout = new VerticalLayout();
         ProfileForm profileForm = new ProfileForm();
-        setHorizontalComponentAlignment(Alignment.CENTER, profileForm);
-        add(profileForm);
+        setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         setSizeFull();
 
         ProfileFormBinder profileFormBinder = new ProfileFormBinder(profileForm, userFacade);
         profileFormBinder.addBindingAndValidation();
+
+        UserProgressLayout progressLayout = new UserProgressLayout(userFacade, achievementFacade);
+        layout.add(profileForm, progressLayout);
+        layout.setHorizontalComponentAlignment(Alignment.CENTER, profileForm, progressLayout);
+
+        add(layout);
     }
 }
