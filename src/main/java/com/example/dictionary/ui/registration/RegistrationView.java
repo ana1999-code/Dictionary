@@ -18,7 +18,8 @@ public class RegistrationView extends VerticalLayout {
     public RegistrationView(UserFacade userFacade) {
         this.userFacade = userFacade;
         RegistrationForm registrationForm = new RegistrationForm();
-        registrationForm.getStyle().set("box-shadow", " 0px 6px 22px -12px rgba(0,0,0,0.8)")
+        registrationForm.getStyle()
+                .set("box-shadow", " 0px 6px 22px -12px rgba(0,0,0,0.8)")
                 .set("border-radius", "10px")
                 .set("padding", "var(--lumo-space-l)");
 

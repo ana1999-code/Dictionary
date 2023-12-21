@@ -13,7 +13,9 @@ public interface UserFacade {
 
     Integer updateUserProgress(UserDto user);
 
-    UserDto uploadLogo(MultipartFile file) throws IOException;
+    UserDto uploadImage(MultipartFile file) throws IOException;
 
     UserDto getUserProfile();
+
+    boolean updateUser(UserDto userDto);
 }

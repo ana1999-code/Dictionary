@@ -1,7 +1,7 @@
 package com.example.dictionary.ui;
 
 import com.example.dictionary.application.security.ui.SecurityService;
-import com.example.dictionary.ui.view.ProfileView;
+import com.example.dictionary.ui.profile.ProfileView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.html.H1;

@@ -75,15 +75,15 @@ public class UserFacadeImpl implements UserFacade {
     }
 
     @Override
-    public UserDto uploadLogo(MultipartFile file) throws IOException {
+    public UserDto uploadImage(MultipartFile file) throws IOException {
         User user = getUser(SecurityUtils.getUsername());
-        user.setLogo(ImageUtil.compressImage(file.getBytes()));
+        user.setProfileImage(ImageUtil.compressImage(file.getBytes()));
 
         User updatedUser = userService.registerUser(user);
-        byte[] addedLogo = ImageUtil.decompressImage(updatedUser.getLogo());
+        byte[] addedLogo = ImageUtil.decompressImage(updatedUser.getProfileImage());
 
         UserDto userDto = userMapper.userToUserDto(user);
-        userDto.setLogo(addedLogo);
+        userDto.setProfileImage(addedLogo);
         return userDto;
     }
 
@@ -92,16 +92,42 @@ public class UserFacadeImpl implements UserFacade {
         User user = getUser(SecurityUtils.getUsername());
 
         byte[] logo = null;
-        byte[] dbLogo = user.getLogo();
+        byte[] dbLogo = user.getProfileImage();
 
         if (dbLogo != null) {
             logo = ImageUtil.decompressImage(dbLogo);
         }
 
         UserDto userDto = userMapper.userToUserDto(user);
-        userDto.setLogo(logo);
+        userDto.setProfileImage(logo);
 
         return userDto;
+    }
+
+    @Override
+    public boolean updateUser(UserDto userDto) {
+        User user = getUser(SecurityUtils.getUsername());
+
+        boolean isChanged = setUserCredentials(userDto, user);
+
+        userService.registerUser(user);
+        return isChanged;
+    }
+
+    private static boolean setUserCredentials(UserDto userDto, User user) {
+        boolean isChanged = false;
+
+        if (userDto.getFirstName() != null && !userDto.getFirstName().equals(user.getFirstName())) {
+            user.setFirstName(userDto.getFirstName());
+            isChanged = true;
+        }
+
+        if (userDto.getLastName() != null && !userDto.getLastName().equals(user.getLastName())) {
+            user.setLastName(userDto.getLastName());
+            isChanged = true;
+        }
+
+        return isChanged;
     }
 
     private User getUser(String email) {

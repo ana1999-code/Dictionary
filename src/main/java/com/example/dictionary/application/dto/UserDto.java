@@ -28,7 +28,8 @@ public class UserDto {
     @NotEmpty(message = "Key is required")
     private String key;
 
-    private byte[] logo;
+    private byte[] profileImage;
+
     private UserInfoDto userInfo;
 
     @JsonFormat(shape = STRING, pattern = "dd-MM-yyyy")
@@ -98,12 +99,12 @@ public class UserDto {
         this.registeredAt = registeredAt;
     }
 
-    public byte[] getLogo() {
-        return logo;
+    public byte[] getProfileImage() {
+        return profileImage;
     }
 
-    public void setLogo(byte[] logo) {
-        this.logo = logo;
+    public void setProfileImage(byte[] profileImage) {
+        this.profileImage = profileImage;
     }
 
     @Override

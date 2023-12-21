@@ -18,11 +18,11 @@ public interface UserMapper {
     ApplicationUser userToApplicationUser(User user);
 
     @Mapping(target = "role", ignore = true)
-    @Mapping(target = "logo", ignore = true)
+    @Mapping(target = "profileImage", ignore = true)
     User userDtoToUser(UserDto userDto);
 
     @Mapping(target = "key", ignore = true)
-    @Mapping(target = "logo", ignore = true)
+    @Mapping(target = "profileImage", ignore = true)
     UserDto userToUserDto(User user);
 
     @Named("roleToGrantedAuthorities")

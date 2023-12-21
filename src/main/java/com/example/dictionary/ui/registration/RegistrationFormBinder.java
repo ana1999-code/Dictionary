@@ -5,16 +5,16 @@ import com.example.dictionary.application.exception.InvalidPasswordException;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.validator.PasswordValidator;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.ValueContext;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Objects;
+
+import static com.example.dictionary.ui.util.UiUtils.showNotification;
+import static com.example.dictionary.ui.util.UiUtils.showSuccess;
 
 public class RegistrationFormBinder {
 
@@ -50,14 +50,10 @@ public class RegistrationFormBinder {
 
                 userFacade.registerUser(userDto);
 
-                showSuccess(userDto);
+                showSuccess("Successful Registration");
                 navigate(register);
             } catch (RuntimeException | ValidationException exception) {
-                Notification notification = new Notification();
-                notification.setText(exception.getMessage());
-                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                notification.setDuration(5000);
-                notification.open();
+                showNotification(exception.getMessage());
             }
         });
 
@@ -74,10 +70,10 @@ public class RegistrationFormBinder {
     private ValidationResult passwordValidator(String password, ValueContext context) {
         try {
             PasswordValidator.validate(password);
-        } catch (InvalidPasswordException exception){
+        } catch (InvalidPasswordException exception) {
             Collection<String> values = exception.getErrorMap().values();
             StringBuilder message = new StringBuilder();
-            for (String error:values){
+            for (String error : values) {
                 message.append(error).append("\n");
             }
             return ValidationResult.error(Objects.requireNonNull(message).toString());
@@ -95,12 +91,5 @@ public class RegistrationFormBinder {
         }
 
         return ValidationResult.error("Password do not match");
-    }
-
-    private void showSuccess(UserDto userDto) {
-        Notification notification =
-                Notification.show("Successful Registration");
-
-        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
     }
 }

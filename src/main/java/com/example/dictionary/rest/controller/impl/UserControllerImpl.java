@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,8 +37,8 @@ public class UserControllerImpl implements UserController {
     @Override
     @PostMapping("profile")
     @PermitAll
-    public ResponseEntity<UserDto> uploadLogo(@RequestParam("logo") MultipartFile file) throws IOException {
-        return new ResponseEntity<>(userFacade.uploadLogo(file), OK);
+    public ResponseEntity<UserDto> uploadImage(@RequestParam("logo") MultipartFile file) throws IOException {
+        return new ResponseEntity<>(userFacade.uploadImage(file), OK);
     }
 
     @Override

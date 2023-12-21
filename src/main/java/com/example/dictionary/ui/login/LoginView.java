@@ -1,8 +1,8 @@
 package com.example.dictionary.ui.login;
 
 import com.example.dictionary.application.security.utils.SecurityUtils;
+import com.example.dictionary.ui.profile.ProfileView;
 import com.example.dictionary.ui.registration.RegistrationView;
-import com.example.dictionary.ui.view.ProfileView;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.AfterNavigationEvent;

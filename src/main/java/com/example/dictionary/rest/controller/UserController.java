@@ -10,7 +10,7 @@ public interface UserController {
 
     ResponseEntity<UserDto> registerUser(UserDto userDao);
 
-    ResponseEntity<UserDto> uploadLogo(MultipartFile file) throws IOException;
+    ResponseEntity<UserDto> uploadImage(MultipartFile file) throws IOException;
 
     ResponseEntity<UserDto> getUserProfile();
 }

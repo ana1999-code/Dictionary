@@ -47,8 +47,7 @@ public class RegistrationForm extends FormLayout {
                 .set("background-color", "var(--_lumo-button-primary-background-color, var(--lumo-primary-color))")
                 .set("padding", "40px 0")
                 .set("text-align", "center")
-                .set("border-radius", "5px")
-        ;
+                .set("border-radius", "5px");
 
         firstName = new TextField("First Name");
         lastName = new TextField("Last Name");

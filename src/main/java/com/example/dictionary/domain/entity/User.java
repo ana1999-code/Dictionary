@@ -49,7 +49,7 @@ public class User {
 
     @Lob
     @JdbcType(VarbinaryJdbcType.class)
-    private byte[] logo;
+    private byte[] profileImage;
 
     @OneToOne(cascade = CascadeType.ALL)
     private UserInfo userInfo;
@@ -125,11 +125,11 @@ public class User {
         this.registeredAt = registeredAt;
     }
 
-    public byte[] getLogo() {
-        return logo;
+    public byte[] getProfileImage() {
+        return profileImage;
     }
 
-    public void setLogo(byte[] logo) {
-        this.logo = logo;
+    public void setProfileImage(byte[] profileImage) {
+        this.profileImage = profileImage;
     }
 }
