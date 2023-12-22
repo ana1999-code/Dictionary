@@ -25,7 +25,7 @@ import java.util.Set;
 import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
-import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.TemporalType.DATE;
 
@@ -41,42 +41,42 @@ public class Word {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(cascade = PERSIST, fetch = LAZY)
+    @ManyToMany(cascade = PERSIST, fetch = EAGER)
     @JoinTable(name = "word_definition",
             joinColumns = @JoinColumn(name = "word_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "definition_id", referencedColumnName = "id"))
     private final Set<Definition> definitions = new HashSet<>();
 
-    @ManyToMany(cascade = PERSIST, fetch = LAZY)
+    @ManyToMany(cascade = PERSIST, fetch = EAGER)
     @JoinTable(name = "word_example",
             joinColumns = @JoinColumn(name = "word_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "example_id", referencedColumnName = "id"))
     private final Set<Example> examples = new HashSet<>();
 
-    @ManyToMany(cascade = {PERSIST, MERGE, REMOVE}, fetch = LAZY)
+    @ManyToMany(cascade = {PERSIST, MERGE, REMOVE}, fetch = EAGER)
     @JoinTable(name = "word_synonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "synonym_id"))
     private final Set<Word> synonyms = new HashSet<>();
 
-    @ManyToMany(cascade = {PERSIST, MERGE}, fetch = LAZY)
+    @ManyToMany(cascade = {PERSIST, MERGE}, fetch = EAGER)
     @JoinTable(name = "word_antonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "antonym_id"))
     @Cascade({CascadeType.PERSIST, CascadeType.MERGE})
     private final Set<Word> antonyms = new HashSet<>();
 
-    @ManyToOne(fetch = LAZY, cascade = {PERSIST, MERGE})
+    @ManyToOne(fetch = EAGER, cascade = {PERSIST, MERGE})
     @JoinColumn(nullable = false)
     private Category category;
 
-    @ManyToMany(fetch = LAZY)
+    @ManyToMany(fetch = EAGER)
     @JoinTable(name = "word_contributors",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private final Set<User> contributors = new HashSet<>();
 
-    @OneToMany(mappedBy = "word", orphanRemoval = true)
+    @OneToMany(mappedBy = "word", orphanRemoval = true, fetch = EAGER)
     private final List<Comment> comments = new ArrayList<>();
 
     @DateTimeFormat(pattern = "dd-MM-yyyy")

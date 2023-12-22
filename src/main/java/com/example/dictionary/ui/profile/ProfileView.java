@@ -8,9 +8,11 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 
+import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
+
 @PermitAll
 @Route(value = "", layout = MainLayout.class)
-@PageTitle("Profile | Dictionary")
+@PageTitle("Profile | " + APP_NAME)
 public class ProfileView extends VerticalLayout {
 
     private final UserFacade userFacade;
