@@ -190,13 +190,15 @@ public class UserFacadeImpl implements UserFacade {
     private static boolean setUserCredentials(UserDto userDto, User user) {
         boolean isChanged = false;
 
-        if (userDto.getFirstName() != null && !userDto.getFirstName().equals(user.getFirstName())) {
-            user.setFirstName(userDto.getFirstName());
+        String firstName = UserMapper.capitalizeFirstLetter(userDto.getFirstName());
+        if (firstName != null && !firstName.equalsIgnoreCase(user.getFirstName())) {
+            user.setFirstName(firstName);
             isChanged = true;
         }
 
-        if (userDto.getLastName() != null && !userDto.getLastName().equals(user.getLastName())) {
-            user.setLastName(userDto.getLastName());
+        String lastName = UserMapper.capitalizeFirstLetter(userDto.getLastName());
+        if (lastName != null && !lastName.equalsIgnoreCase(user.getLastName())) {
+            user.setLastName(lastName);
             isChanged = true;
         }
 

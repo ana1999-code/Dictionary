@@ -90,7 +90,7 @@ public class ProfileFormBinder {
                 if (isChanged) {
                     showSuccess("Successful Updated");
                 }
-
+                binder.readBean(userFacade.getUserProfile());
                 updateButtonsAfterAction();
             } catch (ValidationException e) {
                 showNotification(e.getMessage());

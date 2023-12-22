@@ -22,6 +22,8 @@ public interface UserMapper {
 
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "profileImage", ignore = true)
+    @Mapping(target = "firstName", source = "firstName", qualifiedByName = "capitalize")
+    @Mapping(target = "lastName", source = "lastName", qualifiedByName = "capitalize")
     User userDtoToUser(UserDto userDto);
 
     @Mapping(target = "key", ignore = true)
@@ -37,12 +39,20 @@ public interface UserMapper {
     @Named("wordToWordDtoNames")
     static Set<WordDto> wordToWordDtoNames(Set<Word> words) {
         Set<WordDto> wordDtos = new HashSet<>();
-        words.stream()
+        words
                 .forEach(word -> {
                     WordDto wordDto = new WordDto();
                     wordDto.setName(word.getName());
                     wordDtos.add(wordDto);
                 });
         return wordDtos;
+    }
+
+    @Named("capitalize")
+    static String capitalizeFirstLetter(String value) {
+        if (value != null && !value.isEmpty()) {
+            return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
+        }
+        return value;
     }
 }
