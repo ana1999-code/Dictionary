@@ -5,6 +5,7 @@ import com.example.dictionary.application.dto.UserDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Set;
 
 public interface UserFacade {
 
@@ -21,4 +22,8 @@ public interface UserFacade {
     boolean updateUser(UserDto userDto);
 
     void addAchievement(AchievementDto achievement);
+
+    Set<String> addFavoriteWord(String wordName);
+
+    Set<String> removeFavoriteWord(String wordName);
 }

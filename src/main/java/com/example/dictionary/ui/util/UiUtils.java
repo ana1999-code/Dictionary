@@ -1,5 +1,9 @@
 package com.example.dictionary.ui.util;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 
@@ -24,4 +28,11 @@ public class UiUtils {
         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
     }
 
+    public static Button getCloseButton() {
+        Button close = new Button();
+        close.setIcon(new Icon(VaadinIcon.CLOSE));
+        close.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
+        return close;
+    }
 }

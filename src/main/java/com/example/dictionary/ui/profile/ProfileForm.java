@@ -14,6 +14,7 @@ import com.vaadin.flow.component.upload.Upload;
 import java.util.Arrays;
 
 import static com.example.dictionary.ui.util.UiUtils.APP_COLOR;
+import static com.example.dictionary.ui.util.UiUtils.getCloseButton;
 
 
 public class ProfileForm extends HorizontalLayout {
@@ -69,9 +70,7 @@ public class ProfileForm extends HorizontalLayout {
         save.setIcon(new Icon(VaadinIcon.CHECK));
         save.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 
-        cancel = new Button();
-        cancel.setIcon(new Icon(VaadinIcon.CLOSE));
-        cancel.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        cancel = getCloseButton();
 
         setReadOnly(true, email);
         setCredentialFieldsReadOnly(true);

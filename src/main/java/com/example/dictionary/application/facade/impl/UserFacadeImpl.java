@@ -2,16 +2,20 @@ package com.example.dictionary.application.facade.impl;
 
 import com.example.dictionary.application.dto.AchievementDto;
 import com.example.dictionary.application.dto.UserDto;
+import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.facade.UserFacade;
+import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.application.mapper.AchievementMapper;
 import com.example.dictionary.application.mapper.UserMapper;
+import com.example.dictionary.application.mapper.WordMapper;
 import com.example.dictionary.application.security.key.KeyRoleExtractor;
 import com.example.dictionary.application.security.utils.SecurityUtils;
 import com.example.dictionary.application.util.ImageUtil;
 import com.example.dictionary.application.validator.UserValidator;
 import com.example.dictionary.domain.entity.User;
 import com.example.dictionary.domain.entity.UserInfo;
+import com.example.dictionary.domain.entity.Word;
 import com.example.dictionary.domain.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class UserFacadeImpl implements UserFacade {
@@ -33,16 +39,24 @@ public class UserFacadeImpl implements UserFacade {
 
     private final AchievementMapper achievementMapper;
 
+    private final WordFacade wordFacade;
+
+    private final WordMapper wordMapper;
+
     public UserFacadeImpl(UserService userService,
                           UserMapper userMapper,
                           UserValidator userValidator,
                           PasswordEncoder passwordEncoder,
-                          AchievementMapper achievementMapper) {
+                          AchievementMapper achievementMapper,
+                          WordFacade wordFacade,
+                          WordMapper wordMapper) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.userValidator = userValidator;
         this.passwordEncoder = passwordEncoder;
         this.achievementMapper = achievementMapper;
+        this.wordFacade = wordFacade;
+        this.wordMapper = wordMapper;
     }
 
     @Override
@@ -129,6 +143,48 @@ public class UserFacadeImpl implements UserFacade {
                 .add(achievementMapper.achievementDtoToAchievement(achievement));
 
         userService.registerUser(user);
+    }
+
+    @Override
+    public Set<String> addFavoriteWord(String wordName) {
+        User user = getUser(SecurityUtils.getUsername());
+        Set<Word> favorites = user.getUserInfo().getFavorites();
+
+        WordDto wordByName = wordFacade.getWordByName(wordName);
+        favorites.add(wordMapper.wordDtoToWord(wordByName));
+
+        userService.registerUser(user);
+
+        return favorites.stream()
+                .map(Word::getName)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<String> removeFavoriteWord(String wordName) {
+        User user = getUser(SecurityUtils.getUsername());
+        Set<Word> favorites = user.getUserInfo().getFavorites();
+
+        Word wordToRemove = getWordToRemove(wordName, favorites);
+
+        favorites.remove(wordToRemove);
+        userService.registerUser(user);
+
+        return favorites.stream()
+                .map(Word::getName)
+                .collect(Collectors.toSet());
+    }
+
+    private static Word getWordToRemove(String wordName, Set<Word> favorites) {
+        return favorites
+                .stream()
+                .filter(word -> word.getName().equalsIgnoreCase(wordName))
+                .findAny()
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Word [%s] not found in favorites".formatted(wordName)
+                        )
+                );
     }
 
     private static boolean setUserCredentials(UserDto userDto, User user) {
