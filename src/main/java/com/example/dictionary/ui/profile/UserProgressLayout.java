@@ -5,7 +5,8 @@ import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.dto.UserInfoDto;
 import com.example.dictionary.application.facade.AchievementFacade;
 import com.example.dictionary.application.facade.UserFacade;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -24,39 +25,54 @@ import static com.example.dictionary.ui.util.UiUtils.APP_COLOR;
 @PermitAll
 public class UserProgressLayout extends VerticalLayout {
 
-    public UserProgressLayout(UserFacade userFacade, AchievementFacade achievementFacade) {
+    private Integer progress;
 
+    private Set<AchievementDto> userAchievements;
+
+    public UserProgressLayout(UserFacade userFacade, AchievementFacade achievementFacade) {
         UserDto profile = userFacade.getUserProfile();
         UserInfoDto userInfo = profile.getUserInfo();
 
-        Integer progress = userInfo.getProgress();
-        Span progressSpan = new Span(progress.toString());
-        progressSpan.getStyle().set("color", APP_COLOR)
+        progress = userInfo.getProgress();
+        Span progressLabel = new Span(progress.toString());
+        progressLabel.getStyle().set("color", APP_COLOR)
                 .set("font-weight", "bold");
 
-        Span progressText = new Span("Number of contributions to words: ");
-        HorizontalLayout progressLayout = new HorizontalLayout(progressText, progressSpan);
+        Span progressDescription = new Span("Number of contributions to words: ");
+        HorizontalLayout progressLayout = new HorizontalLayout(progressDescription, progressLabel);
 
-        Span achievementsTitle = new Span("Achievements:");
+        Span achievementsLabel = new Span("Achievements:");
 
-        VerticalLayout achievementsLayout = new VerticalLayout();
-        Icon achievedIcon = new Icon(VaadinIcon.CHECK_CIRCLE_O);
-        achievedIcon.setColor(APP_COLOR);
-
-        Set<AchievementDto> userAchievements = userInfo.getAchievements();
+        userAchievements = userInfo.getAchievements();
         List<AchievementDto> allAchievements = achievementFacade.getAllAchievements();
 
-        for (AchievementDto achievement : allAchievements) {
-            Span achievementName = new Span(achievement.getName());
-            if (userAchievements.contains(achievement)) {
-                HorizontalLayout ach = new HorizontalLayout(achievementName, new Div(achievedIcon));
-                achievementsLayout.add(ach);
-            } else {
-                ProgressBar progressBar = new ProgressBar(0, achievement.getNumberOfWordsRequired(), progress);
-                HorizontalLayout achievementWithProgressLayout = new HorizontalLayout(achievementName, progressBar);
-                achievementsLayout.add(achievementWithProgressLayout);
-            }
+        Grid<AchievementDto> achievementGrid = getAchievementsGrid(allAchievements);
+        setWidth("43%");
+
+        add(progressLayout, achievementsLabel, achievementGrid);
+    }
+
+    private Grid<AchievementDto> getAchievementsGrid(List<AchievementDto> allAchievements) {
+        Grid<AchievementDto> achievementGrid = new Grid<>();
+        achievementGrid.setItems(allAchievements);
+        achievementGrid.
+                addColumn(AchievementDto::getName)
+                .setWidth("30%")
+                .setTooltipGenerator(achievementDto ->
+                        String.valueOf(achievementDto.getNumberOfWordsRequired()));
+        achievementGrid.addComponentColumn(this::createProgressBar).setWidth("70%");
+
+        achievementGrid.getStyle().set("border", "none");
+        achievementGrid.setWidth("110%");
+        return achievementGrid;
+    }
+
+    private <V extends Component> Component createProgressBar(AchievementDto achievementDto) {
+        if (userAchievements.contains(achievementDto)) {
+            Icon icon = new Icon(VaadinIcon.CHECK_CIRCLE_O);
+            icon.setColor(APP_COLOR);
+            return icon;
         }
-        add(progressLayout, achievementsTitle, achievementsLayout);
+        return new ProgressBar(0, achievementDto.getNumberOfWordsRequired(), progress);
     }
 }
