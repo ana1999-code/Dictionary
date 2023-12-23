@@ -23,6 +23,8 @@ import com.example.dictionary.domain.service.DefinitionService;
 import com.example.dictionary.domain.service.ExampleService;
 import com.example.dictionary.domain.service.WordService;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -72,6 +74,7 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly=true)
     public List<WordDto> getAllWords() {
         List<Word> allWords = wordService.getAllWords();
         return allWords.stream()
@@ -80,6 +83,7 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public WordDto getWordByName(String name) {
         Word word = getWord(name);
 

@@ -17,6 +17,7 @@ import com.example.dictionary.domain.entity.User;
 import com.example.dictionary.domain.entity.UserInfo;
 import com.example.dictionary.domain.entity.Word;
 import com.example.dictionary.domain.service.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -146,7 +147,7 @@ public class UserFacadeImpl implements UserFacade {
     }
 
     @Override
-    public Set<String> addFavoriteWord(String wordName) {
+    public Set<String> addWordToFavorities(String wordName) {
         User user = getUser(SecurityUtils.getUsername());
         Set<Word> favorites = user.getUserInfo().getFavorites();
 
@@ -161,7 +162,7 @@ public class UserFacadeImpl implements UserFacade {
     }
 
     @Override
-    public Set<String> removeFavoriteWord(String wordName) {
+    public Set<String> removeWordFromFavorites(String wordName) {
         User user = getUser(SecurityUtils.getUsername());
         Set<Word> favorites = user.getUserInfo().getFavorites();
 
