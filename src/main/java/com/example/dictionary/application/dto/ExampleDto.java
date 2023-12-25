@@ -1,6 +1,6 @@
 package com.example.dictionary.application.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.Objects;
 
@@ -8,7 +8,7 @@ public class ExampleDto {
 
     private Integer id;
 
-    @NotBlank
+    @NotEmpty(message = "Example must not be empty")
     private String text;
 
     public ExampleDto() {

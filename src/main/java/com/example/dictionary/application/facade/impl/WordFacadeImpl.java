@@ -1,6 +1,5 @@
 package com.example.dictionary.application.facade.impl;
 
-import com.example.dictionary.application.annotation.ContributeByUser;
 import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
@@ -26,7 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -74,7 +73,7 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, readOnly=true)
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public List<WordDto> getAllWords() {
         List<Word> allWords = wordService.getAllWords();
         return allWords.stream()
@@ -91,7 +90,7 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @ContributeByUser
+    @Transactional(propagation = Propagation.REQUIRED)
     public WordDto addWord(WordDto wordDto) {
         validator.validate(wordDto);
 
@@ -100,7 +99,7 @@ public class WordFacadeImpl implements WordFacade {
         addToDefinitions(word);
         addToExamples(word);
 
-        word.setAddedAt(LocalDate.now());
+        word.setAddedAt(LocalDateTime.now());
         Word addedWord = wordService.addWord(word);
 
         return wordMapper.wordToWordDto(addedWord);
@@ -114,7 +113,6 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @ContributeByUser
     public WordDto addDefinitionToWord(String name, DefinitionDto definitionDto) {
         Word word = getWord(name);
 
@@ -128,7 +126,6 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @ContributeByUser
     public WordDto removeDefinitionFromWord(String name, DefinitionDto definitionDto) {
         Definition definition = definitionMapper.definitionDtoToDefinition(definitionDto);
         Word word = getWord(name);
@@ -142,7 +139,6 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @ContributeByUser
     public WordDto addExampleToWord(String name, ExampleDto exampleDto) {
         Word word = getWord(name);
         Example example = getOrCreateExample(exampleDto);
@@ -155,7 +151,6 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @ContributeByUser
     public WordDto removeExampleFromWord(String name, ExampleDto exampleDto) {
         Example example = exampleMapper.exampleDtoToExample(exampleDto);
         Word word = getWord(name);
@@ -188,7 +183,6 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @ContributeByUser
     public void addSynonym(String name, WordDto synonym) {
         Word word = getWord(name);
         Word synonymToAdd = getWord(synonym.getName());
@@ -200,7 +194,6 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @ContributeByUser
     public void removeSynonym(String name, WordDto synonym) {
         Word word = getWord(name);
         Word synonymToRemove = getWord(synonym.getName());
@@ -212,7 +205,6 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @ContributeByUser
     public void addAntonym(String name, WordDto antonym) {
         Word word = getWord(name);
         Word antonymToAdd = getWord(antonym.getName());
@@ -224,7 +216,6 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @ContributeByUser
     public void removeAntonym(String name, WordDto antonym) {
         Word word = getWord(name);
         Word antonymToRemove = getWord(antonym.getName());
@@ -249,7 +240,9 @@ public class WordFacadeImpl implements WordFacade {
 
     private Word getWord(String name) {
         return wordService.getWordByName(name)
-                .orElseThrow(() -> new ResourceNotFoundException("Word [%s] not found".formatted(name)));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Word [%s] not found".formatted(name))
+                );
     }
 
     private void addToDefinitions(Word word) {
@@ -287,7 +280,8 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     private Definition getOrCreateDefinition(DefinitionDto definitionDto) {
-        Optional<Definition> existingDefinition = definitionService.getDefinitionByText(definitionDto.getText());
+        Optional<Definition> existingDefinition = definitionService
+                .getDefinitionByText(definitionDto.getText());
 
         return existingDefinition.orElseGet(() -> {
             Definition newDefinition = definitionMapper.definitionDtoToDefinition(definitionDto);
@@ -300,7 +294,8 @@ public class WordFacadeImpl implements WordFacade {
     public static void verifyDefinitionIsNotPresent(Word word, Definition definition) {
         if (word.getDefinitions().contains(definition)) {
             throw new DuplicateResourceException(
-                    "Definition [%s] is already present in word definitions".formatted(definition.getText())
+                    "Definition [%s] is already present in word definitions"
+                            .formatted(definition.getText())
             );
         }
     }
@@ -310,7 +305,8 @@ public class WordFacadeImpl implements WordFacade {
         String text = definition.getText();
 
         Definition definitionToDelete = definitionService.getDefinitionByText(text)
-                .orElseThrow(() -> new ResourceNotFoundException("Definition [%s] not found".formatted(text)));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Definition [%s] not found".formatted(text)));
 
         if (word.getDefinitions().size() == 1) {
             throw new IllegalOperationException(
@@ -329,7 +325,8 @@ public class WordFacadeImpl implements WordFacade {
         String text = example.getText();
 
         Example exampleToDelete = exampleService.getExampleByText(text)
-                .orElseThrow(() -> new ResourceNotFoundException("Example [%s] not found".formatted(text)));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Example [%s] not found".formatted(text)));
 
         if (!word.getExamples().contains(exampleToDelete)) {
             throw new ResourceNotFoundException(
@@ -356,15 +353,17 @@ public class WordFacadeImpl implements WordFacade {
 
         if (word.getExamples().contains(example)) {
             throw new DuplicateResourceException(
-                    "Example [%s] is already present in word examples".formatted(example.getText())
+                    "Example [%s] is already present in word examples"
+                            .formatted(example.getText())
             );
         }
     }
 
     private static void verifyWordIsNotPresent(Word word, Word wordToAdd) {
         if (isWordContaining(word, wordToAdd)) {
-            throw new DuplicateResourceException("Synonym or Antonym [%s] is already linked with word [%s]"
-                    .formatted(wordToAdd.getName(), word.getName()));
+            throw new DuplicateResourceException(
+                    "Synonym or Antonym [%s] is already linked with word [%s]"
+                            .formatted(wordToAdd.getName(), word.getName()));
         }
     }
 

@@ -17,7 +17,6 @@ import com.example.dictionary.domain.entity.User;
 import com.example.dictionary.domain.entity.UserInfo;
 import com.example.dictionary.domain.entity.Word;
 import com.example.dictionary.domain.service.UserService;
-import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;

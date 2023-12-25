@@ -1,5 +1,6 @@
 package com.example.dictionary.domain.service.impl;
 
+import com.example.dictionary.application.annotation.ContributeByUser;
 import com.example.dictionary.domain.entity.Word;
 import com.example.dictionary.domain.repository.WordRepository;
 import com.example.dictionary.domain.service.WordService;
@@ -30,6 +31,7 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
+    @ContributeByUser
     public Word addWord(Word word) {
         return wordRepository.save(word);
     }

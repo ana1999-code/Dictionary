@@ -1,28 +1,38 @@
 package com.example.dictionary.ui.words;
 
 import com.example.dictionary.application.dto.WordDto;
+import com.example.dictionary.application.facade.CategoryFacade;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
+import static com.example.dictionary.ui.util.UiUtils.DD_MM_YYYY;
+import static com.example.dictionary.ui.util.UiUtils.showNotification;
+import static com.example.dictionary.ui.util.UiUtils.showSuccess;
 import static com.vaadin.flow.component.grid.ColumnTextAlign.CENTER;
 
 @Route(value = "words", layout = MainLayout.class)
@@ -30,11 +40,19 @@ import static com.vaadin.flow.component.grid.ColumnTextAlign.CENTER;
 @PageTitle("Words | " + APP_NAME)
 public class WordsView extends VerticalLayout {
 
+    private WordForm wordForm;
+
+    private WordDialog dialogForm;
+
+    private Dialog dialog;
+
     private Grid<WordDto> wordDtoGrid;
 
     private final WordFacade wordFacade;
 
     private final UserFacade userFacade;
+
+    private final CategoryFacade categoryFacade;
 
     private Set<String> userFavoriteWords;
 
@@ -44,9 +62,12 @@ public class WordsView extends VerticalLayout {
 
     private Button addWord;
 
-    public WordsView(WordFacade wordFacade, UserFacade userFacade) {
+    public WordsView(WordFacade wordFacade,
+                     UserFacade userFacade,
+                     CategoryFacade categoryFacade) {
         this.wordFacade = wordFacade;
         this.userFacade = userFacade;
+        this.categoryFacade = categoryFacade;
 
         setupUploadButton();
         setupAddButton();
@@ -57,12 +78,12 @@ public class WordsView extends VerticalLayout {
 
         HorizontalLayout tabLayout =
                 new HorizontalLayout(searchField, uploadFile, addWord);
-        tabLayout.setWidth("70%");
+        tabLayout.setWidth("75%");
         tabLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
 
-        setHorizontalComponentAlignment(Alignment.CENTER, tabLayout, wordDtoGrid);
+        setHorizontalComponentAlignment(Alignment.CENTER, tabLayout, this.wordDtoGrid);
         setSizeFull();
-        add(tabLayout, wordDtoGrid);
+        add(tabLayout, this.wordDtoGrid);
     }
 
     private void setupUploadButton() {
@@ -75,6 +96,36 @@ public class WordsView extends VerticalLayout {
         addWord = new Button("Add Word");
         addWord.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         addWord.setIcon(new Icon(VaadinIcon.PLUS));
+
+        wordForm = new WordForm(wordFacade, categoryFacade);
+        dialogForm = new WordDialog(wordForm);
+        dialog = dialogForm.getDialog();
+
+        addWord.addClickListener(event -> dialog.open());
+        Button saveButton = dialogForm.getSaveButton();
+        saveButton.addClickListener(event -> {
+            try {
+                wordForm.saveWord();
+                wordDtoGrid.setItems(wordFacade.getAllWords());
+                showSuccess("Word [%s] successfully added".formatted(wordForm.getName()));
+                refreshWordForm();
+            } catch (ValidationException ignored) {
+                ignored.printStackTrace();
+            } catch (RuntimeException exception) {
+                showNotification(exception.getMessage());
+            }
+        });
+
+        Button cancelButton = dialogForm.getCancelButton();
+        cancelButton.getStyle().set("margin-right", "auto");
+        cancelButton.addClickListener(event -> {
+            refreshWordForm();
+        });
+
+        Button resetButton = dialogForm.getResetButton();
+        resetButton.addClickListener(event -> wordForm.reset());
+
+        add(dialog);
     }
 
     private void setupSearchField() {
@@ -121,20 +172,31 @@ public class WordsView extends VerticalLayout {
                 .setHeader("Nr. Antonyms");
         wordDtoGrid.addColumn(wordDto -> wordDto.getExamples().size())
                 .setHeader("Nr. Examples");
-        wordDtoGrid.addColumn(WordDto::getAddedAt)
-                .setHeader("AddedAt");
+        wordDtoGrid.addColumn(
+                        new LocalDateTimeRenderer<>(WordDto::getAddedAt, DD_MM_YYYY)
+                )
+                .setKey("addedAt")
+                .setSortProperty("addedAt")
+                .setComparator(Comparator.comparing(WordDto::getAddedAt))
+                .setHeader("Added At");
         wordDtoGrid.getColumns()
                 .forEach(col -> col
                         .setSortable(true)
                         .setSortProperty("")
                         .setTextAlign(CENTER)
-                        .setAutoWidth(true));
+                        .setAutoWidth(false));
         wordDtoGrid.addComponentColumn(this::getHeartButton)
                 .setTextAlign(CENTER)
-                .setWidth("7%");
+                .setWidth("5%");
+
+        wordDtoGrid.sort(
+                List.of(new GridSortOrder<>(wordDtoGrid.getColumnByKey("addedAt"),
+                        SortDirection.DESCENDING))
+        );
 
         wordDtoGrid.setAllRowsVisible(true);
-        wordDtoGrid.setWidth("70%");
+        wordDtoGrid.setPageSize(10);
+        wordDtoGrid.setWidth("75%");
     }
 
     private Button getHeartButton(WordDto wordDto) {
@@ -169,5 +231,10 @@ public class WordsView extends VerticalLayout {
         } else {
             return new Icon(VaadinIcon.HEART_O);
         }
+    }
+
+    private void refreshWordForm() {
+        dialog.close();
+        wordForm.reset();
     }
 }
