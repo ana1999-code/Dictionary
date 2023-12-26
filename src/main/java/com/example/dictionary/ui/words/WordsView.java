@@ -5,6 +5,12 @@ import com.example.dictionary.application.facade.CategoryFacade;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.MainLayout;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -15,6 +21,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
@@ -22,7 +30,15 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -58,7 +74,7 @@ public class WordsView extends VerticalLayout {
 
     private TextField searchField;
 
-    private Button uploadFile;
+    private Upload uploadFile;
 
     private Button addWord;
 
@@ -87,9 +103,43 @@ public class WordsView extends VerticalLayout {
     }
 
     private void setupUploadButton() {
-        uploadFile = new Button("Upload File");
-        uploadFile.addThemeVariants(ButtonVariant.MATERIAL_CONTAINED);
-        uploadFile.setIcon(new Icon(VaadinIcon.UPLOAD));
+        MemoryBuffer memoryBuffer = new MemoryBuffer();
+        uploadFile = new Upload();
+        uploadFile.setDropAllowed(false);
+        uploadFile.setAcceptedFileTypes(".csv");
+        uploadFile.setUploadButton(new Button("Upload File", new Icon(VaadinIcon.UPLOAD)));
+        uploadFile.setReceiver(memoryBuffer);
+        uploadFile.addFileRejectedListener(event -> showNotification(event.getErrorMessage()));
+
+        uploadFile.addSucceededListener(event -> {
+            try {
+                InputStream inputStream = memoryBuffer.getInputStream();
+                String csvFilePath = getCsvFilePath(inputStream);
+
+                wordFacade.uploadFile(csvFilePath);
+                uploadFile.clearFileList();
+
+            } catch (JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
+                     JobParametersInvalidException | JobRestartException | IOException | CsvException exception) {
+                showNotification(exception.getMessage());
+            }
+        });
+    }
+
+    private static String getCsvFilePath(InputStream inputStream) throws IOException, CsvException {
+        CSVParser parser = new CSVParserBuilder().withSeparator(',').build();
+        String csvFilePath = "src/main/resources/input.csv";
+
+        try (CSVReader reader =
+                     new CSVReaderBuilder(new InputStreamReader(inputStream)).withCSVParser(parser).build();
+             CSVWriter writer = new CSVWriter(new FileWriter(csvFilePath))) {
+            List<String[]> data = reader.readAll();
+            writer.writeAll(data);
+        } catch (IOException exception) {
+            showNotification(exception.getMessage());
+        }
+
+        return csvFilePath;
     }
 
     private void setupAddButton() {

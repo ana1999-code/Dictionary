@@ -4,6 +4,10 @@ import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 
 import java.util.List;
 import java.util.Set;
@@ -41,4 +45,9 @@ public interface WordFacade {
     void addComment(String name, CommentDto commentDto);
 
     void removeComment(String name, CommentDto commentDto);
+
+    void uploadFile(String path) throws JobInstanceAlreadyCompleteException,
+            JobExecutionAlreadyRunningException,
+            JobParametersInvalidException,
+            JobRestartException;
 }

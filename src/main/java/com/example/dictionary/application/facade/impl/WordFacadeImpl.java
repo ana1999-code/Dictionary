@@ -8,7 +8,6 @@ import com.example.dictionary.application.exception.DuplicateResourceException;
 import com.example.dictionary.application.exception.IllegalOperationException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.facade.WordFacade;
-import com.example.dictionary.application.mapper.CategoryMapper;
 import com.example.dictionary.application.mapper.DefinitionMapper;
 import com.example.dictionary.application.mapper.ExampleMapper;
 import com.example.dictionary.application.mapper.WordMapper;
@@ -21,6 +20,14 @@ import com.example.dictionary.domain.service.CategoryService;
 import com.example.dictionary.domain.service.DefinitionService;
 import com.example.dictionary.domain.service.ExampleService;
 import com.example.dictionary.domain.service.WordService;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,11 +53,13 @@ public class WordFacadeImpl implements WordFacade {
 
     private final ExampleService exampleService;
 
-    private final CategoryMapper categoryMapper;
-
     private final DefinitionMapper definitionMapper;
 
     private final ExampleMapper exampleMapper;
+
+    private final JobLauncher jobLauncher;
+
+    private final Job job;
 
     public WordFacadeImpl(WordService wordService,
                           WordMapper wordMapper,
@@ -58,18 +67,20 @@ public class WordFacadeImpl implements WordFacade {
                           CategoryService categoryService,
                           DefinitionService definitionService,
                           ExampleService exampleService,
-                          CategoryMapper categoryMapper,
                           DefinitionMapper definitionMapper,
-                          ExampleMapper exampleMapper) {
+                          ExampleMapper exampleMapper,
+                          JobLauncher jobLauncher,
+                          Job job) {
         this.wordService = wordService;
         this.wordMapper = wordMapper;
         this.validator = validator;
         this.categoryService = categoryService;
         this.definitionService = definitionService;
         this.exampleService = exampleService;
-        this.categoryMapper = categoryMapper;
         this.definitionMapper = definitionMapper;
         this.exampleMapper = exampleMapper;
+        this.jobLauncher = jobLauncher;
+        this.job = job;
     }
 
     @Override
@@ -236,6 +247,20 @@ public class WordFacadeImpl implements WordFacade {
     @Override
     public void removeComment(String name, CommentDto commentDto) {
 
+    }
+
+    @Override
+    public void uploadFile(String path) throws
+            JobInstanceAlreadyCompleteException,
+            JobExecutionAlreadyRunningException,
+            JobParametersInvalidException,
+            JobRestartException {
+        JobParameters params = new JobParametersBuilder()
+                .addString("filePath", path)
+                .addString("JobID", String.valueOf(System.currentTimeMillis()))
+                .toJobParameters();
+
+        jobLauncher.run(job, params);
     }
 
     private Word getWord(String name) {
