@@ -1,0 +1,10 @@
+insert into user_info (progress) values (11);
+insert into user_info (progress) values (5);
+insert into user_info (progress) values (0);
+insert into user_info (progress) values (0);
+insert into user_info (progress) values (1);
+insert into user_info (progress) values (0);
+insert into user_info (progress) values (0);
+insert into user_info (progress) values (25);
+insert into user_info (progress) values (0);
+insert into user_info (progress) values (2);

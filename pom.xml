@@ -17,6 +17,10 @@
 		<java.version>17</java.version>
 		<vaadin.version>24.2.5</vaadin.version>
 		<mapstruct.version>1.6.0.Beta1</mapstruct.version>
+		<flyway.user>postgres</flyway.user>
+		<flyway.password>1234567</flyway.password>
+		<flyway.url>jdbc:postgresql://localhost:5434/postgres</flyway.url>
+		<flyway.baselineOnMigrate>true</flyway.baselineOnMigrate>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -82,7 +86,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>6.1.2</version> <!-- Use the version compatible with your Spring version -->
+			<version>6.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -130,6 +138,17 @@
 						<arg>-Amapstruct.suppressGeneratorTimestamp=true</arg>
 						<arg>-Amapstruct.defaultComponentModel=spring</arg>
 					</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<version>${flyway.version}</version>
+				<configuration>
+					<url>${flyway.url}</url>
+					<user>${flyway.user}</user>
+					<password>${flyway.password}</password>
+					<cleanDisabled>false</cleanDisabled>
 				</configuration>
 			</plugin>
 		</plugins>

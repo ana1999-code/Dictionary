@@ -11,7 +11,7 @@ import jakarta.annotation.security.PermitAll;
 import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 
 @PermitAll
-@Route(value = "profile", layout = MainLayout.class)
+@Route(value = "", layout = MainLayout.class)
 @PageTitle("Profile | " + APP_NAME)
 public class ProfileView extends VerticalLayout {
 
