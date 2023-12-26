@@ -130,7 +130,7 @@ public class UserProgressLayout extends VerticalLayout {
         deleteFavorite.getStyle().set("color", APP_COLOR);
 
         deleteFavorite.addClickListener(event -> {
-            userFacade.removeFavoriteWord(wordDto.getName());
+            userFacade.removeWordFromFavorites(wordDto.getName());
             favorites.remove(wordDto);
             favoriteWordsGrid.getDataProvider().refreshAll();
         });

@@ -1,23 +1,19 @@
 package com.example.dictionary.application.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
-import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 public class WordDto {
 
     private Integer id;
 
-    @NotEmpty(message = "Word field must be completed")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Word must contain only letters")
+    @Pattern(regexp = "^[a-zA-Z]+$",
+            message = "Word must not be empty and must contain only letters")
     private String name;
 
     private final Set<DefinitionDto> definitions = new HashSet<>();
@@ -29,14 +25,13 @@ public class WordDto {
     private final Set<WordDto> antonyms = new HashSet<>();
 
     @NotNull(message = "Category is required")
-    private CategoryDto category;
+    private CategoryDto category = new CategoryDto();
 
     private final Set<UserDto> contributors = new HashSet<>();
 
     private final Set<CommentDto> comments = new HashSet<>();
 
-    @JsonFormat(shape = STRING, pattern = "dd-MM-yyyy")
-    private LocalDate addedAt;
+    private LocalDateTime addedAt;
 
     public WordDto() {
     }
@@ -103,11 +98,11 @@ public class WordDto {
         examples.add(example);
     }
 
-    public LocalDate getAddedAt() {
+    public LocalDateTime getAddedAt() {
         return addedAt;
     }
 
-    public void setAddedAt(LocalDate addedAt) {
+    public void setAddedAt(LocalDateTime addedAt) {
         this.addedAt = addedAt;
     }
 

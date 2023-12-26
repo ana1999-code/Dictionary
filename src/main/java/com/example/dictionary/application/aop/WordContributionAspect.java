@@ -3,11 +3,12 @@ package com.example.dictionary.application.aop;
 import com.example.dictionary.application.dto.AchievementDto;
 import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.dto.UserInfoDto;
-import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.AchievementFacade;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.facade.WordFacade;
+import com.example.dictionary.application.mapper.UserMapper;
 import com.example.dictionary.application.security.utils.SecurityUtils;
+import com.example.dictionary.domain.entity.Word;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -25,14 +26,17 @@ public class WordContributionAspect {
 
     private final UserFacade userFacade;
 
+    private final UserMapper userMapper;
+
     private final WordFacade wordFacade;
 
     private final AchievementFacade achievementFacade;
 
     public WordContributionAspect(UserFacade userFacade,
-                                  WordFacade wordFacade,
+                                  UserMapper userMapper, WordFacade wordFacade,
                                   AchievementFacade achievementFacade) {
         this.userFacade = userFacade;
+        this.userMapper = userMapper;
         this.wordFacade = wordFacade;
         this.achievementFacade = achievementFacade;
     }
@@ -48,11 +52,8 @@ public class WordContributionAspect {
 
         Object arg = Arrays.stream(joinPoint.getArgs()).toList().get(0);
 
-        if (arg instanceof WordDto wordDto) {
-            wordDto.getContributors().add(user);
-        } else {
-            String wordName = (String) Arrays.stream(joinPoint.getArgs()).toList().get(0);
-            wordFacade.getWordByName(wordName).getContributors().add(user);
+        if (arg instanceof Word word) {
+            word.getContributors().add(userMapper.userDtoToUser(user));
         }
     }
 
@@ -77,7 +78,7 @@ public class WordContributionAspect {
 
         allAchievements.forEach(achievement -> {
             if (achievement.getNumberOfWordsRequired().equals(progress)
-                    && !userAchievements.contains(achievement)){
+                    && !userAchievements.contains(achievement)) {
                 userFacade.addAchievement(achievement);
             }
         });

@@ -53,12 +53,12 @@ public class UserControllerImpl implements UserController {
     @Override
     @PostMapping("favorites")
     public ResponseEntity<Set<String>> addFavoriteWord(@RequestParam("word") String wordName) {
-        return new ResponseEntity<>(userFacade.addFavoriteWord(wordName), OK);
+        return new ResponseEntity<>(userFacade.addWordToFavorities(wordName), OK);
     }
 
     @Override
     @DeleteMapping("favorites")
     public ResponseEntity<Set<String>> removeFavoriteWord(@RequestParam("word") String wordName) {
-        return new ResponseEntity<>(userFacade.removeFavoriteWord(wordName), OK);
+        return new ResponseEntity<>(userFacade.removeWordFromFavorites(wordName), OK);
     }
 }

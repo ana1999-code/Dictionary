@@ -13,9 +13,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,9 +24,9 @@ import java.util.Set;
 import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
-import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
-import static jakarta.persistence.TemporalType.DATE;
+import static jakarta.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "words")
@@ -41,47 +40,46 @@ public class Word {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(cascade = PERSIST, fetch = EAGER)
+    @ManyToMany(cascade = PERSIST, fetch = LAZY)
     @JoinTable(name = "word_definition",
             joinColumns = @JoinColumn(name = "word_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "definition_id", referencedColumnName = "id"))
     private final Set<Definition> definitions = new HashSet<>();
 
-    @ManyToMany(cascade = PERSIST, fetch = EAGER)
+    @ManyToMany(cascade = PERSIST, fetch = LAZY)
     @JoinTable(name = "word_example",
             joinColumns = @JoinColumn(name = "word_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "example_id", referencedColumnName = "id"))
     private final Set<Example> examples = new HashSet<>();
 
-    @ManyToMany(cascade = {PERSIST, MERGE, REMOVE}, fetch = EAGER)
+    @ManyToMany(cascade = {PERSIST, MERGE, REMOVE}, fetch = LAZY)
     @JoinTable(name = "word_synonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "synonym_id"))
     private final Set<Word> synonyms = new HashSet<>();
 
-    @ManyToMany(cascade = {PERSIST, MERGE}, fetch = EAGER)
+    @ManyToMany(cascade = {PERSIST, MERGE}, fetch = LAZY)
     @JoinTable(name = "word_antonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "antonym_id"))
     @Cascade({CascadeType.PERSIST, CascadeType.MERGE})
     private final Set<Word> antonyms = new HashSet<>();
 
-    @ManyToOne(fetch = EAGER, cascade = {PERSIST, MERGE})
+    @ManyToOne(fetch = LAZY, cascade = {PERSIST, MERGE})
     @JoinColumn(nullable = false)
     private Category category;
 
-    @ManyToMany(fetch = EAGER)
+    @ManyToMany(fetch = LAZY)
     @JoinTable(name = "word_contributors",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private final Set<User> contributors = new HashSet<>();
 
-    @OneToMany(mappedBy = "word", orphanRemoval = true, fetch = EAGER)
+    @OneToMany(mappedBy = "word", orphanRemoval = true, fetch = LAZY)
     private final List<Comment> comments = new ArrayList<>();
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    @Temporal(value = DATE)
-    private LocalDate addedAt;
+    @Temporal(value = TIMESTAMP)
+    private LocalDateTime addedAt;
 
     public Word() {
     }
@@ -135,11 +133,11 @@ public class Word {
         return contributors;
     }
 
-    public LocalDate getAddedAt() {
+    public LocalDateTime getAddedAt() {
         return addedAt;
     }
 
-    public void setAddedAt(LocalDate addedAt) {
+    public void setAddedAt(LocalDateTime addedAt) {
         this.addedAt = addedAt;
     }
 

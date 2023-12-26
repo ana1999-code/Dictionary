@@ -23,7 +23,7 @@ public interface UserFacade {
 
     void addAchievement(AchievementDto achievement);
 
-    Set<String> addFavoriteWord(String wordName);
+    Set<String> addWordToFavorities(String wordName);
 
-    Set<String> removeFavoriteWord(String wordName);
+    Set<String> removeWordFromFavorites(String wordName);
 }

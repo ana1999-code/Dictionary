@@ -146,7 +146,7 @@ public class UserFacadeImpl implements UserFacade {
     }
 
     @Override
-    public Set<String> addFavoriteWord(String wordName) {
+    public Set<String> addWordToFavorities(String wordName) {
         User user = getUser(SecurityUtils.getUsername());
         Set<Word> favorites = user.getUserInfo().getFavorites();
 
@@ -161,7 +161,7 @@ public class UserFacadeImpl implements UserFacade {
     }
 
     @Override
-    public Set<String> removeFavoriteWord(String wordName) {
+    public Set<String> removeWordFromFavorites(String wordName) {
         User user = getUser(SecurityUtils.getUsername());
         Set<Word> favorites = user.getUserInfo().getFavorites();
 
