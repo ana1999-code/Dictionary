@@ -14,6 +14,7 @@ import com.vaadin.flow.component.upload.Upload;
 import java.util.Arrays;
 
 import static com.example.dictionary.ui.util.UiUtils.APP_COLOR;
+import static com.example.dictionary.ui.util.UiUtils.IMAGE_FILE_TYPES;
 import static com.example.dictionary.ui.util.UiUtils.getCloseButton;
 
 
@@ -47,7 +48,7 @@ public class ProfileForm extends HorizontalLayout {
         uploadButton.getStyle().set("padding", "0 4em");
 
         upload = new Upload();
-        upload.setAcceptedFileTypes(".png", ".jpeg", ".jpg");
+        upload.setAcceptedFileTypes(IMAGE_FILE_TYPES);
         upload.setUploadButton(uploadButton);
         upload.setDropAllowed(false);
         upload.getStyle()

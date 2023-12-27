@@ -133,6 +133,10 @@ public class Word {
         return contributors;
     }
 
+    public void addContributor(User user) {
+        contributors.add(user);
+    }
+
     public LocalDateTime getAddedAt() {
         return addedAt;
     }

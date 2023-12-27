@@ -5,7 +5,6 @@ import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.dto.UserInfoDto;
 import com.example.dictionary.application.facade.AchievementFacade;
 import com.example.dictionary.application.facade.UserFacade;
-import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.application.mapper.UserMapper;
 import com.example.dictionary.application.security.utils.SecurityUtils;
 import com.example.dictionary.domain.entity.Word;
@@ -28,16 +27,13 @@ public class WordContributionAspect {
 
     private final UserMapper userMapper;
 
-    private final WordFacade wordFacade;
-
     private final AchievementFacade achievementFacade;
 
     public WordContributionAspect(UserFacade userFacade,
-                                  UserMapper userMapper, WordFacade wordFacade,
+                                  UserMapper userMapper,
                                   AchievementFacade achievementFacade) {
         this.userFacade = userFacade;
         this.userMapper = userMapper;
-        this.wordFacade = wordFacade;
         this.achievementFacade = achievementFacade;
     }
 
@@ -53,18 +49,20 @@ public class WordContributionAspect {
         Object arg = Arrays.stream(joinPoint.getArgs()).toList().get(0);
 
         if (arg instanceof Word word) {
-            word.getContributors().add(userMapper.userDtoToUser(user));
+            word.addContributor(userMapper.userDtoToUser(user));
         }
     }
 
-    @AfterReturning("contributeByUserAnnotation()")
-    public void setUserProgress() {
-        UserDto user = getUser();
+    @AfterReturning(value = "contributeByUserAnnotation()", returning = "word")
+    public void setUserProgress(Word word) {
+        if (word != null){
+            UserDto user = getUser();
 
-        int progress = user.getUserInfo().getProgress();
-        user.getUserInfo().setProgress(progress + 1);
+            int progress = user.getUserInfo().getProgress();
+            user.getUserInfo().setProgress(progress + 1);
 
-        userFacade.updateUserProgress(user);
+            userFacade.updateUserProgress(user);
+        }
     }
 
     @AfterReturning("execution(* com.example.dictionary.application.facade.UserFacade.updateUserProgress(..))")

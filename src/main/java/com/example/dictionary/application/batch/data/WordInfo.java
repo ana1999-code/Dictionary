@@ -1,11 +1,16 @@
 package com.example.dictionary.application.batch.data;
 
+import jakarta.validation.constraints.NotEmpty;
+
 public class WordInfo {
 
+    @NotEmpty
     private String name;
 
+    @NotEmpty
     private String category;
 
+    @NotEmpty
     private String definition;
 
     private String example;

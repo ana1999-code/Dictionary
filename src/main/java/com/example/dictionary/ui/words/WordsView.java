@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
+import static com.example.dictionary.ui.util.UiUtils.CSV;
 import static com.example.dictionary.ui.util.UiUtils.DD_MM_YYYY;
 import static com.example.dictionary.ui.util.UiUtils.showNotification;
 import static com.example.dictionary.ui.util.UiUtils.showSuccess;
@@ -106,19 +107,18 @@ public class WordsView extends VerticalLayout {
         MemoryBuffer memoryBuffer = new MemoryBuffer();
         uploadFile = new Upload();
         uploadFile.setDropAllowed(false);
-        uploadFile.setAcceptedFileTypes(".csv");
+        uploadFile.setAcceptedFileTypes(CSV);
         uploadFile.setUploadButton(new Button("Upload File", new Icon(VaadinIcon.UPLOAD)));
         uploadFile.setReceiver(memoryBuffer);
         uploadFile.addFileRejectedListener(event -> showNotification(event.getErrorMessage()));
 
         uploadFile.addSucceededListener(event -> {
             try {
-                InputStream inputStream = memoryBuffer.getInputStream();
-                String csvFilePath = getCsvFilePath(inputStream);
+                String csvFilePath = getCsvFilePath(memoryBuffer);
 
                 wordFacade.uploadFile(csvFilePath);
                 uploadFile.clearFileList();
-
+                refreshWordForm();
             } catch (JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
                      JobParametersInvalidException | JobRestartException | IOException | CsvException exception) {
                 showNotification(exception.getMessage());
@@ -126,9 +126,11 @@ public class WordsView extends VerticalLayout {
         });
     }
 
-    private static String getCsvFilePath(InputStream inputStream) throws IOException, CsvException {
+    private static String getCsvFilePath(MemoryBuffer memoryBuffer) throws IOException, CsvException {
+        InputStream inputStream = memoryBuffer.getInputStream();
+        String fileName = memoryBuffer.getFileName();
         CSVParser parser = new CSVParserBuilder().withSeparator(',').build();
-        String csvFilePath = "src/main/resources/input.csv";
+        String csvFilePath = "src/main/resources/data/" + fileName + "_processed.csv";
 
         try (CSVReader reader =
                      new CSVReaderBuilder(new InputStreamReader(inputStream)).withCSVParser(parser).build();
@@ -160,7 +162,6 @@ public class WordsView extends VerticalLayout {
                 showSuccess("Word [%s] successfully added".formatted(wordForm.getName()));
                 refreshWordForm();
             } catch (ValidationException ignored) {
-                ignored.printStackTrace();
             } catch (RuntimeException exception) {
                 showNotification(exception.getMessage());
             }

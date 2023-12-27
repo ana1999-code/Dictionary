@@ -11,12 +11,12 @@ import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.application.mapper.DefinitionMapper;
 import com.example.dictionary.application.mapper.ExampleMapper;
 import com.example.dictionary.application.mapper.WordMapper;
+import com.example.dictionary.application.util.WordEntityAssociationUtil;
 import com.example.dictionary.application.validator.ExampleValidator;
 import com.example.dictionary.application.validator.WordValidator;
 import com.example.dictionary.domain.entity.Definition;
 import com.example.dictionary.domain.entity.Example;
 import com.example.dictionary.domain.entity.Word;
-import com.example.dictionary.domain.service.CategoryService;
 import com.example.dictionary.domain.service.DefinitionService;
 import com.example.dictionary.domain.service.ExampleService;
 import com.example.dictionary.domain.service.WordService;
@@ -47,8 +47,6 @@ public class WordFacadeImpl implements WordFacade {
 
     private final WordValidator validator;
 
-    private final CategoryService categoryService;
-
     private final DefinitionService definitionService;
 
     private final ExampleService exampleService;
@@ -57,6 +55,8 @@ public class WordFacadeImpl implements WordFacade {
 
     private final ExampleMapper exampleMapper;
 
+    private final WordEntityAssociationUtil associationUtil;
+
     private final JobLauncher jobLauncher;
 
     private final Job job;
@@ -64,21 +64,20 @@ public class WordFacadeImpl implements WordFacade {
     public WordFacadeImpl(WordService wordService,
                           WordMapper wordMapper,
                           WordValidator validator,
-                          CategoryService categoryService,
                           DefinitionService definitionService,
                           ExampleService exampleService,
                           DefinitionMapper definitionMapper,
-                          ExampleMapper exampleMapper,
+                          ExampleMapper exampleMapper, WordEntityAssociationUtil associationUtil,
                           JobLauncher jobLauncher,
                           Job job) {
         this.wordService = wordService;
         this.wordMapper = wordMapper;
         this.validator = validator;
-        this.categoryService = categoryService;
         this.definitionService = definitionService;
         this.exampleService = exampleService;
         this.definitionMapper = definitionMapper;
         this.exampleMapper = exampleMapper;
+        this.associationUtil = associationUtil;
         this.jobLauncher = jobLauncher;
         this.job = job;
     }
@@ -106,9 +105,7 @@ public class WordFacadeImpl implements WordFacade {
         validator.validate(wordDto);
 
         Word word = wordMapper.wordDtoToWord(wordDto);
-        addToCategory(word);
-        addToDefinitions(word);
-        addToExamples(word);
+        associationUtil.associateWordWithEntities(word);
 
         word.setAddedAt(LocalDateTime.now());
         Word addedWord = wordService.addWord(word);
@@ -268,40 +265,6 @@ public class WordFacadeImpl implements WordFacade {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Word [%s] not found".formatted(name))
                 );
-    }
-
-    private void addToDefinitions(Word word) {
-        Set<Definition> definitions = word.getDefinitions();
-
-        definitions.forEach(
-                definition ->
-                        definitionService
-                                .getDefinitionByText(definition.getText())
-                                .ifPresent(value -> {
-                                    word.removeDefinition(definition);
-                                    word.addDefinition(value);
-                                })
-        );
-    }
-
-    private void addToCategory(Word word) {
-        categoryService
-                .getCategoryByName(word.getCategory().getName())
-                .ifPresent(word::setCategory);
-    }
-
-    private void addToExamples(Word word) {
-        Set<Example> examples = word.getExamples();
-
-        examples.forEach(
-                example ->
-                        exampleService
-                                .getExampleByText(example.getText())
-                                .ifPresent(value -> {
-                                    word.removeExample(example);
-                                    word.addExample(value);
-                                })
-        );
     }
 
     private Definition getOrCreateDefinition(DefinitionDto definitionDto) {
