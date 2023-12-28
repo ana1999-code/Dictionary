@@ -1,21 +1,16 @@
 package com.example.dictionary.application.batch.data;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
+public class FailedWordInfo {
 
-public class WordInfo {
-
-    @Pattern(regexp = "^[a-zA-Z]+$",
-            message = "Word must not be empty and must contain only letters")
     private String name;
 
-    @NotEmpty
     private String category;
 
-    @NotEmpty
     private String definition;
 
     private String example;
+
+    private String error;
 
     public String getName() {
         return name;
@@ -49,13 +44,22 @@ public class WordInfo {
         this.example = example;
     }
 
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
     @Override
     public String toString() {
-        return "WordInfo{" +
+        return "FailedWordInfo{" +
                 "name='" + name + '\'' +
                 ", category='" + category + '\'' +
                 ", definition='" + definition + '\'' +
                 ", example='" + example + '\'' +
+                ", error='" + error + '\'' +
                 '}';
     }
 }

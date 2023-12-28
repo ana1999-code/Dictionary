@@ -46,7 +46,7 @@ public interface WordFacade {
 
     void removeComment(String name, CommentDto commentDto);
 
-    void uploadFile(String path) throws JobInstanceAlreadyCompleteException,
+    void uploadFile(String path, String fileName, String fileLocation) throws JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,
             JobRestartException;
