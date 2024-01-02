@@ -22,13 +22,8 @@ public class WordValidatingItemProcessor implements ItemProcessor<Word, Word> {
     @Override
     @ContributeByUser
     public Word process(Word word) throws Exception {
-        try {
-            wordValidator.validate(wordMapper.wordToWordDto(word));
-            associationUtil.associateWordWithEntities(word);
-            return word;
-        } catch (RuntimeException exception){
-            System.out.println(exception.getMessage());
-            return null;
-        }
+        wordValidator.validate(wordMapper.wordToWordDto(word));
+        associationUtil.associateWordWithEntities(word);
+        return word;
     }
 }

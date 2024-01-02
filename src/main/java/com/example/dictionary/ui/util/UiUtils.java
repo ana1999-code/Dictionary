@@ -21,6 +21,10 @@ public class UiUtils {
 
     public static final String[] IMAGE_FILE_TYPES = {".png", ".jpeg", ".jpg"};
 
+    public static final String FILE_LOCATION = "src/main/resources/data/";
+
+    public static final String PROCESSED = "PROCESSED_";
+
     public static void showNotification(String message) {
         Notification notification = new Notification(message, 5000, Notification.Position.TOP_CENTER);
         notification.addThemeVariants(NotificationVariant.LUMO_ERROR);

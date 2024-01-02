@@ -48,6 +48,8 @@ import java.util.stream.Collectors;
 import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 import static com.example.dictionary.ui.util.UiUtils.CSV;
 import static com.example.dictionary.ui.util.UiUtils.DD_MM_YYYY;
+import static com.example.dictionary.ui.util.UiUtils.FILE_LOCATION;
+import static com.example.dictionary.ui.util.UiUtils.PROCESSED;
 import static com.example.dictionary.ui.util.UiUtils.showNotification;
 import static com.example.dictionary.ui.util.UiUtils.showSuccess;
 import static com.vaadin.flow.component.grid.ColumnTextAlign.CENTER;
@@ -116,9 +118,9 @@ public class WordsView extends VerticalLayout {
             try {
                 String csvFilePath = getCsvFilePath(memoryBuffer);
 
-                wordFacade.uploadFile(csvFilePath);
+                wordFacade.uploadFile(csvFilePath, memoryBuffer.getFileName(), FILE_LOCATION);
                 uploadFile.clearFileList();
-                refreshWordForm();
+                wordDtoGrid.setItems(wordFacade.getAllWords());
             } catch (JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
                      JobParametersInvalidException | JobRestartException | IOException | CsvException exception) {
                 showNotification(exception.getMessage());
@@ -130,7 +132,7 @@ public class WordsView extends VerticalLayout {
         InputStream inputStream = memoryBuffer.getInputStream();
         String fileName = memoryBuffer.getFileName();
         CSVParser parser = new CSVParserBuilder().withSeparator(',').build();
-        String csvFilePath = "src/main/resources/data/" + fileName + "_processed.csv";
+        String csvFilePath = FILE_LOCATION + PROCESSED + fileName;
 
         try (CSVReader reader =
                      new CSVReaderBuilder(new InputStreamReader(inputStream)).withCSVParser(parser).build();

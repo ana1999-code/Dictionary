@@ -247,13 +247,15 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    public void uploadFile(String path) throws
+    public void uploadFile(String path, String fileName, String fileLocation) throws
             JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,
             JobRestartException {
         JobParameters params = new JobParametersBuilder()
                 .addString("filePath", path)
+                .addString("fileName", fileName)
+                .addString("fileLocation", fileLocation)
                 .addString("JobID", String.valueOf(System.currentTimeMillis()))
                 .toJobParameters();
 

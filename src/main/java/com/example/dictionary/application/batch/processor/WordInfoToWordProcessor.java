@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 public class WordInfoToWordProcessor implements ItemProcessor<WordInfo, Word> {
 
-
     @Override
     public Word process(WordInfo wordInfo) throws Exception {
         Word word = new Word();

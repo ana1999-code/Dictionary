@@ -55,7 +55,7 @@ public class WordContributionAspect {
 
     @AfterReturning(value = "contributeByUserAnnotation()", returning = "word")
     public void setUserProgress(Word word) {
-        if (word != null){
+        if (word != null) {
             UserDto user = getUser();
 
             int progress = user.getUserInfo().getProgress();
