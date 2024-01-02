@@ -1,5 +1,6 @@
 package com.example.dictionary.application.report;
 
+import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.report.data.WordDetail;
 import com.example.dictionary.domain.entity.User;
@@ -15,6 +16,7 @@ import net.sf.dynamicreports.report.builder.component.TextFieldBuilder;
 import net.sf.dynamicreports.report.builder.datatype.DataTypes;
 import net.sf.dynamicreports.report.builder.style.BorderBuilder;
 import net.sf.dynamicreports.report.builder.style.PenBuilder;
+import net.sf.dynamicreports.report.builder.style.StyleBuilder;
 import net.sf.dynamicreports.report.constant.Calculation;
 import net.sf.dynamicreports.report.constant.PageType;
 import net.sf.dynamicreports.report.definition.ReportParameters;
@@ -22,9 +24,7 @@ import net.sf.dynamicreports.report.exception.DRException;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.Serial;
@@ -34,6 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.example.dictionary.application.report.util.ReportUtil.BLUE;
+import static com.example.dictionary.application.report.util.ReportUtil.CURRENT_DATE_PATTERN;
+import static com.example.dictionary.application.report.util.ReportUtil.DARK_BLUE;
+import static com.example.dictionary.application.report.util.ReportUtil.DD_MMYYYY_HHMMSS;
+import static com.example.dictionary.application.report.util.ReportUtil.DD_MM_YYYY;
+import static com.example.dictionary.application.report.util.ReportUtil.PATH;
+import static com.example.dictionary.application.report.util.ReportUtil.PDF;
+import static com.example.dictionary.application.report.util.ReportUtil.WORD_CONTRIBUTIONS;
 import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 import static java.awt.Color.BLACK;
 import static net.sf.dynamicreports.report.builder.DynamicReports.cmp;
@@ -48,7 +56,7 @@ import static net.sf.dynamicreports.report.constant.HorizontalTextAlignment.CENT
 import static net.sf.dynamicreports.report.constant.HorizontalTextAlignment.RIGHT;
 import static net.sf.dynamicreports.report.constant.LineStyle.SOLID;
 
-public class WordsReport {
+public class WordsContributionReport {
 
     private List<WordDetail> words;
 
@@ -56,53 +64,38 @@ public class WordsReport {
 
     private List<User> users;
 
-    public static final String CURRENT_DATE_PATTERN = "EEEEE dd MMMMM";
-
     private final UserFacade userFacade;
 
     private String currentUser;
 
-    public WordsReport(List<WordDetail> words, UserFacade userFacade) {
+    public WordsContributionReport(List<WordDetail> words, UserFacade userFacade) {
         this.words = words;
         this.userWords = words.stream()
                 .collect(Collectors.groupingBy(WordDetail::getContributor));
         this.userFacade = userFacade;
         this.users = userWords.keySet().stream().toList();
-        currentUser = this.userFacade.getUserProfile().getFirstName() + " " + this.userFacade.getUserProfile().getLastName();
+
+        UserDto userProfile = this.userFacade
+                .getUserProfile();
+        currentUser = userProfile.getFirstName() + " " + userProfile.getLastName();
     }
 
-    public void generate() {
+    public void generate() throws FileNotFoundException, DRException {
         SubreportBuilder subreport = cmp.subreport(new SubreportExpression())
                 .setDataSource(new SubreportDataSourceExpression());
-
-        try {
-            report()
-                    .title(cmp.text("USER WORD CONTRIBUTIONS REPORT")
-                            .setStyle(stl
-                                    .style()
-                                    .setFontSize(12)
-                                    .bold()
-                                    .setForegroundColor(new Color(1, 1, 43)))
-                            .setHorizontalTextAlignment(CENTER)
-                            .setHeight(40))
-                    .detail(subreport)
-                    .setDataSource(createDataSource())
-                    .setPageMargin(margin(50))
-                    .setPageFormat(PageType.A4)
-                    .setDetailStyle(stl.style().setBorder(getBorderBuilder()))
-                    .pageFooter(getFooterComponents())
-                    .pageHeader(cmp.horizontalList(cmp.text(APP_NAME),
-                            cmp.text("Reported by " + currentUser).setHorizontalTextAlignment(RIGHT)))
-                    .setPageHeaderStyle(stl.style().setBottomPadding(30))
-                    .setPageFooterStyle(stl.style().setTopPadding(30))
-                    .toPdf(new FileOutputStream("src/main/resources/report.pdf"));
-        } catch (DRException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        report()
+                .title(getTitle())
+                .detail(subreport)
+                .setDataSource(createDataSource())
+                .setPageMargin(margin(50))
+                .setPageFormat(PageType.A4)
+                .setDetailStyle(getDetailStyle())
+                .pageFooter(getFooterComponents())
+                .pageHeader(getPageHeader())
+                .setPageHeaderStyle(getPageHeaderStyle())
+                .setPageFooterStyle(getPageFooterStyle())
+                .toPdf(getOutputStream());
     }
-
 
     private JRDataSource createDataSource() {
         return new JREmptyDataSource(userWords.size());
@@ -119,7 +112,7 @@ public class WordsReport {
 
             TextColumnBuilder<String> name = col.column("name", type.stringType());
             TextColumnBuilder<String> category = col.column("category", type.stringType());
-            TextColumnBuilder<String> addedAt = col.column(new DateColumn("dd-MM-yyyy"));
+            TextColumnBuilder<String> addedAt = col.column(new DateColumn(DD_MM_YYYY));
 
             VariableBuilder<Long> subtotal = variable(name, Calculation.COUNT);
             TextFieldBuilder<String> summarySubtotal = cmp.text(new CustomTextSubtotal(subtotal));
@@ -127,13 +120,7 @@ public class WordsReport {
                     .setStyle(stl.style().setFont(stl.font()).bold());
             report
                     .title(title)
-                    .setTitleStyle(stl.style()
-                            .bold()
-                            .setBackgroundColor(new Color(204, 229, 255))
-                            .setLeftPadding(25)
-                            .setBottomPadding(10)
-                            .setTopPadding(10)
-                            .setBorder(getBorderBuilder()))
+                    .setTitleStyle(getSubreportTitleStyle())
                     .fields(field("addedAt", DataTypes.dateType()))
                     .variables(subtotal)
                     .addColumn(
@@ -141,19 +128,37 @@ public class WordsReport {
                             category,
                             addedAt)
                     .setHighlightDetailEvenRows(true)
-                    .setColumnStyle(stl.style().setLeftPadding(60))
+                    .setColumnStyle(getSubreportColumnStyle())
                     .setPageColumnSpace(10)
-                    .summary(summarySubtotal.setStyle(
-                            stl.style()
-                                    .setHorizontalTextAlignment(RIGHT)
-                                    .setRightPadding(40)
-                                    .setBottomPadding(10)
-                                    .setTopPadding(10)
-                                    .setFont(stl.font().italic())
-                                    .setBorder(getBorderBuilder())
-                    ));
+                    .summary(getSubreportSummary(summarySubtotal));
 
             return report;
+        }
+
+        private static StyleBuilder getSubreportTitleStyle() {
+            return stl.style()
+                    .bold()
+                    .setBackgroundColor(BLUE)
+                    .setLeftPadding(25)
+                    .setBottomPadding(10)
+                    .setTopPadding(10)
+                    .setBorder(getBorderBuilder());
+        }
+
+        private static StyleBuilder getSubreportColumnStyle() {
+            return stl.style().setLeftPadding(60);
+        }
+
+        private static TextFieldBuilder<String> getSubreportSummary(TextFieldBuilder<String> summarySubtotal) {
+            return summarySubtotal.setStyle(
+                    stl.style()
+                            .setHorizontalTextAlignment(RIGHT)
+                            .setRightPadding(40)
+                            .setBottomPadding(10)
+                            .setTopPadding(10)
+                            .setFont(stl.font().italic())
+                            .setBorder(getBorderBuilder())
+            );
         }
     }
 
@@ -200,6 +205,50 @@ public class WordsReport {
         }
     }
 
+    private static TextFieldBuilder<String> getTitle() {
+        return cmp.text("USER WORD CONTRIBUTIONS REPORT")
+                .setStyle(stl
+                        .style()
+                        .setFontSize(12)
+                        .bold()
+                        .setForegroundColor(DARK_BLUE))
+                .setHorizontalTextAlignment(CENTER)
+                .setHeight(40);
+    }
+
+    private static StyleBuilder getDetailStyle() {
+        return stl.style()
+                .setBorder(getBorderBuilder());
+    }
+
+    private static HorizontalListBuilder getFooterComponents() {
+        return cmp
+                .horizontalList(
+                        getCurrentDate(),
+                        getPageXofY()
+                );
+    }
+
+    private HorizontalListBuilder getPageHeader() {
+        return cmp.horizontalList(cmp.text(APP_NAME),
+                cmp.text("Reported by " + currentUser)
+                        .setHorizontalTextAlignment(RIGHT));
+    }
+
+    private static StyleBuilder getPageHeaderStyle() {
+        return stl.style().setBottomPadding(30);
+    }
+
+    private static StyleBuilder getPageFooterStyle() {
+        return stl.style().setTopPadding(30);
+    }
+
+    private static FileOutputStream getOutputStream() throws FileNotFoundException {
+        LocalDateTime dateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DD_MMYYYY_HHMMSS);
+        return new FileOutputStream(PATH + WORD_CONTRIBUTIONS + formatter.format(dateTime)  + PDF);
+    }
+
     private static BorderBuilder getBorderBuilder() {
         return stl
                 .border(getPenBuilder());
@@ -211,15 +260,6 @@ public class WordsReport {
                 .setLineColor(BLACK);
     }
 
-    private static HorizontalListBuilder getFooterComponents() {
-        return cmp
-                .horizontalList(
-                        getCurrentDate(),
-                        getPageXofY()
-                );
-    }
-
-
     private static CurrentDateBuilder getCurrentDate() {
         return cmp
                 .currentDate()
@@ -229,12 +269,6 @@ public class WordsReport {
     private static PageNumberBuilder getPageXofY() {
         return cmp
                 .pageNumber()
-                .setHorizontalTextAlignment(RIGHT);
-    }
-
-    private static TextFieldBuilder<String> getPageTextComponent() {
-        return cmp
-                .text("Page")
                 .setHorizontalTextAlignment(RIGHT);
     }
 }
