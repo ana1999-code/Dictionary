@@ -6,6 +6,7 @@ import com.example.dictionary.application.dto.UserInfoDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.AchievementFacade;
 import com.example.dictionary.application.facade.UserFacade;
+import com.example.dictionary.ui.security.CurrentUserPermissionService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -32,6 +33,8 @@ import static com.example.dictionary.ui.util.UiUtils.getCloseButton;
 @PermitAll
 public class UserProgressLayout extends VerticalLayout {
 
+    private final CurrentUserPermissionService permissionService;
+
     private Integer progress;
 
     private Set<AchievementDto> userAchievements;
@@ -46,26 +49,31 @@ public class UserProgressLayout extends VerticalLayout {
 
     private Grid<WordDto> favoriteWordsGrid;
 
-    public UserProgressLayout(UserFacade userFacade, AchievementFacade achievementFacade) {
+    private UserInfoDto userInfo;
+
+    public UserProgressLayout(CurrentUserPermissionService permissionService,
+                              UserFacade userFacade,
+                              AchievementFacade achievementFacade) {
+        this.permissionService = permissionService;
         this.userFacade = userFacade;
         this.achievementFacade = achievementFacade;
 
         UserDto profile = userFacade.getUserProfile();
-        UserInfoDto userInfo = profile.getUserInfo();
+        userInfo = profile.getUserInfo();
 
-        allAchievements = achievementFacade.getAllAchievements();
-        progress = userInfo.getProgress();
-        userAchievements = userInfo.getAchievements();
-        favorites = userInfo.getFavorites();
+        if (permissionService.hasWordWritePermission()) {
+            setupProgressLayout();
+            setupAchievementsGrid();
+        }
 
-        setupProgressLayout();
-        setupAchievementsGrid();
         setupFavoriteWords();
 
         setWidth("43%");
     }
 
     private void setupProgressLayout() {
+        progress = userInfo.getProgress();
+
         Span progressLabel = new Span(progress.toString());
         progressLabel.getStyle().set("color", APP_COLOR)
                 .set("font-weight", "bold");
@@ -76,6 +84,9 @@ public class UserProgressLayout extends VerticalLayout {
     }
 
     private void setupAchievementsGrid() {
+        allAchievements = achievementFacade.getAllAchievements();
+        userAchievements = userInfo.getAchievements();
+
         Span achievementsLabel = new Span("Achievements:");
         Grid<AchievementDto> achievementGrid = new Grid<>();
         achievementGrid.setItems(allAchievements);
@@ -93,6 +104,8 @@ public class UserProgressLayout extends VerticalLayout {
     }
 
     private void setupFavoriteWords() {
+        favorites = userInfo.getFavorites();
+
         favoriteWordsGrid = new Grid<>(WordDto.class, false);
         Details favouriteWordsDetails = new Details("Favorites");
         favouriteWordsDetails.addThemeVariants(DetailsVariant.REVERSE);

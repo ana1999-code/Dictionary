@@ -10,8 +10,8 @@ import com.example.dictionary.application.mapper.AchievementMapper;
 import com.example.dictionary.application.mapper.UserMapper;
 import com.example.dictionary.application.mapper.WordMapper;
 import com.example.dictionary.application.security.key.KeyRoleExtractor;
-import com.example.dictionary.application.security.utils.SecurityUtils;
-import com.example.dictionary.application.util.ImageUtil;
+import com.example.dictionary.application.security.util.SecurityUtils;
+import com.example.dictionary.application.util.ImageUtils;
 import com.example.dictionary.application.validator.UserValidator;
 import com.example.dictionary.domain.entity.User;
 import com.example.dictionary.domain.entity.UserInfo;
@@ -97,10 +97,10 @@ public class UserFacadeImpl implements UserFacade {
     @Override
     public UserDto uploadImage(MultipartFile file) throws IOException {
         User user = getUser(SecurityUtils.getUsername());
-        user.setProfileImage(ImageUtil.compressImage(file.getBytes()));
+        user.setProfileImage(ImageUtils.compressImage(file.getBytes()));
 
         User updatedUser = userService.registerUser(user);
-        byte[] addedLogo = ImageUtil.decompressImage(updatedUser.getProfileImage());
+        byte[] addedLogo = ImageUtils.decompressImage(updatedUser.getProfileImage());
 
         UserDto userDto = userMapper.userToUserDto(user);
         userDto.setProfileImage(addedLogo);
@@ -115,7 +115,7 @@ public class UserFacadeImpl implements UserFacade {
         byte[] dbLogo = user.getProfileImage();
 
         if (dbLogo != null) {
-            logo = ImageUtil.decompressImage(dbLogo);
+            logo = ImageUtils.decompressImage(dbLogo);
         }
 
         UserDto userDto = userMapper.userToUserDto(user);

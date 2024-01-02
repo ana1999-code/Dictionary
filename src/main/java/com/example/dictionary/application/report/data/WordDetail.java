@@ -1,6 +1,5 @@
 package com.example.dictionary.application.report.data;
 
-import com.example.dictionary.domain.entity.Category;
 import com.example.dictionary.domain.entity.User;
 
 import java.time.LocalDateTime;

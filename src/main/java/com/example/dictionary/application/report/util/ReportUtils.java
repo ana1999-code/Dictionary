@@ -2,7 +2,7 @@ package com.example.dictionary.application.report.util;
 
 import java.awt.Color;
 
-public class ReportUtil {
+public class ReportUtils {
 
     public static final Color BLUE = new Color(204, 229, 255);
 

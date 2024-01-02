@@ -9,7 +9,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import net.sf.dynamicreports.report.exception.DRException;
 
 import java.io.FileNotFoundException;
@@ -20,7 +20,7 @@ import static com.example.dictionary.ui.util.UiUtils.showNotification;
 
 @Route(value = "reports", layout = MainLayout.class)
 @PageTitle("Reports | " + APP_NAME)
-@PermitAll
+@RolesAllowed("ADMIN")
 public class ReportView extends VerticalLayout {
 
     private Button generateReport;

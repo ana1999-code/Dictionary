@@ -3,6 +3,7 @@ package com.example.dictionary.ui.profile;
 import com.example.dictionary.application.facade.AchievementFacade;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.ui.MainLayout;
+import com.example.dictionary.ui.security.CurrentUserPermissionService;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -19,9 +20,14 @@ public class ProfileView extends VerticalLayout {
 
     private final AchievementFacade achievementFacade;
 
-    public ProfileView(UserFacade userFacade, AchievementFacade achievementFacade) {
+    private final CurrentUserPermissionService userPermissionService;
+
+    public ProfileView(UserFacade userFacade,
+                       AchievementFacade achievementFacade,
+                       CurrentUserPermissionService userPermissionService) {
         this.userFacade = userFacade;
         this.achievementFacade = achievementFacade;
+        this.userPermissionService = userPermissionService;
 
 
         VerticalLayout layout = new VerticalLayout();
@@ -32,7 +38,8 @@ public class ProfileView extends VerticalLayout {
         ProfileFormBinder profileFormBinder = new ProfileFormBinder(profileForm, userFacade);
         profileFormBinder.addBindingAndValidation();
 
-        UserProgressLayout progressLayout = new UserProgressLayout(userFacade, achievementFacade);
+        UserProgressLayout progressLayout =
+                new UserProgressLayout(userPermissionService, userFacade, achievementFacade);
         layout.add(profileForm, progressLayout);
         layout.setHorizontalComponentAlignment(Alignment.CENTER, profileForm, progressLayout);
 

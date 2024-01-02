@@ -1,4 +1,4 @@
-package com.example.dictionary.application.security.utils;
+package com.example.dictionary.application.security.util;
 
 import com.example.dictionary.application.security.auth.ApplicationUser;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

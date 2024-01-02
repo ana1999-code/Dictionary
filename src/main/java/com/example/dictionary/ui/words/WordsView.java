@@ -5,6 +5,7 @@ import com.example.dictionary.application.facade.CategoryFacade;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.MainLayout;
+import com.example.dictionary.ui.security.CurrentUserPermissionService;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -59,6 +60,8 @@ import static com.vaadin.flow.component.grid.ColumnTextAlign.CENTER;
 @PageTitle("Words | " + APP_NAME)
 public class WordsView extends VerticalLayout {
 
+    private final CurrentUserPermissionService permissionService;
+
     private WordForm wordForm;
 
     private WordDialog dialogForm;
@@ -75,34 +78,44 @@ public class WordsView extends VerticalLayout {
 
     private Set<String> userFavoriteWords;
 
+    private HorizontalLayout tabLayout;
+
     private TextField searchField;
 
     private Upload uploadFile;
 
     private Button addWord;
 
-    public WordsView(WordFacade wordFacade,
+    public WordsView(CurrentUserPermissionService permissionService,
+                     WordFacade wordFacade,
                      UserFacade userFacade,
                      CategoryFacade categoryFacade) {
+        this.permissionService = permissionService;
         this.wordFacade = wordFacade;
         this.userFacade = userFacade;
         this.categoryFacade = categoryFacade;
-
-        setupUploadButton();
-        setupAddButton();
 
         setupWordsGrid();
         setupSearchField();
         setupUserFavoriteWords();
 
-        HorizontalLayout tabLayout =
-                new HorizontalLayout(searchField, uploadFile, addWord);
+        tabLayout =
+                new HorizontalLayout(searchField);
+        setupButtonsForWritePermission();
         tabLayout.setWidth("75%");
         tabLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
 
         setHorizontalComponentAlignment(Alignment.CENTER, tabLayout, this.wordDtoGrid);
         setSizeFull();
         add(tabLayout, this.wordDtoGrid);
+    }
+
+    private void setupButtonsForWritePermission() {
+        if (permissionService.hasWordWritePermission()) {
+            setupUploadButton();
+            setupAddButton();
+            tabLayout.add(uploadFile, addWord);
+        }
     }
 
     private void setupUploadButton() {

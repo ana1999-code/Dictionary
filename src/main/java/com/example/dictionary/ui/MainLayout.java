@@ -3,6 +3,7 @@ package com.example.dictionary.ui;
 import com.example.dictionary.application.security.ui.SecurityService;
 import com.example.dictionary.ui.profile.ProfileView;
 import com.example.dictionary.ui.report.ReportView;
+import com.example.dictionary.ui.security.CurrentUserPermissionService;
 import com.example.dictionary.ui.words.WordsView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -17,8 +18,12 @@ public class MainLayout extends AppLayout {
 
     private final SecurityService securityService;
 
-    public MainLayout(SecurityService securityService) {
+    private final CurrentUserPermissionService permissionService;
+
+    public MainLayout(SecurityService securityService,
+                      CurrentUserPermissionService permissionService) {
         this.securityService = securityService;
+        this.permissionService = permissionService;
         H1 title = new H1(APP_NAME);
         title.getStyle().set("font-size", "var(--lumo-font-size-l)")
                 .set("left", "var(--lumo-space-l)").set("margin", "0")
@@ -44,11 +49,22 @@ public class MainLayout extends AppLayout {
         Tabs tabs = new Tabs();
         tabs.getStyle().set("margin", "auto");
 
-        tabs.add(createTab("Profile", ProfileView.class),
-                createTab("Words", WordsView.class),
-                createTab("Users", ProfileView.class),
-                createTab("Reports", ReportView.class),
-                createTab("Logout", new RouterLink()));
+        Tab profile = createTab("Profile", ProfileView.class);
+        Tab reports = createTab("Reports", ReportView.class);
+        Tab words = createTab("Words", WordsView.class);
+        Tab users = createTab("Users", ProfileView.class);
+        Tab logout = createTab("Logout", new RouterLink());
+
+        if (!permissionService.isAdmin()) {
+            reports.setEnabled(false);
+            users.setEnabled(false);
+        }
+
+        tabs.add(profile,
+                words,
+                users,
+                reports,
+                logout);
 
         return tabs;
     }

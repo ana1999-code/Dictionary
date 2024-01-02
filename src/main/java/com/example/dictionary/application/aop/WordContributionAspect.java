@@ -6,7 +6,7 @@ import com.example.dictionary.application.dto.UserInfoDto;
 import com.example.dictionary.application.facade.AchievementFacade;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.mapper.UserMapper;
-import com.example.dictionary.application.security.utils.SecurityUtils;
+import com.example.dictionary.application.security.util.SecurityUtils;
 import com.example.dictionary.domain.entity.Word;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;

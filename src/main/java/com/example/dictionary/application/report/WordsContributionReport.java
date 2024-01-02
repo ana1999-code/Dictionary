@@ -34,14 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.example.dictionary.application.report.util.ReportUtil.BLUE;
-import static com.example.dictionary.application.report.util.ReportUtil.CURRENT_DATE_PATTERN;
-import static com.example.dictionary.application.report.util.ReportUtil.DARK_BLUE;
-import static com.example.dictionary.application.report.util.ReportUtil.DD_MMYYYY_HHMMSS;
-import static com.example.dictionary.application.report.util.ReportUtil.DD_MM_YYYY;
-import static com.example.dictionary.application.report.util.ReportUtil.PATH;
-import static com.example.dictionary.application.report.util.ReportUtil.PDF;
-import static com.example.dictionary.application.report.util.ReportUtil.WORD_CONTRIBUTIONS;
+import static com.example.dictionary.application.report.util.ReportUtils.BLUE;
+import static com.example.dictionary.application.report.util.ReportUtils.CURRENT_DATE_PATTERN;
+import static com.example.dictionary.application.report.util.ReportUtils.DARK_BLUE;
+import static com.example.dictionary.application.report.util.ReportUtils.DD_MMYYYY_HHMMSS;
+import static com.example.dictionary.application.report.util.ReportUtils.DD_MM_YYYY;
+import static com.example.dictionary.application.report.util.ReportUtils.PATH;
+import static com.example.dictionary.application.report.util.ReportUtils.PDF;
+import static com.example.dictionary.application.report.util.ReportUtils.WORD_CONTRIBUTIONS;
 import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 import static java.awt.Color.BLACK;
 import static net.sf.dynamicreports.report.builder.DynamicReports.cmp;
@@ -246,7 +246,7 @@ public class WordsContributionReport {
     private static FileOutputStream getOutputStream() throws FileNotFoundException {
         LocalDateTime dateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DD_MMYYYY_HHMMSS);
-        return new FileOutputStream(PATH + WORD_CONTRIBUTIONS + formatter.format(dateTime)  + PDF);
+        return new FileOutputStream(PATH + WORD_CONTRIBUTIONS + formatter.format(dateTime) + PDF);
     }
 
     private static BorderBuilder getBorderBuilder() {
