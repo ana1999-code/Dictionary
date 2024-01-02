@@ -20,8 +20,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
-import com.vaadin.flow.router.Route;
-import jakarta.annotation.security.PermitAll;
 
 import java.util.List;
 import java.util.Set;
@@ -29,8 +27,6 @@ import java.util.Set;
 import static com.example.dictionary.ui.util.UiUtils.APP_COLOR;
 import static com.example.dictionary.ui.util.UiUtils.getCloseButton;
 
-@Route("users")
-@PermitAll
 public class UserProgressLayout extends VerticalLayout {
 
     private final CurrentUserPermissionService permissionService;

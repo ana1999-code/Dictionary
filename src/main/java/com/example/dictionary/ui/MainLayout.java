@@ -4,6 +4,7 @@ import com.example.dictionary.application.security.ui.SecurityService;
 import com.example.dictionary.ui.profile.ProfileView;
 import com.example.dictionary.ui.report.ReportView;
 import com.example.dictionary.ui.security.CurrentUserPermissionService;
+import com.example.dictionary.ui.users.UsersView;
 import com.example.dictionary.ui.words.WordsView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -52,7 +53,7 @@ public class MainLayout extends AppLayout {
         Tab profile = createTab("Profile", ProfileView.class);
         Tab reports = createTab("Reports", ReportView.class);
         Tab words = createTab("Words", WordsView.class);
-        Tab users = createTab("Users", ProfileView.class);
+        Tab users = createTab("Users", UsersView.class);
         Tab logout = createTab("Logout", new RouterLink());
 
         if (!permissionService.isAdmin()) {

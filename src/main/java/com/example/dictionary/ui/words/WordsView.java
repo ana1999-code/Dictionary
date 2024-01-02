@@ -17,6 +17,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -27,7 +28,6 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
@@ -51,6 +51,7 @@ import static com.example.dictionary.ui.util.UiUtils.CSV;
 import static com.example.dictionary.ui.util.UiUtils.DD_MM_YYYY;
 import static com.example.dictionary.ui.util.UiUtils.FILE_LOCATION;
 import static com.example.dictionary.ui.util.UiUtils.PROCESSED;
+import static com.example.dictionary.ui.util.UiUtils.getConfiguredSearchField;
 import static com.example.dictionary.ui.util.UiUtils.showNotification;
 import static com.example.dictionary.ui.util.UiUtils.showSuccess;
 import static com.vaadin.flow.component.grid.ColumnTextAlign.CENTER;
@@ -102,7 +103,7 @@ public class WordsView extends VerticalLayout {
         tabLayout =
                 new HorizontalLayout(searchField);
         setupButtonsForWritePermission();
-        tabLayout.setWidth("75%");
+        tabLayout.setWidth("60%");
         tabLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
 
         setHorizontalComponentAlignment(Alignment.CENTER, tabLayout, this.wordDtoGrid);
@@ -195,21 +196,20 @@ public class WordsView extends VerticalLayout {
     }
 
     private void setupSearchField() {
-        searchField = new TextField();
-        searchField.setPlaceholder("Search...");
-        searchField.setValueChangeMode(ValueChangeMode.EAGER);
-        searchField.addValueChangeListener(
-                event -> wordDtoGrid.setItems(
-                        wordFacade.getAllWords()
-                                .stream()
-                                .filter(word -> word
-                                        .getName()
-                                        .toLowerCase()
-                                        .startsWith(searchField.getValue().toLowerCase()))
-                                .collect(Collectors.toSet())
-                ));
-        searchField.setSuffixComponent(new Icon(VaadinIcon.SEARCH));
-        searchField.setWidthFull();
+        searchField = getConfiguredSearchField();
+        searchField.addValueChangeListener(event -> resetFilteredData());
+    }
+
+    private void resetFilteredData() {
+        wordDtoGrid.setItems(
+                wordFacade.getAllWords()
+                        .stream()
+                        .filter(word -> word
+                                .getName()
+                                .toLowerCase()
+                                .startsWith(searchField.getValue().toLowerCase()))
+                        .collect(Collectors.toSet())
+        );
     }
 
     private void setupUserFavoriteWords() {
@@ -227,7 +227,8 @@ public class WordsView extends VerticalLayout {
 
         wordDtoGrid.setItems(words);
         wordDtoGrid.addColumn(WordDto::getName)
-                .setHeader("Word");
+                .setHeader("Word")
+                .setFooter("Total: %s words".formatted(words.size()));
         wordDtoGrid.addColumn(wordDto -> wordDto.getCategory().getName())
                 .setHeader("Category");
         wordDtoGrid.addColumn(wordDto -> wordDto.getDefinitions().size())
@@ -260,9 +261,9 @@ public class WordsView extends VerticalLayout {
                         SortDirection.DESCENDING))
         );
 
-        wordDtoGrid.setAllRowsVisible(true);
+        wordDtoGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         wordDtoGrid.setPageSize(10);
-        wordDtoGrid.setWidth("75%");
+        wordDtoGrid.setWidth("60%");
     }
 
     private Button getHeartButton(WordDto wordDto) {
