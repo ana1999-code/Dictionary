@@ -1,7 +1,5 @@
 package com.example.dictionary.application.report;
 
-import com.example.dictionary.application.dto.UserDto;
-import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.report.data.WordDetail;
 import com.example.dictionary.domain.entity.User;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
@@ -58,20 +56,14 @@ public class WordsContributionReportGenerator implements ReportGenerator {
 
     private List<User> users;
 
-    private final UserFacade userFacade;
+    private final String currentUser;
 
-    private String currentUser;
-
-    public WordsContributionReportGenerator(List<WordDetail> words, UserFacade userFacade) {
+    public WordsContributionReportGenerator(List<WordDetail> words, String currentUser) {
         this.words = words;
         this.userWords = words.stream()
                 .collect(Collectors.groupingBy(WordDetail::getContributor));
-        this.userFacade = userFacade;
+        this.currentUser = currentUser;
         this.users = userWords.keySet().stream().toList();
-
-        UserDto userProfile = this.userFacade
-                .getUserProfile();
-        currentUser = userProfile.getFirstName() + " " + userProfile.getLastName();
     }
 
     public void generate() throws FileNotFoundException, DRException {

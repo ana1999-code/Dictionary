@@ -11,6 +11,10 @@ import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.application.mapper.DefinitionMapper;
 import com.example.dictionary.application.mapper.ExampleMapper;
 import com.example.dictionary.application.mapper.WordMapper;
+import com.example.dictionary.application.report.WordsContributionReportGenerator;
+import com.example.dictionary.application.report.WordsStatisticReportGenerator;
+import com.example.dictionary.application.report.data.WordDetail;
+import com.example.dictionary.application.security.util.SecurityUtils;
 import com.example.dictionary.application.util.WordEntityAssociationUtil;
 import com.example.dictionary.application.validator.ExampleValidator;
 import com.example.dictionary.application.validator.WordValidator;
@@ -20,6 +24,7 @@ import com.example.dictionary.domain.entity.Word;
 import com.example.dictionary.domain.service.DefinitionService;
 import com.example.dictionary.domain.service.ExampleService;
 import com.example.dictionary.domain.service.WordService;
+import net.sf.dynamicreports.report.exception.DRException;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -32,7 +37,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -261,6 +268,34 @@ public class WordFacadeImpl implements WordFacade {
                 .toJobParameters();
 
         jobLauncher.run(job, params);
+    }
+
+    @Override
+    public void generateWordsContributionReport() throws DRException, FileNotFoundException {
+        List<WordDetail> wordDetails = wordService.getWordsDetails();
+        WordsContributionReportGenerator reportGenerator =
+                new WordsContributionReportGenerator(wordDetails, getCurrentUser());
+        reportGenerator.generate();
+    }
+
+    @Override
+    public void generateWordsStatisticsReport(Integer year, String month) throws DRException, FileNotFoundException {
+        List<Word> words = wordService.getAllWords();
+        WordsStatisticReportGenerator reportGenerator =
+                new WordsStatisticReportGenerator(words, getCurrentUser());
+
+        reportGenerator.setYear(year);
+        reportGenerator.setMonth(Month.valueOf(month));
+        reportGenerator.generate();
+    }
+
+    @Override
+    public List<WordDetail> getAllWordsDetails() {
+        return wordService.getWordsDetails();
+    }
+
+    private String getCurrentUser() {
+        return SecurityUtils.getUsername();
     }
 
     private Word getWord(String name) {

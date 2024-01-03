@@ -4,11 +4,14 @@ import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
+import com.example.dictionary.application.report.data.WordDetail;
+import net.sf.dynamicreports.report.exception.DRException;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Set;
 
@@ -46,8 +49,15 @@ public interface WordFacade {
 
     void removeComment(String name, CommentDto commentDto);
 
-    void uploadFile(String path, String fileName, String fileLocation) throws JobInstanceAlreadyCompleteException,
+    void uploadFile(String path, String fileName, String fileLocation) throws
+            JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,
             JobRestartException;
+
+    void generateWordsContributionReport() throws DRException, FileNotFoundException;
+
+    void generateWordsStatisticsReport(Integer year, String month) throws DRException, FileNotFoundException;
+
+    List<WordDetail> getAllWordsDetails();
 }

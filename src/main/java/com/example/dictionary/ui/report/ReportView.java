@@ -1,13 +1,7 @@
 package com.example.dictionary.ui.report;
 
-import com.example.dictionary.application.exception.ValueRequiredException;
-import com.example.dictionary.application.facade.UserFacade;
-import com.example.dictionary.application.report.ReportGenerator;
-import com.example.dictionary.application.report.WordsContributionReportGenerator;
-import com.example.dictionary.application.report.WordsStatisticReportGenerator;
+import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.application.report.data.WordDetail;
-import com.example.dictionary.domain.entity.Word;
-import com.example.dictionary.domain.repository.WordRepository;
 import com.example.dictionary.ui.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -22,7 +16,6 @@ import jakarta.annotation.security.RolesAllowed;
 import net.sf.dynamicreports.report.exception.DRException;
 
 import java.io.FileNotFoundException;
-import java.time.Month;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,27 +37,25 @@ public class ReportView extends VerticalLayout {
 
     private Button generateReport;
 
-    private final WordRepository wordRepository;
-
-    private final UserFacade userFacade;
+    private final WordFacade wordFacade;
 
     private List<WordDetail> wordsDetails;
-
-    private List<Word> words;
 
     private Div reportDescription = new Div();
 
     private ComboBox<Integer> yearComboBox = new ComboBox<>("Year");
 
-    private ComboBox<Month> monthComboBox = new ComboBox<>("Month");
+    private ComboBox<String> monthComboBox = new ComboBox<>("Month");
 
     private Registration registration;
 
-    public ReportView(WordRepository wordRepository, UserFacade userFacade) {
-        this.wordRepository = wordRepository;
-        this.userFacade = userFacade;
-        wordsDetails = wordRepository.getWordsDetails();
-        words = wordRepository.findAll();
+    private Integer selectedYear;
+
+    private String selectedMonth;
+
+    public ReportView(WordFacade wordFacade) {
+        this.wordFacade = wordFacade;
+        wordsDetails = wordFacade.getAllWordsDetails();
 
         generateReport = new Button("Generate Report");
         reportDescription.setMaxWidth("40%");
@@ -106,27 +97,39 @@ public class ReportView extends VerticalLayout {
     private void setupWordsContributionsReport() {
         reportDescription.add("This report lists users and the words they contributed, " +
                 "offering a quick overview of individual contributions to the database.");
-        WordsContributionReportGenerator reportGenerator =
-                new WordsContributionReportGenerator(wordsDetails, userFacade);
-        generateReport(reportGenerator);
+
+        registration = generateReport.addClickListener(event -> {
+            try {
+                wordFacade.generateWordsContributionReport();
+                showSuccess("Report Successfully Generated");
+            } catch (DRException | FileNotFoundException exception) {
+                showNotification(exception.getMessage());
+            }
+        });
+
         add(reportDescription);
     }
 
     private void setupWordsStatisticReport() {
-        WordsStatisticReportGenerator reportGenerator =
-                new WordsStatisticReportGenerator(words, userFacade);
         reportDescription.add("To generate this report, select a specific month and year. " +
                 "The resulting chart provides a quick overview of daily word additions during the chosen period, " +
                 "aiding in the analysis of database growth patterns.");
 
         monthComboBox.setEnabled(false);
-        setupYearComboBox(reportGenerator);
+        setupYearComboBox();
+        registration = generateReport.addClickListener(event -> {
+            try {
+                wordFacade.generateWordsStatisticsReport(selectedYear, selectedMonth);
+                showSuccess("Report Successfully Generated");
+            } catch (DRException | FileNotFoundException exception) {
+                showNotification(exception.getMessage());
+            }
+        });
 
-        generateReport(reportGenerator);
         add(reportDescription, yearComboBox, monthComboBox);
     }
 
-    private void setupYearComboBox(WordsStatisticReportGenerator reportGenerator) {
+    private void setupYearComboBox() {
         Set<Integer> years = wordsDetails.stream()
                 .map(wordDetail -> wordDetail.getAddedAt().getYear())
                 .collect(Collectors.toSet());
@@ -136,35 +139,23 @@ public class ReportView extends VerticalLayout {
 
         yearComboBox.addValueChangeListener(event -> {
             Integer year = event.getValue();
-            reportGenerator.setYear(year);
-            setupMonthComboBox(reportGenerator, year);
+            selectedYear = year;
+            setupMonthComboBox(year);
         });
     }
 
-    private void setupMonthComboBox(WordsStatisticReportGenerator reportGenerator, Integer year) {
+    private void setupMonthComboBox(Integer year) {
         monthComboBox.setEnabled(true);
-        Set<Month> months = wordsDetails.stream()
+        Set<String> months = wordsDetails.stream()
                 .filter(wordDetail -> wordDetail.getAddedAt().getYear() == year)
-                .map(wordDetail -> wordDetail.getAddedAt().getMonth())
+                .map(wordDetail -> wordDetail.getAddedAt().getMonth().toString())
                 .collect(Collectors.toSet());
 
         monthComboBox.setItems(months);
         monthComboBox.setRequired(true);
 
         monthComboBox.addValueChangeListener(event -> {
-            Month month = event.getValue();
-            reportGenerator.setMonth(month);
-        });
-    }
-
-    private void generateReport(ReportGenerator reportGenerator) {
-        registration = generateReport.addClickListener(event -> {
-            try {
-                reportGenerator.generate();
-                showSuccess("Report Successfully Generated");
-            } catch (FileNotFoundException | DRException | ValueRequiredException exception) {
-                showNotification(exception.getMessage());
-            }
+            selectedMonth = event.getValue();
         });
     }
 }

@@ -1,5 +1,6 @@
 package com.example.dictionary.domain.service;
 
+import com.example.dictionary.application.report.data.WordDetail;
 import com.example.dictionary.domain.entity.Word;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface WordService {
     boolean existsWordByName(String name);
 
     void deleteWordByName(String name);
+
+    List<WordDetail> getWordsDetails();
 }

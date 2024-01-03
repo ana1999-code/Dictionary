@@ -1,6 +1,7 @@
 package com.example.dictionary.domain.service.impl;
 
 import com.example.dictionary.application.annotation.ContributeByUser;
+import com.example.dictionary.application.report.data.WordDetail;
 import com.example.dictionary.domain.entity.Word;
 import com.example.dictionary.domain.repository.WordRepository;
 import com.example.dictionary.domain.service.WordService;
@@ -44,5 +45,10 @@ public class WordServiceImpl implements WordService {
     @Override
     public void deleteWordByName(String name) {
         wordRepository.deleteByName(name);
+    }
+
+    @Override
+    public List<WordDetail> getWordsDetails() {
+        return wordRepository.getWordsDetails();
     }
 }

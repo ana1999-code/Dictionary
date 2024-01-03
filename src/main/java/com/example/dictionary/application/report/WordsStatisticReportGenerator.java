@@ -1,8 +1,6 @@
 package com.example.dictionary.application.report;
 
-import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.exception.ValueRequiredException;
-import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.domain.entity.Word;
 import net.sf.dynamicreports.report.builder.chart.AxisFormatBuilder;
 import net.sf.dynamicreports.report.builder.chart.BarChartBuilder;
@@ -39,9 +37,7 @@ public class WordsStatisticReportGenerator implements ReportGenerator {
 
     private List<Word> words;
 
-    private final UserFacade userFacade;
-
-    private String currentUser;
+    private final String currentUser;
 
     private Integer year;
 
@@ -49,13 +45,9 @@ public class WordsStatisticReportGenerator implements ReportGenerator {
 
     private int totalWords;
 
-    public WordsStatisticReportGenerator(List<Word> words, UserFacade userFacade) {
+    public WordsStatisticReportGenerator(List<Word> words, String currentUser) {
         this.words = words;
-        this.userFacade = userFacade;
-
-        UserDto userProfile = this.userFacade
-                .getUserProfile();
-        currentUser = userProfile.getFirstName() + " " + userProfile.getLastName();
+        this.currentUser = currentUser;
     }
 
     public void generate() throws FileNotFoundException, DRException {
