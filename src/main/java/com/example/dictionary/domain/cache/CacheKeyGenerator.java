@@ -1,4 +1,4 @@
-package com.example.dictionary.application.cache;
+package com.example.dictionary.domain.cache;
 
 import org.springframework.cache.interceptor.KeyGenerator;
 

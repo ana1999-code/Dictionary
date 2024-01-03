@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.dictionary.application.cache.CacheContext.WORDS_CACHE;
-import static com.example.dictionary.application.cache.CacheContext.WORDS_DETAILS_CACHE;
-import static com.example.dictionary.application.cache.CacheContext.WORD_CACHE;
+import static com.example.dictionary.domain.cache.CacheContext.WORDS_CACHE;
+import static com.example.dictionary.domain.cache.CacheContext.WORDS_DETAILS_CACHE;
+import static com.example.dictionary.domain.cache.CacheContext.WORD_CACHE;
 
 @Service
 public class WordServiceImpl implements WordService {

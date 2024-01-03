@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.dictionary.application.cache.CacheContext.USERS_CACHE;
-import static com.example.dictionary.application.cache.CacheContext.USER_CACHE;
+import static com.example.dictionary.domain.cache.CacheContext.USERS_CACHE;
+import static com.example.dictionary.domain.cache.CacheContext.USER_CACHE;
 
 @Service
 public class UserServiceImpl implements UserService {

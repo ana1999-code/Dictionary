@@ -1,4 +1,4 @@
-package com.example.dictionary.application.cache;
+package com.example.dictionary.domain.cache;
 
 import com.example.dictionary.application.batch.listener.WordProcessorListener;
 import org.slf4j.Logger;
@@ -17,12 +17,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.example.dictionary.application.cache.CacheContext.USERS_CACHE;
-import static com.example.dictionary.application.cache.CacheContext.USER_CACHE;
-import static com.example.dictionary.application.cache.CacheContext.WORDS_CACHE;
-import static com.example.dictionary.application.cache.CacheContext.WORDS_DETAILS_CACHE;
-import static com.example.dictionary.application.cache.CacheContext.WORD_CACHE;
-
 @Configuration
 @EnableCaching
 @EnableScheduling
@@ -39,20 +33,20 @@ public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
         return new ConcurrentMapCacheManager(
-                WORDS_CACHE,
-                WORD_CACHE,
-                WORDS_DETAILS_CACHE,
-                USERS_CACHE,
-                USER_CACHE
+                CacheContext.WORDS_CACHE,
+                CacheContext.WORD_CACHE,
+                CacheContext.WORDS_DETAILS_CACHE,
+                CacheContext.USERS_CACHE,
+                CacheContext.USER_CACHE
         );
     }
 
     @CacheEvict(allEntries = true, value = {
-            WORDS_CACHE,
-            WORD_CACHE,
-            WORDS_DETAILS_CACHE,
-            USERS_CACHE,
-            USER_CACHE
+            CacheContext.WORDS_CACHE,
+            CacheContext.WORD_CACHE,
+            CacheContext.WORDS_DETAILS_CACHE,
+            CacheContext.USERS_CACHE,
+            CacheContext.USER_CACHE
     })
     @Scheduled(fixedDelay = 60 * 60 * 1000, initialDelay = 500)
     public void reportCacheEvict() {
