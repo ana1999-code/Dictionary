@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -191,7 +192,7 @@ public class WordControllerImpl implements WordController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public void generateWordsContributionReport() throws
             DRException,
-            FileNotFoundException,
+            IOException,
             JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,
@@ -205,7 +206,8 @@ public class WordControllerImpl implements WordController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public void generateWordsStatisticsReport(@RequestParam("year") Integer year,
                                               @RequestParam("month") String month) throws
-            DRException, FileNotFoundException,
+            DRException,
+            IOException,
             JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,

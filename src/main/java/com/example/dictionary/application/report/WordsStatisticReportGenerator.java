@@ -13,6 +13,7 @@ import net.sf.dynamicreports.report.datasource.DRDataSource;
 import net.sf.dynamicreports.report.exception.DRException;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.Month;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class WordsStatisticReportGenerator implements ReportGenerator {
         this.currentUser = currentUser;
     }
 
-    public void generate() throws FileNotFoundException, DRException {
+    public void generate() throws IOException, DRException {
         totalWords = 0;
         report()
                 .title(getTitle("WORD STATISTICS FOR " + month + " " + year))

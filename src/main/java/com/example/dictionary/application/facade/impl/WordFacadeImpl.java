@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -280,7 +281,8 @@ public class WordFacadeImpl implements WordFacade {
     @Override
     public void generateWordsContributionReport() throws
             DRException,
-            FileNotFoundException, JobInstanceAlreadyCompleteException,
+            IOException,
+            JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,
             JobRestartException {
@@ -294,7 +296,7 @@ public class WordFacadeImpl implements WordFacade {
     @Override
     public void generateWordsStatisticsReport(Integer year, String month) throws
             DRException,
-            FileNotFoundException,
+            IOException,
             JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,

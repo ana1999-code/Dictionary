@@ -12,6 +12,7 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.http.ResponseEntity;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -51,7 +52,7 @@ public interface WordController {
 
     void generateWordsContributionReport() throws
             DRException,
-            FileNotFoundException,
+            IOException,
             JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,
@@ -59,7 +60,7 @@ public interface WordController {
 
     void generateWordsStatisticsReport(Integer year, String month) throws
             DRException,
-            FileNotFoundException,
+            IOException,
             JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,

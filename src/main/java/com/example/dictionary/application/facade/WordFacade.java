@@ -12,6 +12,7 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -57,7 +58,7 @@ public interface WordFacade {
 
     void generateWordsContributionReport() throws
             DRException,
-            FileNotFoundException,
+            IOException,
             JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,
@@ -65,7 +66,7 @@ public interface WordFacade {
 
     void generateWordsStatisticsReport(Integer year, String month) throws
             DRException,
-            FileNotFoundException,
+            IOException,
             JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,
