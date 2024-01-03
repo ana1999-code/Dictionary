@@ -5,6 +5,7 @@ import com.example.dictionary.application.exception.IllegalOperationException;
 import com.example.dictionary.application.exception.IncorrectUsernameException;
 import com.example.dictionary.application.exception.InvalidPasswordException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
+import net.sf.dynamicreports.report.exception.DRException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +67,22 @@ public class ControllerExceptionHandler {
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(IllegalOperationException.class)
     public ResponseEntity<Map<String, String>> handleIllegalOperationException(IllegalOperationException exception) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", exception.getMessage());
+        return new ResponseEntity<>(errorMap, BAD_REQUEST);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(DRException.class)
+    public ResponseEntity<Map<String, String>> handleDRException(DRException exception) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", exception.getMessage());
+        return new ResponseEntity<>(errorMap, BAD_REQUEST);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleFileNotFoundException(FileNotFoundException exception) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error", exception.getMessage());
         return new ResponseEntity<>(errorMap, BAD_REQUEST);
