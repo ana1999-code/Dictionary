@@ -17,9 +17,9 @@
 		<java.version>17</java.version>
 		<vaadin.version>24.2.5</vaadin.version>
 		<mapstruct.version>1.6.0.Beta1</mapstruct.version>
-		<flyway.user>${username}</flyway.user>
-		<flyway.password>${password}</flyway.password>
-		<flyway.url>${url}</flyway.url>
+		<flyway.user>${env.PSQL_USERNAME}</flyway.user>
+		<flyway.password>${env.PSQL_PASSWORD}</flyway.password>
+		<flyway.url>${env.PSQL_URL}</flyway.url>
 		<flyway.baselineOnMigrate>true</flyway.baselineOnMigrate>
 	</properties>
 	<dependencies>
