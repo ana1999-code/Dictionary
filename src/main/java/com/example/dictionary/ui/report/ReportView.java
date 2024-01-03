@@ -54,9 +54,9 @@ public class ReportView extends VerticalLayout {
 
     private Div reportDescription = new Div();
 
-    private ComboBox<Integer> yearComboBox = new ComboBox<>();
+    private ComboBox<Integer> yearComboBox = new ComboBox<>("Year");
 
-    private ComboBox<Month> monthComboBox = new ComboBox<>();
+    private ComboBox<Month> monthComboBox = new ComboBox<>("Month");
 
     private Registration registration;
 
@@ -119,15 +119,14 @@ public class ReportView extends VerticalLayout {
                 "The resulting chart provides a quick overview of daily word additions during the chosen period, " +
                 "aiding in the analysis of database growth patterns.");
 
+        monthComboBox.setEnabled(false);
         setupYearComboBox(reportGenerator);
-        setupMonthComboBox(reportGenerator);
 
         generateReport(reportGenerator);
         add(reportDescription, yearComboBox, monthComboBox);
     }
 
     private void setupYearComboBox(WordsStatisticReportGenerator reportGenerator) {
-        yearComboBox.setLabel("Year");
         Set<Integer> years = wordsDetails.stream()
                 .map(wordDetail -> wordDetail.getAddedAt().getYear())
                 .collect(Collectors.toSet());
@@ -138,12 +137,14 @@ public class ReportView extends VerticalLayout {
         yearComboBox.addValueChangeListener(event -> {
             Integer year = event.getValue();
             reportGenerator.setYear(year);
+            setupMonthComboBox(reportGenerator, year);
         });
     }
 
-    private void setupMonthComboBox(WordsStatisticReportGenerator reportGenerator) {
-        monthComboBox.setLabel("Month");
+    private void setupMonthComboBox(WordsStatisticReportGenerator reportGenerator, Integer year) {
+        monthComboBox.setEnabled(true);
         Set<Month> months = wordsDetails.stream()
+                .filter(wordDetail -> wordDetail.getAddedAt().getYear() == year)
                 .map(wordDetail -> wordDetail.getAddedAt().getMonth())
                 .collect(Collectors.toSet());
 
