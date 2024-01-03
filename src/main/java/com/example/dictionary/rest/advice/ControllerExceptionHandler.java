@@ -9,6 +9,7 @@ import net.sf.dynamicreports.report.exception.DRException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -83,6 +84,16 @@ public class ControllerExceptionHandler {
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleFileNotFoundException(FileNotFoundException exception) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", exception.getMessage());
+        return new ResponseEntity<>(errorMap, BAD_REQUEST);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Map<String, String>> handleMissingServletRequestParameterException(
+            MissingServletRequestParameterException exception
+    ) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error", exception.getMessage());
         return new ResponseEntity<>(errorMap, BAD_REQUEST);

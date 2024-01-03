@@ -7,6 +7,11 @@ import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.rest.controller.WordController;
 import jakarta.validation.Valid;
+import net.sf.dynamicreports.report.exception.DRException;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,9 +22,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Set;
 
@@ -176,5 +183,33 @@ public class WordControllerImpl implements WordController {
     public void removeComment(@PathVariable String name,
                               @RequestBody CommentDto commentDto) {
         wordFacade.removeComment(name, commentDto);
+    }
+
+    @Override
+    @GetMapping("/report/contributions")
+    @ResponseStatus(value = CREATED)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public void generateWordsContributionReport() throws
+            DRException,
+            FileNotFoundException,
+            JobInstanceAlreadyCompleteException,
+            JobExecutionAlreadyRunningException,
+            JobParametersInvalidException,
+            JobRestartException {
+        wordFacade.generateWordsContributionReport();
+    }
+
+    @Override
+    @GetMapping("/report/statistics")
+    @ResponseStatus(value = CREATED)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public void generateWordsStatisticsReport(@RequestParam("year") Integer year,
+                                              @RequestParam("month") String month) throws
+            DRException, FileNotFoundException,
+            JobInstanceAlreadyCompleteException,
+            JobExecutionAlreadyRunningException,
+            JobParametersInvalidException,
+            JobRestartException {
+        wordFacade.generateWordsStatisticsReport(year, month);
     }
 }

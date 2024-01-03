@@ -4,8 +4,14 @@ import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
+import net.sf.dynamicreports.report.exception.DRException;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.http.ResponseEntity;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Set;
 
@@ -42,4 +48,20 @@ public interface WordController {
     void addComment(String name, CommentDto commentDto);
 
     void removeComment(String name, CommentDto commentDto);
+
+    void generateWordsContributionReport() throws
+            DRException,
+            FileNotFoundException,
+            JobInstanceAlreadyCompleteException,
+            JobExecutionAlreadyRunningException,
+            JobParametersInvalidException,
+            JobRestartException;
+
+    void generateWordsStatisticsReport(Integer year, String month) throws
+            DRException,
+            FileNotFoundException,
+            JobInstanceAlreadyCompleteException,
+            JobExecutionAlreadyRunningException,
+            JobParametersInvalidException,
+            JobRestartException;
 }
