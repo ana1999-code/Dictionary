@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import static com.example.dictionary.application.report.util.ReportUtils.BLUE;
 import static com.example.dictionary.application.report.util.ReportUtils.MARGIN;
 import static com.example.dictionary.application.report.util.ReportUtils.WORD_STATISTICS;
+import static com.example.dictionary.application.report.util.ReportUtils.filePath;
 import static com.example.dictionary.application.report.util.ReportUtils.getFooterComponents;
 import static com.example.dictionary.application.report.util.ReportUtils.getOutputStream;
 import static com.example.dictionary.application.report.util.ReportUtils.getPageFooterStyle;
@@ -131,5 +132,9 @@ public class WordsStatisticReportGenerator implements ReportGenerator {
 
     public void setMonth(Month month) {
         this.month = month;
+    }
+
+    public String getPath(){
+        return filePath;
     }
 }

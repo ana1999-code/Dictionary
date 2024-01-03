@@ -38,6 +38,8 @@ public class ReportUtils {
 
     public static final String PDF = ".pdf";
 
+    public static String filePath;
+
     public static final String WORD_CONTRIBUTIONS = "Word_Contributions_";
 
     public static final String WORD_STATISTICS = "Word_Statistics_";
@@ -85,7 +87,8 @@ public class ReportUtils {
     public static FileOutputStream getOutputStream(String fileName) throws FileNotFoundException {
         LocalDateTime dateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DD_MMYYYY_HHMMSS);
-        return new FileOutputStream(PATH + fileName + formatter.format(dateTime) + PDF);
+        filePath = PATH + fileName + formatter.format(dateTime) + PDF;
+        return new FileOutputStream(filePath);
     }
 
     public static BorderBuilder getBorderBuilder() {

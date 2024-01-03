@@ -55,9 +55,9 @@ public interface WordFacade {
             JobParametersInvalidException,
             JobRestartException;
 
-    void generateWordsContributionReport() throws DRException, FileNotFoundException;
+    void generateWordsContributionReport() throws DRException, FileNotFoundException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException;
 
-    void generateWordsStatisticsReport(Integer year, String month) throws DRException, FileNotFoundException;
+    void generateWordsStatisticsReport(Integer year, String month) throws DRException, FileNotFoundException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException;
 
     List<WordDetail> getAllWordsDetails();
 }

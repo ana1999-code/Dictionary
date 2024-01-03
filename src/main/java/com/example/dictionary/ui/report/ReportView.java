@@ -14,6 +14,10 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
 import jakarta.annotation.security.RolesAllowed;
 import net.sf.dynamicreports.report.exception.DRException;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -102,7 +106,9 @@ public class ReportView extends VerticalLayout {
             try {
                 wordFacade.generateWordsContributionReport();
                 showSuccess("Report Successfully Generated");
-            } catch (DRException | FileNotFoundException exception) {
+            } catch (DRException | FileNotFoundException | JobInstanceAlreadyCompleteException |
+                     JobExecutionAlreadyRunningException | JobParametersInvalidException |
+                     JobRestartException exception) {
                 showNotification(exception.getMessage());
             }
         });
@@ -121,7 +127,9 @@ public class ReportView extends VerticalLayout {
             try {
                 wordFacade.generateWordsStatisticsReport(selectedYear, selectedMonth);
                 showSuccess("Report Successfully Generated");
-            } catch (DRException | FileNotFoundException exception) {
+            } catch (DRException | FileNotFoundException | JobInstanceAlreadyCompleteException |
+                     JobExecutionAlreadyRunningException | JobParametersInvalidException |
+                     JobRestartException exception) {
                 showNotification(exception.getMessage());
             }
         });

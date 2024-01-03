@@ -29,6 +29,7 @@ import static com.example.dictionary.application.report.util.ReportUtils.COLUMN_
 import static com.example.dictionary.application.report.util.ReportUtils.DD_MM_YYYY;
 import static com.example.dictionary.application.report.util.ReportUtils.MARGIN;
 import static com.example.dictionary.application.report.util.ReportUtils.WORD_CONTRIBUTIONS;
+import static com.example.dictionary.application.report.util.ReportUtils.filePath;
 import static com.example.dictionary.application.report.util.ReportUtils.getDetailStyle;
 import static com.example.dictionary.application.report.util.ReportUtils.getFooterComponents;
 import static com.example.dictionary.application.report.util.ReportUtils.getOutputStream;
@@ -164,6 +165,10 @@ public class WordsContributionReportGenerator implements ReportGenerator {
             LocalDateTime value = reportParameters.getValue("addedAt");
             return DateTimeFormatter.ofPattern(pattern).format(value);
         }
+    }
+
+    public String getPath(){
+        return filePath;
     }
 }
 

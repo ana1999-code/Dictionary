@@ -192,13 +192,22 @@ public class BatchImportConfigForWords {
                 .build();
     }
 
-    @Bean
+    @Bean("importWordsFromCsvToDbJob")
     public Job importWordsFromCsvToDbJob(
             @Qualifier("importWordsFromCsvToDbStep") Step importStep,
             @Qualifier("openFilesLocationStep") Step openFolderStep) {
         return new JobBuilder("importWordsFromCsvToDbJob", jobRepository)
                 .start(importStep)
                 .next(openFolderStep)
+                .build();
+    }
+
+    @Bean("openFileLocationJop")
+    public Job openFileLocationJop(
+            @Qualifier("openFilesLocationStep") Step openFolderStep
+    ){
+        return new JobBuilder("openFileLocationJop", jobRepository)
+                .start(openFolderStep)
                 .build();
     }
 }

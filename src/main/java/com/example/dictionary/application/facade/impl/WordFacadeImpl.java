@@ -33,6 +33,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +67,11 @@ public class WordFacadeImpl implements WordFacade {
 
     private final JobLauncher jobLauncher;
 
-    private final Job job;
+    @Qualifier("importWordsFromCsvToDbJob")
+    private final Job importWordsFromCsvToDbJob;
+
+    @Qualifier("openFileLocationJop")
+    private final Job openFileLocationJop;
 
     public WordFacadeImpl(WordService wordService,
                           WordMapper wordMapper,
@@ -77,7 +82,8 @@ public class WordFacadeImpl implements WordFacade {
                           ExampleMapper exampleMapper,
                           WordEntityAssociationUtil associationUtil,
                           JobLauncher jobLauncher,
-                          Job job) {
+                          Job importWordsFromCsvToDbJob,
+                          Job openFileLocationJop) {
         this.wordService = wordService;
         this.wordMapper = wordMapper;
         this.validator = validator;
@@ -87,7 +93,8 @@ public class WordFacadeImpl implements WordFacade {
         this.exampleMapper = exampleMapper;
         this.associationUtil = associationUtil;
         this.jobLauncher = jobLauncher;
-        this.job = job;
+        this.importWordsFromCsvToDbJob = importWordsFromCsvToDbJob;
+        this.openFileLocationJop = openFileLocationJop;
     }
 
     @Override
@@ -267,19 +274,31 @@ public class WordFacadeImpl implements WordFacade {
                 .addString("JobID", String.valueOf(System.currentTimeMillis()))
                 .toJobParameters();
 
-        jobLauncher.run(job, params);
+        jobLauncher.run(importWordsFromCsvToDbJob, params);
     }
 
     @Override
-    public void generateWordsContributionReport() throws DRException, FileNotFoundException {
+    public void generateWordsContributionReport() throws
+            DRException,
+            FileNotFoundException, JobInstanceAlreadyCompleteException,
+            JobExecutionAlreadyRunningException,
+            JobParametersInvalidException,
+            JobRestartException {
         List<WordDetail> wordDetails = wordService.getWordsDetails();
         WordsContributionReportGenerator reportGenerator =
                 new WordsContributionReportGenerator(wordDetails, getCurrentUser());
         reportGenerator.generate();
+        openReportLocation(reportGenerator.getPath());
     }
 
     @Override
-    public void generateWordsStatisticsReport(Integer year, String month) throws DRException, FileNotFoundException {
+    public void generateWordsStatisticsReport(Integer year, String month) throws
+            DRException,
+            FileNotFoundException,
+            JobInstanceAlreadyCompleteException,
+            JobExecutionAlreadyRunningException,
+            JobParametersInvalidException,
+            JobRestartException {
         List<Word> words = wordService.getAllWords();
         WordsStatisticReportGenerator reportGenerator =
                 new WordsStatisticReportGenerator(words, getCurrentUser());
@@ -287,11 +306,25 @@ public class WordFacadeImpl implements WordFacade {
         reportGenerator.setYear(year);
         reportGenerator.setMonth(Month.valueOf(month));
         reportGenerator.generate();
+        openReportLocation(reportGenerator.getPath());
     }
 
     @Override
     public List<WordDetail> getAllWordsDetails() {
         return wordService.getWordsDetails();
+    }
+
+    private void openReportLocation(String path) throws
+            JobInstanceAlreadyCompleteException,
+            JobExecutionAlreadyRunningException,
+            JobParametersInvalidException,
+            JobRestartException {
+        JobParameters params = new JobParametersBuilder()
+                .addString("filePath", path)
+                .addString("JobID", String.valueOf(System.currentTimeMillis()))
+                .toJobParameters();
+
+        jobLauncher.run(openFileLocationJop, params);
     }
 
     private String getCurrentUser() {
