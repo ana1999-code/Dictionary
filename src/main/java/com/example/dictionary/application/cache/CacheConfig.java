@@ -17,6 +17,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.example.dictionary.application.cache.CacheContext.USERS_CACHE;
+import static com.example.dictionary.application.cache.CacheContext.USER_CACHE;
 import static com.example.dictionary.application.cache.CacheContext.WORDS_CACHE;
 import static com.example.dictionary.application.cache.CacheContext.WORDS_DETAILS_CACHE;
 import static com.example.dictionary.application.cache.CacheContext.WORD_CACHE;
@@ -30,7 +32,7 @@ public class CacheConfig {
     private final static Logger LOGGER = LoggerFactory.getLogger(WordProcessorListener.class);
 
     @Bean("cacheKeyGenerator")
-    public KeyGenerator keyGenerator(){
+    public KeyGenerator keyGenerator() {
         return new CacheKeyGenerator();
     }
 
@@ -39,13 +41,21 @@ public class CacheConfig {
         return new ConcurrentMapCacheManager(
                 WORDS_CACHE,
                 WORD_CACHE,
-                WORDS_DETAILS_CACHE
+                WORDS_DETAILS_CACHE,
+                USERS_CACHE,
+                USER_CACHE
         );
     }
 
-    @CacheEvict(allEntries = true, value = {WORDS_CACHE, WORD_CACHE, WORDS_DETAILS_CACHE})
+    @CacheEvict(allEntries = true, value = {
+            WORDS_CACHE,
+            WORD_CACHE,
+            WORDS_DETAILS_CACHE,
+            USERS_CACHE,
+            USER_CACHE
+    })
     @Scheduled(fixedDelay = 60 * 60 * 1000, initialDelay = 500)
-    public void reportCacheEvict(){
+    public void reportCacheEvict() {
         LOGGER.info("Flush Cache " +
                 new SimpleDateFormat("dd/MM/yyyy HH:mm:ss:SSS").format(new Date()));
     }
