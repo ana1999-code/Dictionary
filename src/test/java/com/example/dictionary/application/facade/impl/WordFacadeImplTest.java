@@ -8,6 +8,7 @@ import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.mapper.DefinitionMapper;
 import com.example.dictionary.application.mapper.ExampleMapper;
 import com.example.dictionary.application.mapper.WordMapper;
+import com.example.dictionary.application.util.WordEntityAssociationUtil;
 import com.example.dictionary.application.validator.ExampleValidator;
 import com.example.dictionary.application.validator.WordValidator;
 import com.example.dictionary.domain.entity.Word;
@@ -100,6 +101,9 @@ class WordFacadeImplTest {
     @Mock
     private ExampleMapper exampleMapper;
 
+    @Mock
+    private WordEntityAssociationUtil associationUtil;
+
     @Captor
     private ArgumentCaptor<Word> wordArgumentCaptor;
 
@@ -163,12 +167,7 @@ class WordFacadeImplTest {
         when(wordMapper.wordDtoToWord(any(WordDto.class))).thenReturn(WORD);
         when(wordService.addWord(WORD)).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any(Word.class))).thenReturn(WORD_DTO);
-        when(categoryService.getCategoryByName(anyString())).thenReturn(Optional.of(WORD.getCategory()));
-
-        WORD.getDefinitions().forEach(definition ->
-                when(definitionService.getDefinitionByText(definition.getText()))
-                        .thenReturn(Optional.of(definition))
-        );
+        doNothing().when(associationUtil).associateWordWithEntities(any());
 
         WordDto actualWord = wordFacade.addWord(WORD_DTO);
 

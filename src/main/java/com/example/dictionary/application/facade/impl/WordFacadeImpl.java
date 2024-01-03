@@ -67,7 +67,8 @@ public class WordFacadeImpl implements WordFacade {
                           DefinitionService definitionService,
                           ExampleService exampleService,
                           DefinitionMapper definitionMapper,
-                          ExampleMapper exampleMapper, WordEntityAssociationUtil associationUtil,
+                          ExampleMapper exampleMapper,
+                          WordEntityAssociationUtil associationUtil,
                           JobLauncher jobLauncher,
                           Job job) {
         this.wordService = wordService;
