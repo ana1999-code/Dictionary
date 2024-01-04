@@ -132,9 +132,9 @@ public class WordsView extends VerticalLayout {
 
         uploadFile.addSucceededListener(event -> {
             try {
+                Files.createDirectories(Paths.get(FILE_LOCATION));
                 String csvFilePath = getCsvFilePath(memoryBuffer);
 
-                Files.createDirectories(Paths.get(FILE_LOCATION));
                 wordFacade.uploadFile(csvFilePath, memoryBuffer.getFileName(), FILE_LOCATION);
                 uploadFile.clearFileList();
                 wordDtoGrid.setItems(wordFacade.getAllWords());

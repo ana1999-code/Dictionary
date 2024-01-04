@@ -34,6 +34,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.example.dictionary.domain.cache.CacheContext.WORDS_CACHE;
 
 @Component
 public class WordFacadeImpl implements WordFacade {
@@ -262,6 +265,7 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
+    @CacheEvict(value = WORDS_CACHE, allEntries = true)
     public void uploadFile(String path, String fileName, String fileLocation) throws
             JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
