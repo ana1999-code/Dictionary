@@ -40,6 +40,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -132,6 +134,7 @@ public class WordsView extends VerticalLayout {
             try {
                 String csvFilePath = getCsvFilePath(memoryBuffer);
 
+                Files.createDirectories(Paths.get(FILE_LOCATION));
                 wordFacade.uploadFile(csvFilePath, memoryBuffer.getFileName(), FILE_LOCATION);
                 uploadFile.clearFileList();
                 wordDtoGrid.setItems(wordFacade.getAllWords());

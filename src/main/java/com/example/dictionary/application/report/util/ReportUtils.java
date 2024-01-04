@@ -9,8 +9,10 @@ import net.sf.dynamicreports.report.builder.style.PenBuilder;
 import net.sf.dynamicreports.report.builder.style.StyleBuilder;
 
 import java.awt.Color;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -84,9 +86,10 @@ public class ReportUtils {
         return stl.style().setTopPadding(PADDING);
     }
 
-    public static FileOutputStream getOutputStream(String fileName) throws FileNotFoundException {
+    public static FileOutputStream getOutputStream(String fileName) throws IOException {
         LocalDateTime dateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DD_MMYYYY_HHMMSS);
+        Files.createDirectories(Paths.get(PATH));
         filePath = PATH + fileName + formatter.format(dateTime) + PDF;
         return new FileOutputStream(filePath);
     }

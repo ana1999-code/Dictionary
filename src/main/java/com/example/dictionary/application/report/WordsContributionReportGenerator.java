@@ -17,7 +17,7 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serial;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -67,7 +67,7 @@ public class WordsContributionReportGenerator implements ReportGenerator {
         this.users = userWords.keySet().stream().toList();
     }
 
-    public void generate() throws FileNotFoundException, DRException {
+    public void generate() throws IOException, DRException {
         SubreportBuilder subreport = cmp.subreport(new SubreportExpression())
                 .setDataSource(new SubreportDataSourceExpression());
         report()

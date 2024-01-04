@@ -19,7 +19,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -106,9 +106,8 @@ public class ReportView extends VerticalLayout {
             try {
                 wordFacade.generateWordsContributionReport();
                 showSuccess("Report Successfully Generated");
-            } catch (DRException | FileNotFoundException | JobInstanceAlreadyCompleteException |
-                     JobExecutionAlreadyRunningException | JobParametersInvalidException |
-                     JobRestartException exception) {
+            } catch (DRException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
+                     JobParametersInvalidException | JobRestartException | IOException exception) {
                 showNotification(exception.getMessage());
             }
         });
@@ -127,9 +126,8 @@ public class ReportView extends VerticalLayout {
             try {
                 wordFacade.generateWordsStatisticsReport(selectedYear, selectedMonth);
                 showSuccess("Report Successfully Generated");
-            } catch (DRException | FileNotFoundException | JobInstanceAlreadyCompleteException |
-                     JobExecutionAlreadyRunningException | JobParametersInvalidException |
-                     JobRestartException exception) {
+            } catch (DRException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
+                     JobParametersInvalidException | JobRestartException | IOException exception) {
                 showNotification(exception.getMessage());
             }
         });
