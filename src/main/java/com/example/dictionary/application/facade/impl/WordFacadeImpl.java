@@ -132,15 +132,32 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
+    @Transactional
     public void deleteWordByName(String name) {
-        getWord(name);
+        Word word = getWord(name);
+        word.getSynonyms().forEach(
+                syn -> {
+                    Word word1 = getWord(syn.getName());
+                    word1.removeSynonym(word);
+                    wordService.addWord(word1);
+                }
+        );
+
+        word.getAntonyms().forEach(
+                ant -> {
+                    Word word1 = getWord(ant.getName());
+                    word1.removeAntonym(word);
+                    wordService.addWord(word1);
+                }
+        );
 
         wordService.deleteWordByName(name);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public WordDto addDefinitionToWord(String name, DefinitionDto definitionDto) {
-        Word word = getWord(name);
+        Word word = getWordWithContributors(name);
 
         Definition definition = getOrCreateDefinition(definitionDto);
         verifyDefinitionIsNotPresent(word, definition);
@@ -152,9 +169,10 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public WordDto removeDefinitionFromWord(String name, DefinitionDto definitionDto) {
         Definition definition = definitionMapper.definitionDtoToDefinition(definitionDto);
-        Word word = getWord(name);
+        Word word = getWordWithContributors(name);
 
         Definition definitionToDelete = getDefinitionToDelete(definition, word);
 
@@ -166,7 +184,7 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     public WordDto addExampleToWord(String name, ExampleDto exampleDto) {
-        Word word = getWord(name);
+        Word word = getWordWithContributors(name);
         Example example = getOrCreateExample(exampleDto);
 
         verifyExampleIsValid(word, example);
@@ -179,7 +197,7 @@ public class WordFacadeImpl implements WordFacade {
     @Override
     public WordDto removeExampleFromWord(String name, ExampleDto exampleDto) {
         Example example = exampleMapper.exampleDtoToExample(exampleDto);
-        Word word = getWord(name);
+        Word word = getWordWithContributors(name);
 
         Example exampleToDelete = getExampleToDelete(example, word);
 
@@ -210,8 +228,8 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     public void addSynonym(String name, WordDto synonym) {
-        Word word = getWord(name);
-        Word synonymToAdd = getWord(synonym.getName());
+        Word word = getWordWithContributors(name);
+        Word synonymToAdd = getWordWithContributors(synonym.getName());
 
         verifyWordIsNotPresent(word, synonymToAdd);
 
@@ -221,8 +239,8 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     public void removeSynonym(String name, WordDto synonym) {
-        Word word = getWord(name);
-        Word synonymToRemove = getWord(synonym.getName());
+        Word word = getWordWithContributors(name);
+        Word synonymToRemove = getWordWithContributors(synonym.getName());
 
         verifyWordIsPresent(synonymToRemove, word.getSynonyms());
 
@@ -232,8 +250,8 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     public void addAntonym(String name, WordDto antonym) {
-        Word word = getWord(name);
-        Word antonymToAdd = getWord(antonym.getName());
+        Word word = getWordWithContributors(name);
+        Word antonymToAdd = getWordWithContributors(antonym.getName());
 
         verifyWordIsNotPresent(word, antonymToAdd);
 
@@ -243,8 +261,8 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     public void removeAntonym(String name, WordDto antonym) {
-        Word word = getWord(name);
-        Word antonymToRemove = getWord(antonym.getName());
+        Word word = getWordWithContributors(name);
+        Word antonymToRemove = getWordWithContributors(antonym.getName());
 
         verifyWordIsPresent(antonymToRemove, word.getAntonyms());
 
@@ -343,6 +361,13 @@ public class WordFacadeImpl implements WordFacade {
                 );
     }
 
+    private Word getWordWithContributors(String name) {
+        return wordService.getWordByNameWithContributors(name)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Word [%s] not found".formatted(name))
+                );
+    }
+
     private Definition getOrCreateDefinition(DefinitionDto definitionDto) {
         Optional<Definition> existingDefinition = definitionService
                 .getDefinitionByText(definitionDto.getText());
@@ -354,7 +379,6 @@ public class WordFacadeImpl implements WordFacade {
         });
     }
 
-
     public static void verifyDefinitionIsNotPresent(Word word, Definition definition) {
         if (word.getDefinitions().contains(definition)) {
             throw new DuplicateResourceException(
@@ -363,7 +387,6 @@ public class WordFacadeImpl implements WordFacade {
             );
         }
     }
-
 
     private Definition getDefinitionToDelete(Definition definition, Word word) {
         String text = definition.getText();

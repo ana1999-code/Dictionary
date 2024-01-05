@@ -48,7 +48,6 @@ public class UiUtils {
         return close;
     }
 
-
     public static TextField getConfiguredSearchField() {
         TextField searchField = new TextField();
         searchField.setPlaceholder("Search...");

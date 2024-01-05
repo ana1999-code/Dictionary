@@ -63,7 +63,7 @@ public class WordForm extends FormLayout {
         setupCategoryField();
 
         wordBinder.bindInstanceFields(this);
-        setupDefAnExampleLayouts();
+        setupDefAndExampleLayouts();
     }
 
     private void setupNameField() {
@@ -91,7 +91,7 @@ public class WordForm extends FormLayout {
         add(category);
     }
 
-    private void setupDefAnExampleLayouts() {
+    private void setupDefAndExampleLayouts() {
         definitionsLayout = new VerticalLayout();
         definitionsLayout.add(new NativeLabel("Definitions"));
 

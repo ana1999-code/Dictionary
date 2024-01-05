@@ -19,4 +19,6 @@ public interface WordService {
     void deleteWordByName(String name);
 
     List<WordDetail> getWordsDetails();
+
+    Optional<Word> getWordByNameWithContributors(String name);
 }

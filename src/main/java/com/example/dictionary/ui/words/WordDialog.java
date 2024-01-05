@@ -1,5 +1,6 @@
 package com.example.dictionary.ui.words;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -9,7 +10,7 @@ public class WordDialog extends Div {
 
     private Dialog dialog;
 
-    private WordForm wordForm;
+    private Component wordForm;
 
     private Button saveButton = new Button("Save");
 
@@ -17,17 +18,18 @@ public class WordDialog extends Div {
 
     private Button resetButton = new Button("Reset");
 
-    public WordDialog(WordForm wordForm) {
+    public WordDialog(Component wordForm, String description) {
         this.wordForm = wordForm;
         dialog = new Dialog();
 
-        dialog.setHeaderTitle("Add New Word");
-        dialog.setWidth("50%");
+        dialog.setHeaderTitle(description);
+        dialog.setWidth("30%");
 
         dialog.add(wordForm);
 
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        cancelButton.getStyle().set("margin-right", "auto");
 
         dialog.getFooter().add(cancelButton, resetButton, saveButton);
     }

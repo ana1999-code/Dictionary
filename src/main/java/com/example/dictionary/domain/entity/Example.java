@@ -9,6 +9,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -60,5 +61,18 @@ public class Example {
 
     public void addWord(Word word) {
         words.add(word);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Example example = (Example) o;
+        return Objects.equals(text, example.text);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(text);
     }
 }

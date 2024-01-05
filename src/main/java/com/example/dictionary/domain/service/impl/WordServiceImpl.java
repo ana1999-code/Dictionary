@@ -68,4 +68,10 @@ public class WordServiceImpl implements WordService {
     public List<WordDetail> getWordsDetails() {
         return wordRepository.getWordsDetails();
     }
+
+    @Override
+    @Cacheable(value = WORD_CACHE, key = "#name")
+    public Optional<Word> getWordByNameWithContributors(String name) {
+        return wordRepository.findByNameWithContributors(name);
+    }
 }

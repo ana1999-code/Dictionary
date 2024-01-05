@@ -30,6 +30,7 @@ import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -169,7 +170,7 @@ public class WordsView extends VerticalLayout {
         addWord.setIcon(new Icon(VaadinIcon.PLUS));
 
         wordForm = new WordForm(wordFacade, categoryFacade);
-        dialogForm = new WordDialog(wordForm);
+        dialogForm = new WordDialog(wordForm, "New Word");
         dialog = dialogForm.getDialog();
 
         addWord.addClickListener(event -> dialog.open());
@@ -187,7 +188,6 @@ public class WordsView extends VerticalLayout {
         });
 
         Button cancelButton = dialogForm.getCancelButton();
-        cancelButton.getStyle().set("margin-right", "auto");
         cancelButton.addClickListener(event -> {
             refreshWordForm();
         });
@@ -227,6 +227,11 @@ public class WordsView extends VerticalLayout {
     private void setupWordsGrid() {
         wordDtoGrid = new Grid<>(WordDto.class, false);
         List<WordDto> words = wordFacade.getAllWords();
+        wordDtoGrid.addItemClickListener(event -> {
+            String wordName = event.getItem().getName();
+            wordDtoGrid.getUI().ifPresent(ui -> ui.navigate(WordView.class,
+                    new RouteParameters("wordName", wordName)));
+        });
 
         wordDtoGrid.setItems(words);
         wordDtoGrid.addColumn(WordDto::getName)

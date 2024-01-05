@@ -23,7 +23,6 @@ import java.util.Set;
 
 import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
-import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.TemporalType.TIMESTAMP;
@@ -52,13 +51,14 @@ public class Word {
             inverseJoinColumns = @JoinColumn(name = "example_id", referencedColumnName = "id"))
     private final Set<Example> examples = new HashSet<>();
 
-    @ManyToMany(cascade = {PERSIST, MERGE, REMOVE}, fetch = LAZY)
+    @ManyToMany(fetch = LAZY)
     @JoinTable(name = "word_synonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "synonym_id"))
+    @Cascade({CascadeType.PERSIST, CascadeType.MERGE})
     private final Set<Word> synonyms = new HashSet<>();
 
-    @ManyToMany(cascade = {PERSIST, MERGE}, fetch = LAZY)
+    @ManyToMany(fetch = LAZY)
     @JoinTable(name = "word_antonyms",
             joinColumns = @JoinColumn(name = "word_id"),
             inverseJoinColumns = @JoinColumn(name = "antonym_id"))
@@ -212,16 +212,11 @@ public class Word {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Word word = (Word) o;
-        return Objects.equals(id, word.id)
-                && Objects.equals(name, word.name)
-                && Objects.equals(category, word.category)
-                && Objects.equals(contributors, word.contributors)
-                && Objects.equals(comments, word.comments)
-                && Objects.equals(addedAt, word.addedAt);
+        return Objects.equals(name, word.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, category, contributors, comments, addedAt);
+        return Objects.hash(name);
     }
 }
