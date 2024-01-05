@@ -18,8 +18,8 @@ public interface WordMapper {
     @Mapping(target = "antonyms", ignore = true)
     Word wordDtoToWord(WordDto wordDto);
 
-    @Mapping(target = "synonyms", ignore = true)
-    @Mapping(target = "antonyms", ignore = true)
+    @Mapping(target = "synonyms", source = "synonyms", qualifiedByName = "wordsToWordsName")
+    @Mapping(target = "antonyms", source = "antonyms", qualifiedByName = "wordsToWordsName")
     @Mapping(target = "contributors", source = "contributors", qualifiedByName = "userToUserDtoNames")
     WordDto wordToWordDto(Word word);
 
@@ -37,5 +37,18 @@ public interface WordMapper {
                 });
 
         return userDtos;
+    }
+
+    @Named("wordsToWordsName")
+    static Set<WordDto> wordsToWordsName(Set<Word> words) {
+        Set<WordDto> wordDtos = new HashSet<>();
+        words.forEach(
+                word -> {
+                    WordDto wordDto = new WordDto();
+                    wordDto.setName(word.getName());
+                    wordDtos.add(wordDto);
+                }
+        );
+        return wordDtos;
     }
 }
