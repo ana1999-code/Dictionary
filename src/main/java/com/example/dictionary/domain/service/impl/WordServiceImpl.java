@@ -43,7 +43,7 @@ public class WordServiceImpl implements WordService {
 
     @Override
     @ContributeByUser
-    @CacheEvict(value = {WORDS_CACHE, WORDS_DETAILS_CACHE}, allEntries = true)
+    @CacheEvict(value = {WORDS_CACHE, WORDS_DETAILS_CACHE, WORD_CACHE}, allEntries = true)
     @CachePut(value = WORD_CACHE, key = "#result.name")
     public Word addWord(Word word) {
         return wordRepository.save(word);
