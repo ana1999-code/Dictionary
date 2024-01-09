@@ -132,24 +132,8 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @Transactional
     public void deleteWordByName(String name) {
-        Word word = getWord(name);
-        word.getSynonyms().forEach(
-                syn -> {
-                    Word word1 = getWord(syn.getName());
-                    word1.removeSynonym(word);
-                    wordService.addWord(word1);
-                }
-        );
-
-        word.getAntonyms().forEach(
-                ant -> {
-                    Word word1 = getWord(ant.getName());
-                    word1.removeAntonym(word);
-                    wordService.addWord(word1);
-                }
-        );
+        getWord(name);
 
         wordService.deleteWordByName(name);
     }
