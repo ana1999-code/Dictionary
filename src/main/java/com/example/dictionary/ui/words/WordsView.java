@@ -174,7 +174,7 @@ public class WordsView extends VerticalLayout {
         dialog = dialogForm.getDialog();
 
         addWord.addClickListener(event -> dialog.open());
-        Button saveButton = dialogForm.getSaveButton();
+        Button saveButton = dialogForm.getSecondRightButton();
         saveButton.addClickListener(event -> {
             try {
                 wordForm.saveWord();
@@ -187,12 +187,12 @@ public class WordsView extends VerticalLayout {
             }
         });
 
-        Button cancelButton = dialogForm.getCancelButton();
+        Button cancelButton = dialogForm.getLeftButton();
         cancelButton.addClickListener(event -> {
             refreshWordForm();
         });
 
-        Button resetButton = dialogForm.getResetButton();
+        Button resetButton = dialogForm.getFirstRightButton();
         resetButton.addClickListener(event -> wordForm.reset());
 
         add(dialog);

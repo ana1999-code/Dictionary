@@ -3,6 +3,7 @@ package com.example.dictionary.ui.words.operation;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.words.WordTextFieldForm;
 import com.example.dictionary.ui.words.WordDialog;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.ValidationException;
 
@@ -48,14 +49,18 @@ public abstract class WordOperationTemplate {
     }
 
     private void configureSaveButton() {
-        wordDialog.getSaveButton().addClickListener(clickEvent -> {
+        wordDialog.getSecondRightButton().setText("Save");
+        wordDialog.getSecondRightButton().addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        wordDialog.getSecondRightButton().addClickListener(clickEvent -> {
             TextField detail = wordTextFieldForm.getDetail();
             createDtoAndExecute(detail);
         });
     }
 
     private void configureCancelButton() {
-        wordDialog.getCancelButton()
+        wordDialog.getLeftButton().setText("Cancel");
+        wordDialog.getLeftButton().addThemeVariants(ButtonVariant.LUMO_ERROR);
+        wordDialog.getLeftButton()
                 .addClickListener(clickEvent -> closeDialog());
     }
 
@@ -64,7 +69,9 @@ public abstract class WordOperationTemplate {
     }
 
     private void configureResetButton() {
-        wordDialog.getResetButton()
+        wordDialog.getFirstRightButton().setText("Reset");
+        wordDialog.getFirstRightButton().addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        wordDialog.getFirstRightButton()
                 .addClickListener(clickEvent -> wordTextFieldForm.getDetail().clear());
     }
 

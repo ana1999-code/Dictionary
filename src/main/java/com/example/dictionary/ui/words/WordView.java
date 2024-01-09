@@ -28,8 +28,12 @@ import jakarta.annotation.security.PermitAll;
 
 import java.util.Set;
 
+import static com.example.dictionary.ui.util.UiUtils.WIDTH;
 import static com.example.dictionary.ui.util.UiUtils.showNotification;
 import static com.example.dictionary.ui.util.UiUtils.showSuccess;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_ERROR;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_PRIMARY;
+import static com.vaadin.flow.component.icon.VaadinIcon.ARROW_LEFT;
 
 @Route(value = "word/:wordName?", layout = MainLayout.class)
 @PermitAll
@@ -61,9 +65,9 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private Button addAntonym = new Button(new Icon(VaadinIcon.PLUS));
 
-    private Button close = new Button("Close");
+    private Button close = new Button();
 
-    private Button delete = new Button("Delete");
+    private Button delete = new Button("Delete Word");
 
     public WordView(WordFacade wordFacade) {
         this.wordFacade = wordFacade;
@@ -80,6 +84,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
         wordBinder.bind(name, "name");
         wordBinder.bind(category, "category.name");
+        setupButtons();
 
         setupDefinitions();
         setupExamples();
@@ -92,46 +97,65 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         HorizontalLayout layout = new HorizontalLayout(name, category);
         HorizontalLayout layout2 = new HorizontalLayout(definitionLayout, exampleLayout);
         HorizontalLayout layout1 = new HorizontalLayout(synonymLayout, antonymLayout);
-        layout2.setWidth("50%");
-        layout1.setWidth("50%");
+        layout2.setWidth(WIDTH);
+        layout1.setWidth(WIDTH);
 
         definitionLayout.setSpacing(false);
         exampleLayout.setSpacing(false);
         synonymLayout.setSpacing(false);
         antonymLayout.setSpacing(false);
-        definitionLayout.setWidth("50%");
-        exampleLayout.setWidth("50%");
-        synonymLayout.setWidth("50%");
-        antonymLayout.setWidth("50%");
+        definitionLayout.setWidth(WIDTH);
+        exampleLayout.setWidth(WIDTH);
+        synonymLayout.setWidth(WIDTH);
+        antonymLayout.setWidth(WIDTH);
 
 
         add(layout, layout2, layout1);
-        setupButtons();
     }
 
     private void setupButtons() {
+        setupCancelButton();
+        setupDeleteButton();
+
+        HorizontalLayout buttonsLayout = new HorizontalLayout();
+        buttonsLayout.add(close, delete);
+        buttonsLayout.getStyle().set("flex-wrap", "wrap");
+        buttonsLayout.setJustifyContentMode(JustifyContentMode.END);
+        close.getStyle().set("margin-inline-end", "auto");
+        buttonsLayout.setWidth(WIDTH);
+        add(buttonsLayout);
+    }
+
+    private void setupCancelButton() {
+        close.setIcon(new Icon(ARROW_LEFT));
         close.addClickListener(event -> UI.getCurrent().navigate(WordsView.class));
+    }
+
+    private void setupDeleteButton() {
+        delete.addThemeVariants(LUMO_ERROR);
         delete.addClickListener(event -> {
             try {
-                WordDialog dialog = new WordDialog(new H4("Are you sure you want to delete word?"), "Delete word");
+                String wordValue = name.getValue();
+                WordDialog dialog = new WordDialog(
+                        new H4("Are you sure you want to delete word [%s]?".formatted(wordValue)),
+                        "Delete word");
                 dialog.getDialog().open();
-                dialog.getResetButton().setVisible(false);
-                dialog.getCancelButton().setText("Delete");
-                dialog.getCancelButton()
+                dialog.getFirstRightButton().setVisible(false);
+                dialog.getSecondRightButton().setText("Delete");
+                dialog.getSecondRightButton().addThemeVariants(LUMO_PRIMARY, LUMO_ERROR);
+                dialog.getSecondRightButton()
                         .addClickListener(dialogEvent -> {
-                            wordFacade.deleteWordByName(name.getValue());
+                            wordFacade.deleteWordByName(wordValue);
                             dialog.getDialog().close();
                             UI.getCurrent().navigate(WordsView.class);
                             showSuccess("Successfully Removed");
                         });
-                dialog.getSaveButton().setText("Cancel");
-                dialog.getSaveButton().addClickListener(dialogEvent -> dialog.getDialog().close());
+                dialog.getLeftButton().setText("Cancel");
+                dialog.getLeftButton().addClickListener(dialogEvent -> dialog.getDialog().close());
             } catch (RuntimeException exception) {
                 showNotification(exception.getMessage());
             }
         });
-
-        add(new HorizontalLayout(close, delete));
     }
 
     private void setupDefinitions() {
@@ -172,19 +196,23 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         text.getDelete().setVisible(true);
         text.getDelete().addClickListener(event -> {
             try {
-                WordDialog dialog = new WordDialog(new H4("Are you sure you want to delete definition?"), "Delete definition");
+                String definitionValue = text.getDetail().getValue();
+                WordDialog dialog = new WordDialog(
+                        new H4("Are you sure you want to delete definition [%s]?".formatted(definitionValue)),
+                        "Delete definition");
                 dialog.getDialog().open();
-                dialog.getResetButton().setVisible(false);
-                dialog.getCancelButton().setText("Delete");
-                dialog.getCancelButton()
+                dialog.getFirstRightButton().setVisible(false);
+                dialog.getSecondRightButton().setText("Delete");
+                dialog.getSecondRightButton().addThemeVariants(LUMO_PRIMARY, LUMO_ERROR);
+                dialog.getSecondRightButton()
                         .addClickListener(dialogEvent -> {
                             wordFacade.removeDefinitionFromWord(name.getValue(), definitionDto);
                             dialog.getDialog().close();
                             refresh();
                             showSuccess("Successfully Removed");
                         });
-                dialog.getSaveButton().setText("Cancel");
-                dialog.getSaveButton().addClickListener(dialogEvent -> dialog.getDialog().close());
+                dialog.getLeftButton().setText("Cancel");
+                dialog.getLeftButton().addClickListener(dialogEvent -> dialog.getDialog().close());
             } catch (RuntimeException exception) {
                 showNotification(exception.getMessage());
             }
@@ -201,19 +229,23 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         text.getDelete().setVisible(true);
         text.getDelete().addClickListener(event -> {
             try {
-                WordDialog dialog = new WordDialog(new H4("Are you sure you want to delete example?"), "Delete example");
+                String exampleValue = text.getDetail().getValue();
+                WordDialog dialog = new WordDialog(
+                        new H4("Are you sure you want to delete example [%s]?".formatted(exampleValue)),
+                        "Delete example");
                 dialog.getDialog().open();
-                dialog.getResetButton().setVisible(false);
-                dialog.getCancelButton().setText("Delete");
-                dialog.getCancelButton()
+                dialog.getFirstRightButton().setVisible(false);
+                dialog.getSecondRightButton().setText("Delete");
+                dialog.getSecondRightButton().addThemeVariants(LUMO_PRIMARY, LUMO_ERROR);
+                dialog.getSecondRightButton()
                         .addClickListener(dialogEvent -> {
                             wordFacade.removeExampleFromWord(name.getValue(), exampleDto);
                             dialog.getDialog().close();
                             refresh();
                             showSuccess("Successfully Removed");
                         });
-                dialog.getSaveButton().setText("Cancel");
-                dialog.getSaveButton().addClickListener(dialogEvent -> dialog.getDialog().close());
+                dialog.getLeftButton().setText("Cancel");
+                dialog.getLeftButton().addClickListener(dialogEvent -> dialog.getDialog().close());
             } catch (RuntimeException exception) {
                 showNotification(exception.getMessage());
             }
@@ -230,19 +262,23 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         text.getDelete().setVisible(true);
         text.getDelete().addClickListener(event -> {
             try {
-                WordDialog dialog = new WordDialog(new H4("Are you sure you want to delete synonym?"), "Delete synonym");
+                String wordValue = text.getDetail().getValue();
+                WordDialog dialog = new WordDialog(
+                        new H4("Are you sure you want to delete synonym [%s]?".formatted(wordValue)),
+                        "Delete synonym");
                 dialog.getDialog().open();
-                dialog.getResetButton().setVisible(false);
-                dialog.getCancelButton().setText("Delete");
-                dialog.getCancelButton()
+                dialog.getFirstRightButton().setVisible(false);
+                dialog.getSecondRightButton().setText("Delete");
+                dialog.getSecondRightButton().addThemeVariants(LUMO_PRIMARY, LUMO_ERROR);
+                dialog.getSecondRightButton()
                         .addClickListener(dialogEvent -> {
                             wordFacade.removeSynonym(name.getValue(), synonym);
                             dialog.getDialog().close();
                             refresh();
                             showSuccess("Successfully Removed");
                         });
-                dialog.getSaveButton().setText("Cancel");
-                dialog.getSaveButton().addClickListener(dialogEvent -> dialog.getDialog().close());
+                dialog.getLeftButton().setText("Cancel");
+                dialog.getLeftButton().addClickListener(dialogEvent -> dialog.getDialog().close());
             } catch (RuntimeException exception) {
                 showNotification(exception.getMessage());
             }
@@ -259,19 +295,23 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         text.getDelete().setVisible(true);
         text.getDelete().addClickListener(event -> {
             try {
-                WordDialog dialog = new WordDialog(new H4("Are you sure you want to delete antonym?"), "Delete antonym");
+                String wordValue = text.getDetail().getValue();
+                WordDialog dialog = new WordDialog(
+                        new H4("Are you sure you want to delete antonym [%s]?".formatted(wordValue)),
+                        "Delete antonym");
                 dialog.getDialog().open();
-                dialog.getResetButton().setVisible(false);
-                dialog.getCancelButton().setText("Delete");
-                dialog.getCancelButton()
+                dialog.getFirstRightButton().setVisible(false);
+                dialog.getSecondRightButton().setText("Delete");
+                dialog.getSecondRightButton().addThemeVariants(LUMO_PRIMARY, LUMO_ERROR);
+                dialog.getSecondRightButton()
                         .addClickListener(dialogEvent -> {
                             wordFacade.removeAntonym(name.getValue(), antonym);
                             dialog.getDialog().close();
                             refresh();
                             showSuccess("Successfully Removed");
                         });
-                dialog.getSaveButton().setText("Cancel");
-                dialog.getSaveButton().addClickListener(dialogEvent -> dialog.getDialog().close());
+                dialog.getLeftButton().setText("Cancel");
+                dialog.getLeftButton().addClickListener(dialogEvent -> dialog.getDialog().close());
             } catch (RuntimeException exception) {
                 showNotification(exception.getMessage());
             }

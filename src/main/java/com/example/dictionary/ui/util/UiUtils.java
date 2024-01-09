@@ -27,6 +27,8 @@ public class UiUtils {
 
     public static final String PROCESSED = "PROCESSED_";
 
+    public static final String WIDTH = "50%";
+
     public static void showNotification(String message) {
         Notification notification = new Notification(message, 5000, Notification.Position.TOP_CENTER);
         notification.addThemeVariants(NotificationVariant.LUMO_ERROR);

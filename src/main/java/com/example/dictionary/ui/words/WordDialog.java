@@ -2,7 +2,6 @@ package com.example.dictionary.ui.words;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 
@@ -12,11 +11,11 @@ public class WordDialog extends Div {
 
     private Component wordForm;
 
-    private Button saveButton = new Button("Save");
+    private Button secondRightButton = new Button();
 
-    private Button cancelButton = new Button("Cancel");
+    private Button leftButton = new Button();
 
-    private Button resetButton = new Button("Reset");
+    private Button firstRightButton = new Button();
 
     public WordDialog(Component wordForm, String description) {
         this.wordForm = wordForm;
@@ -24,29 +23,26 @@ public class WordDialog extends Div {
 
         dialog.setHeaderTitle(description);
         dialog.setWidth("30%");
-
         dialog.add(wordForm);
 
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        cancelButton.getStyle().set("margin-right", "auto");
+        leftButton.getStyle().set("margin-right", "auto");
 
-        dialog.getFooter().add(cancelButton, resetButton, saveButton);
+        dialog.getFooter().add(leftButton, firstRightButton, secondRightButton);
     }
 
     public Dialog getDialog() {
         return dialog;
     }
 
-    public Button getSaveButton() {
-        return saveButton;
+    public Button getSecondRightButton() {
+        return secondRightButton;
     }
 
-    public Button getCancelButton() {
-        return cancelButton;
+    public Button getLeftButton() {
+        return leftButton;
     }
 
-    public Button getResetButton() {
-        return resetButton;
+    public Button getFirstRightButton() {
+        return firstRightButton;
     }
 }
