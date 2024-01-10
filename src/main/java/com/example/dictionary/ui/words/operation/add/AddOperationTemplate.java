@@ -4,14 +4,15 @@ import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.words.WordDialog;
 import com.example.dictionary.ui.words.WordView;
 import com.example.dictionary.ui.words.operation.OperationTemplate;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.ValidationException;
 
 import static com.example.dictionary.ui.util.UiUtils.showNotification;
 import static com.example.dictionary.ui.util.UiUtils.showSuccess;
 import static com.example.dictionary.ui.words.operation.DataRefresher.refresh;
-import static com.vaadin.flow.component.button.ButtonVariant.*;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_ERROR;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_PRIMARY;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 
 public abstract class AddOperationTemplate extends OperationTemplate {
 

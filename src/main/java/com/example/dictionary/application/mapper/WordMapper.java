@@ -58,7 +58,7 @@ public interface WordMapper {
     }
 
     @Named("commentsToCommentsDetails")
-    static List<CommentDto> commentsToCommentsDetails(List<Comment> comments){
+    static List<CommentDto> commentsToCommentsDetails(List<Comment> comments) {
         List<CommentDto> commentDtos = new ArrayList<>();
         comments.forEach(
                 comment -> {

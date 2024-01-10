@@ -3,7 +3,7 @@ package com.example.dictionary.application.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
@@ -16,8 +16,8 @@ public class CommentDto {
 
     private UserDto commenter;
 
-    @JsonFormat(shape = STRING, pattern = "dd-MM-yyyy")
-    private LocalDate commentedAt;
+    @JsonFormat(shape = STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime commentedAt;
 
     public CommentDto() {
     }
@@ -52,11 +52,11 @@ public class CommentDto {
         this.commenter = commenter;
     }
 
-    public LocalDate getCommentedAt() {
+    public LocalDateTime getCommentedAt() {
         return commentedAt;
     }
 
-    public void setCommentedAt(LocalDate commentedAt) {
+    public void setCommentedAt(LocalDateTime commentedAt) {
         this.commentedAt = commentedAt;
     }
 

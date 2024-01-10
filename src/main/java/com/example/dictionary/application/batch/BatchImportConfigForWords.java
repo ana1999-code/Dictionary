@@ -205,7 +205,7 @@ public class BatchImportConfigForWords {
     @Bean("openFileLocationJop")
     public Job openFileLocationJop(
             @Qualifier("openFilesLocationStep") Step openFolderStep
-    ){
+    ) {
         return new JobBuilder("openFileLocationJop", jobRepository)
                 .start(openFolderStep)
                 .build();

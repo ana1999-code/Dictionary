@@ -18,14 +18,15 @@ public interface CommentMapper {
     CommentDto commentToCommentDto(Comment comment);
 
     @Named("commenterToCommenterDto")
-    static UserDto commenterToCommenterDto(User user){
+    static UserDto commenterToCommenterDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setEmail(user.getEmail());
         userDto.setPassword(user.getPassword());
-        userDto.setProfileImage(user.getProfileImage());;
+        userDto.setProfileImage(user.getProfileImage());
+        ;
         return userDto;
     }
 }

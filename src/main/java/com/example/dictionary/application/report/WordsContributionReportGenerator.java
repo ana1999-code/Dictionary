@@ -167,7 +167,7 @@ public class WordsContributionReportGenerator implements ReportGenerator {
         }
     }
 
-    public String getPath(){
+    public String getPath() {
         return filePath;
     }
 }

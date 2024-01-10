@@ -11,11 +11,11 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
-import static jakarta.persistence.TemporalType.DATE;
+import static jakarta.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "comments")
@@ -31,9 +31,9 @@ public class Comment {
     @OneToOne
     private User commenter;
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    @Temporal(value = DATE)
-    private LocalDate commentedAt;
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    @Temporal(value = TIMESTAMP)
+    private LocalDateTime commentedAt;
 
     @ManyToOne
     @JoinColumn
@@ -63,11 +63,11 @@ public class Comment {
         this.commenter = commenter;
     }
 
-    public LocalDate getCommentedAt() {
+    public LocalDateTime getCommentedAt() {
         return commentedAt;
     }
 
-    public void setCommentedAt(LocalDate commentedAt) {
+    public void setCommentedAt(LocalDateTime commentedAt) {
         this.commentedAt = commentedAt;
     }
 

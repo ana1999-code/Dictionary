@@ -134,7 +134,7 @@ public class WordsStatisticReportGenerator implements ReportGenerator {
         this.month = month;
     }
 
-    public String getPath(){
+    public String getPath() {
         return filePath;
     }
 }

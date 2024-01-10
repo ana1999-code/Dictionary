@@ -38,6 +38,8 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -270,7 +272,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         examples.forEach(this::setupAntonymLayout);
     }
 
-    private void setupCommentsLayout(){
+    private void setupCommentsLayout() {
         List<CommentDto> comments = wordFacade.getAllCommentsByWord(name.getValue());
         HorizontalLayout layout = new HorizontalLayout(new H4("Comments"));
         layout.add(addComment);
@@ -319,7 +321,9 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         String lastName = commenter.getLastName();
         Avatar avatar = getAvatar(firstName, lastName);
         Span name = new Span(firstName + " " + lastName);
-        Span commentedDate = new Span(commentDto.getCommentedAt().toString());
+        LocalDateTime commentedAt = commentDto.getCommentedAt();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+        Span commentedDate = new Span(formatter.format(commentedAt));
         commentedDate.getStyle().set("color", "grey")
                 .set("font-size", "0.8em");
         HorizontalLayout commenterLayout =
@@ -329,7 +333,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         wordTextFieldForm.getDelete()
                 .setVisible(Objects.requireNonNull(
                         SecurityUtils.getUsername()).equalsIgnoreCase(commenter.getEmail()
-                        ));
+                ));
 
         commentLayout.add(
                 commenterLayout,

@@ -2,7 +2,8 @@ package com.example.dictionary.domain.cache;
 
 public class CacheContext {
 
-    private CacheContext(){}
+    private CacheContext() {
+    }
 
     public static final String WORDS_CACHE = "wordsCache";
 

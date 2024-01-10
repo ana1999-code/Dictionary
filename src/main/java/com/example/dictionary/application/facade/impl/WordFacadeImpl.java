@@ -45,7 +45,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -277,7 +276,7 @@ public class WordFacadeImpl implements WordFacade {
         Word word = getWord(name);
 
         Comment comment = commentMapper.commentDtoToComment(commentDto);
-        comment.setCommentedAt(LocalDate.now());
+        comment.setCommentedAt(LocalDateTime.now());
         comment.setCommenter(userService.findByEmail(getCurrentUser()).get());
 
         word.addComment(comment);
