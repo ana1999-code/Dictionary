@@ -49,6 +49,8 @@ public interface WordFacade {
 
     void removeComment(String name, Integer commentId);
 
+    List<CommentDto> getAllCommentsByWord(String name);
+
     void uploadFile(String path, String fileName, String fileLocation) throws
             JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,

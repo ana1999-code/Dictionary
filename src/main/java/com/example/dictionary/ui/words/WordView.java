@@ -1,27 +1,33 @@
 package com.example.dictionary.ui.words;
 
+import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
+import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.WordFacade;
+import com.example.dictionary.application.security.util.SecurityUtils;
 import com.example.dictionary.ui.MainLayout;
 import com.example.dictionary.ui.security.CurrentUserPermissionService;
+import com.example.dictionary.ui.words.operation.add.AddOperationTemplate;
+import com.example.dictionary.ui.words.operation.add.comments.AddCommentOperation;
 import com.example.dictionary.ui.words.operation.add.detail.AddAntonymOperation;
 import com.example.dictionary.ui.words.operation.add.detail.AddDefinitionOperation;
 import com.example.dictionary.ui.words.operation.add.detail.AddExampleOperation;
-import com.example.dictionary.ui.words.operation.add.AddOperationTemplate;
 import com.example.dictionary.ui.words.operation.add.detail.AddSynonymOperation;
+import com.example.dictionary.ui.words.operation.remove.RemoveOperationTemplate;
+import com.example.dictionary.ui.words.operation.remove.comment.RemoveCommentOperation;
 import com.example.dictionary.ui.words.operation.remove.detail.RemoveAntonymOperation;
 import com.example.dictionary.ui.words.operation.remove.detail.RemoveDefinitionOperation;
 import com.example.dictionary.ui.words.operation.remove.detail.RemoveExampleOperation;
-import com.example.dictionary.ui.words.operation.remove.RemoveOperationTemplate;
 import com.example.dictionary.ui.words.operation.remove.detail.RemoveSynonymOperation;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -32,14 +38,19 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.example.dictionary.ui.util.UiUtils.WIDTH;
+import static com.example.dictionary.ui.util.UiUtils.getAddButton;
+import static com.example.dictionary.ui.util.UiUtils.getAvatar;
 import static com.example.dictionary.ui.util.UiUtils.showNotification;
 import static com.example.dictionary.ui.util.UiUtils.showSuccess;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_ERROR;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_PRIMARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.ARROW_LEFT;
+import static com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment.CENTER;
 
 @Route(value = "word/:wordName?", layout = MainLayout.class)
 @PermitAll
@@ -65,13 +76,17 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private VerticalLayout antonymLayout = new VerticalLayout();
 
-    private Button addDefinition = new Button(new Icon(VaadinIcon.PLUS));
+    private VerticalLayout commentLayout = new VerticalLayout();
 
-    private Button addExample = new Button(new Icon(VaadinIcon.PLUS));
+    private Button addDefinition = getAddButton();
 
-    private Button addSynonym = new Button(new Icon(VaadinIcon.PLUS));
+    private Button addExample = getAddButton();
 
-    private Button addAntonym = new Button(new Icon(VaadinIcon.PLUS));
+    private Button addSynonym = getAddButton();
+
+    private Button addAntonym = getAddButton();
+
+    private Button addComment = getAddButton();
 
     private Button back = new Button();
 
@@ -90,6 +105,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         HorizontalLayout nameAndCategoryLayout = getNameAndCategoryLayout();
         HorizontalLayout definitionAndExampleLayout = getDefinitionAndExampleLayout();
         HorizontalLayout synonymAndAntonymLayout = getSynonymAndAntonymLayout();
+        HorizontalLayout commentsLayout = getCommentsHorizontalLayout();
 
         setupWordBinder();
         setupBackAndDeleteButtons();
@@ -98,8 +114,8 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         if (permissionService.hasWordWritePermission()) {
             setupAddWordDetailButtons();
         }
-
-        add(nameAndCategoryLayout, definitionAndExampleLayout, synonymAndAntonymLayout);
+        setupAddCommentButton();
+        add(nameAndCategoryLayout, definitionAndExampleLayout, synonymAndAntonymLayout, commentsLayout);
     }
 
     private void setupAddWordDetailButtons() {
@@ -114,6 +130,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         setupExamplesLayout();
         setupSynonymsLayout();
         setupAntonymsLayout();
+        setupCommentsLayout();
     }
 
     private HorizontalLayout getNameAndCategoryLayout() {
@@ -139,6 +156,13 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         synonymLayout.setWidth(WIDTH);
         antonymLayout.setWidth(WIDTH);
         return synonymAndAntonymLayout;
+    }
+
+    private HorizontalLayout getCommentsHorizontalLayout() {
+        HorizontalLayout commentsLayout = new HorizontalLayout(commentLayout);
+        commentsLayout.setWidth(WIDTH);
+        commentLayout.setWidthFull();
+        return commentsLayout;
     }
 
     private void setupWordBinder() {
@@ -208,7 +232,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         if (permissionService.hasWordWritePermission()) {
             layout.add(addDefinition);
         }
-        layout.setDefaultVerticalComponentAlignment(Alignment.END);
+        layout.setDefaultVerticalComponentAlignment(CENTER);
         definitionLayout.add(layout);
         definitions.forEach(this::setupDefinitionLayout);
     }
@@ -219,7 +243,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         if (permissionService.hasWordWritePermission()) {
             layout.add(addExample);
         }
-        layout.setDefaultVerticalComponentAlignment(Alignment.END);
+        layout.setDefaultVerticalComponentAlignment(CENTER);
         exampleLayout.add(layout);
         examples.forEach(this::setupExampleLayout);
     }
@@ -230,7 +254,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         if (permissionService.hasWordWritePermission()) {
             layout.add(addSynonym);
         }
-        layout.setDefaultVerticalComponentAlignment(Alignment.END);
+        layout.setDefaultVerticalComponentAlignment(CENTER);
         synonymLayout.add(layout);
         examples.forEach(this::setupSynonymLayout);
     }
@@ -241,9 +265,19 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         if (permissionService.hasWordWritePermission()) {
             layout.add(addAntonym);
         }
-        layout.setDefaultVerticalComponentAlignment(Alignment.END);
+        layout.setDefaultVerticalComponentAlignment(CENTER);
         antonymLayout.add(layout);
         examples.forEach(this::setupAntonymLayout);
+    }
+
+    private void setupCommentsLayout(){
+        List<CommentDto> comments = wordFacade.getAllCommentsByWord(name.getValue());
+        HorizontalLayout layout = new HorizontalLayout(new H4("Comments"));
+        layout.add(addComment);
+        layout.setDefaultVerticalComponentAlignment(CENTER);
+        commentLayout.add(layout);
+        commentLayout.setHorizontalComponentAlignment(CENTER, layout);
+        comments.forEach(this::setupCommentLayout);
     }
 
     private void setupDefinitionLayout(DefinitionDto definitionDto) {
@@ -274,6 +308,33 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         antonym.execute();
         antonym.getWordTextFieldForm().getDetail().setHeight("2.25em");
         antonymLayout.add(antonym.getWordTextFieldForm());
+    }
+
+    private void setupCommentLayout(CommentDto commentDto) {
+        RemoveOperationTemplate comment =
+                new RemoveCommentOperation(wordFacade, name.getValue(), commentDto, this);
+        comment.execute();
+        UserDto commenter = commentDto.getCommenter();
+        String firstName = commenter.getFirstName();
+        String lastName = commenter.getLastName();
+        Avatar avatar = getAvatar(firstName, lastName);
+        Span name = new Span(firstName + " " + lastName);
+        Span commentedDate = new Span(commentDto.getCommentedAt().toString());
+        commentedDate.getStyle().set("color", "grey")
+                .set("font-size", "0.8em");
+        HorizontalLayout commenterLayout =
+                new HorizontalLayout(avatar, name, commentedDate);
+        commenterLayout.setDefaultVerticalComponentAlignment(CENTER);
+        WordTextFieldForm wordTextFieldForm = comment.getWordTextFieldForm();
+        wordTextFieldForm.getDelete()
+                .setVisible(Objects.requireNonNull(
+                        SecurityUtils.getUsername()).equalsIgnoreCase(commenter.getEmail()
+                        ));
+
+        commentLayout.add(
+                commenterLayout,
+                wordTextFieldForm
+        );
     }
 
     private void setupAddSynonymButton() {
@@ -308,6 +369,14 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         });
     }
 
+    private void setupAddCommentButton() {
+        addComment.addClickListener(event -> {
+            AddOperationTemplate addOperationTemplate =
+                    new AddCommentOperation(wordFacade, name.getValue(), this);
+            addOperationTemplate.execute();
+        });
+    }
+
     public TextField getName() {
         return name;
     }
@@ -330,6 +399,10 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     public VerticalLayout getAntonymLayout() {
         return antonymLayout;
+    }
+
+    public VerticalLayout getCommentLayout() {
+        return commentLayout;
     }
 
     public CurrentUserPermissionService getPermissionService() {

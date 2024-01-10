@@ -298,6 +298,15 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public List<CommentDto> getAllCommentsByWord(String name) {
+        List<Comment> commentsByWord = commentService.getAllCommentsByWord(name);
+        return commentsByWord.stream()
+                .map(commentMapper::commentToCommentDto)
+                .toList();
+    }
+
+    @Override
     @CacheEvict(value = WORDS_CACHE, allEntries = true)
     public void uploadFile(String path, String fileName, String fileLocation) throws
             JobInstanceAlreadyCompleteException,

@@ -11,6 +11,7 @@ import com.vaadin.flow.data.binder.ValidationException;
 import static com.example.dictionary.ui.util.UiUtils.showNotification;
 import static com.example.dictionary.ui.util.UiUtils.showSuccess;
 import static com.example.dictionary.ui.words.operation.DataRefresher.refresh;
+import static com.vaadin.flow.component.button.ButtonVariant.*;
 
 public abstract class AddOperationTemplate extends OperationTemplate {
 
@@ -32,7 +33,7 @@ public abstract class AddOperationTemplate extends OperationTemplate {
 
     private void configureSaveButton() {
         wordDialog.getSecondRightButton().setText("Save");
-        wordDialog.getSecondRightButton().addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        wordDialog.getSecondRightButton().addThemeVariants(LUMO_PRIMARY);
         wordDialog.getSecondRightButton().addClickListener(clickEvent -> {
             TextArea detail = wordTextFieldForm.getDetail();
             createDtoAndExecute(detail);
@@ -41,14 +42,14 @@ public abstract class AddOperationTemplate extends OperationTemplate {
 
     private void configureCancelButton() {
         wordDialog.getLeftButton().setText("Cancel");
-        wordDialog.getLeftButton().addThemeVariants(ButtonVariant.LUMO_ERROR);
+        wordDialog.getLeftButton().addThemeVariants(LUMO_ERROR);
         wordDialog.getLeftButton()
                 .addClickListener(clickEvent -> closeDialog());
     }
 
     private void configureResetButton() {
         wordDialog.getFirstRightButton().setText("Reset");
-        wordDialog.getFirstRightButton().addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        wordDialog.getFirstRightButton().addThemeVariants(LUMO_TERTIARY);
         wordDialog.getFirstRightButton()
                 .addClickListener(clickEvent -> wordTextFieldForm.getDetail().clear());
     }

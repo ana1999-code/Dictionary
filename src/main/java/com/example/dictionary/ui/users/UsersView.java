@@ -3,7 +3,6 @@ package com.example.dictionary.ui.users;
 import com.example.dictionary.domain.entity.User;
 import com.example.dictionary.domain.service.UserService;
 import com.example.dictionary.ui.MainLayout;
-import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -17,6 +16,7 @@ import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.dictionary.ui.util.UiUtils.getAvatar;
 import static com.example.dictionary.ui.util.UiUtils.getConfiguredSearchField;
 
 @Route(value = "/users", layout = MainLayout.class)
@@ -50,7 +50,7 @@ public class UsersView extends VerticalLayout {
         List<User> users = userService.getAllUsers();
 
         userGrid.setItems(users);
-        userGrid.addComponentColumn(UsersView::getAvatar)
+        userGrid.addComponentColumn(user -> getAvatar(user.getFirstName(), user.getLastName()))
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setWidth("5%");
         userGrid.addColumn(User::getFirstName)
@@ -102,12 +102,5 @@ public class UsersView extends VerticalLayout {
                                                 .startsWith(searchField.getValue().toLowerCase()))
                         .collect(Collectors.toSet())
         );
-    }
-
-    private static Avatar getAvatar(User user) {
-        String name = user.getFirstName() + " " + user.getLastName();
-        Avatar avatar = new Avatar(name);
-        avatar.setColorIndex(name.length());
-        return avatar;
     }
 }

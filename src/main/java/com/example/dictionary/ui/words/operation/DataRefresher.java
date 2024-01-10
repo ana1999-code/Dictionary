@@ -11,6 +11,7 @@ public class DataRefresher {
         wordView.getExampleLayout().removeAll();
         wordView.getSynonymLayout().removeAll();
         wordView.getAntonymLayout().removeAll();
+        wordView.getCommentLayout().removeAll();
         wordView.setupWordDetails();
     }
 }

@@ -57,6 +57,9 @@ import static com.example.dictionary.ui.util.UiUtils.PROCESSED;
 import static com.example.dictionary.ui.util.UiUtils.getConfiguredSearchField;
 import static com.example.dictionary.ui.util.UiUtils.showNotification;
 import static com.example.dictionary.ui.util.UiUtils.showSuccess;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_ERROR;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_PRIMARY;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.grid.ColumnTextAlign.CENTER;
 
 @Route(value = "words", layout = MainLayout.class)
@@ -166,7 +169,7 @@ public class WordsView extends VerticalLayout {
 
     private void setupAddButton() {
         addWord = new Button("Add Word");
-        addWord.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        addWord.addThemeVariants(LUMO_PRIMARY);
         addWord.setIcon(new Icon(VaadinIcon.PLUS));
 
         wordForm = new WordForm(wordFacade, categoryFacade);
@@ -184,6 +187,8 @@ public class WordsView extends VerticalLayout {
 
     private void setupSaveButton() {
         Button saveButton = dialogForm.getSecondRightButton();
+        saveButton.setText("Save");
+        saveButton.addThemeVariants(LUMO_PRIMARY);
         saveButton.addClickListener(event -> {
             try {
                 wordForm.saveWord();
@@ -199,6 +204,8 @@ public class WordsView extends VerticalLayout {
 
     private void setupCancelButton() {
         Button cancelButton = dialogForm.getLeftButton();
+        cancelButton.setText("Cancel");
+        cancelButton.addThemeVariants(LUMO_ERROR);
         cancelButton.addClickListener(event -> {
             refreshWordForm();
         });
@@ -206,6 +213,8 @@ public class WordsView extends VerticalLayout {
 
     private void setupResetButton() {
         Button resetButton = dialogForm.getFirstRightButton();
+        resetButton.setText("Reset");
+        resetButton.addThemeVariants(LUMO_TERTIARY);
         resetButton.addClickListener(event -> wordForm.reset());
     }
 

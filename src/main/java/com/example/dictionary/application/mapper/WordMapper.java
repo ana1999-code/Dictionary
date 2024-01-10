@@ -63,6 +63,7 @@ public interface WordMapper {
         comments.forEach(
                 comment -> {
                     CommentDto commentDto = new CommentDto();
+                    commentDto.setId(comment.getId());
                     commentDto.setCommentedAt(comment.getCommentedAt());
                     commentDto.setText(comment.getText());
                     commentDtos.add(commentDto);

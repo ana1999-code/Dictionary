@@ -5,6 +5,7 @@ import com.example.dictionary.domain.repository.CommentRepository;
 import com.example.dictionary.domain.service.CommentService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,5 +30,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void removeComment(Comment comment) {
         commentRepository.delete(comment);
+    }
+
+    @Override
+    public List<Comment> getAllCommentsByWord(String name) {
+        return commentRepository.findAllCommentsByWord(name);
     }
 }

@@ -19,6 +19,13 @@ public class CommentDto {
     @JsonFormat(shape = STRING, pattern = "dd-MM-yyyy")
     private LocalDate commentedAt;
 
+    public CommentDto() {
+    }
+
+    public CommentDto(String text) {
+        this.text = text;
+    }
+
     private WordDto word;
 
     public Integer getId() {
