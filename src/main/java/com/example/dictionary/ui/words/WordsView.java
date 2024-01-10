@@ -227,12 +227,11 @@ public class WordsView extends VerticalLayout {
     private void setupWordsGrid() {
         wordDtoGrid = new Grid<>(WordDto.class, false);
         List<WordDto> words = wordFacade.getAllWords();
-        wordDtoGrid.addItemClickListener(event -> {
+        wordDtoGrid.addItemDoubleClickListener(event -> {
             String wordName = event.getItem().getName();
             wordDtoGrid.getUI().ifPresent(ui -> ui.navigate(WordView.class,
                     new RouteParameters("wordName", wordName)));
         });
-
         wordDtoGrid.setItems(words);
         wordDtoGrid.addColumn(WordDto::getName)
                 .setHeader("Word")
