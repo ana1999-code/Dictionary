@@ -217,7 +217,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         Set<ExampleDto> examples = word.getExamples();
         HorizontalLayout layout = new HorizontalLayout(new H5("Examples"));
         if (permissionService.hasWordWritePermission()) {
-            layout.add(addDefinition, addExample);
+            layout.add(addExample);
         }
         layout.setDefaultVerticalComponentAlignment(Alignment.END);
         exampleLayout.add(layout);
