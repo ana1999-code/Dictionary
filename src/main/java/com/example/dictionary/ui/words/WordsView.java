@@ -174,6 +174,15 @@ public class WordsView extends VerticalLayout {
         dialog = dialogForm.getDialog();
 
         addWord.addClickListener(event -> dialog.open());
+
+        setupSaveButton();
+        setupCancelButton();
+        setupResetButton();
+
+        add(dialog);
+    }
+
+    private void setupSaveButton() {
         Button saveButton = dialogForm.getSecondRightButton();
         saveButton.addClickListener(event -> {
             try {
@@ -186,16 +195,18 @@ public class WordsView extends VerticalLayout {
                 showNotification(exception.getMessage());
             }
         });
+    }
 
+    private void setupCancelButton() {
         Button cancelButton = dialogForm.getLeftButton();
         cancelButton.addClickListener(event -> {
             refreshWordForm();
         });
+    }
 
+    private void setupResetButton() {
         Button resetButton = dialogForm.getFirstRightButton();
         resetButton.addClickListener(event -> wordForm.reset());
-
-        add(dialog);
     }
 
     private void setupSearchField() {
@@ -227,11 +238,15 @@ public class WordsView extends VerticalLayout {
     private void setupWordsGrid() {
         wordDtoGrid = new Grid<>(WordDto.class, false);
         List<WordDto> words = wordFacade.getAllWords();
-        wordDtoGrid.addItemDoubleClickListener(event -> {
-            String wordName = event.getItem().getName();
-            wordDtoGrid.getUI().ifPresent(ui -> ui.navigate(WordView.class,
-                    new RouteParameters("wordName", wordName)));
-        });
+
+        setWordColumns(words);
+        addItemClickListener();
+        addWordSorting();
+
+        setupWordGridStyle();
+    }
+
+    private void setWordColumns(List<WordDto> words) {
         wordDtoGrid.setItems(words);
         wordDtoGrid.addColumn(WordDto::getName)
                 .setHeader("Word")
@@ -262,12 +277,24 @@ public class WordsView extends VerticalLayout {
         wordDtoGrid.addComponentColumn(this::getHeartButton)
                 .setTextAlign(CENTER)
                 .setWidth("5%");
+    }
 
+    private void addItemClickListener() {
+        wordDtoGrid.addItemDoubleClickListener(event -> {
+            String wordName = event.getItem().getName();
+            wordDtoGrid.getUI().ifPresent(ui -> ui.navigate(WordView.class,
+                    new RouteParameters("wordName", wordName)));
+        });
+    }
+
+    private void addWordSorting() {
         wordDtoGrid.sort(
                 List.of(new GridSortOrder<>(wordDtoGrid.getColumnByKey("addedAt"),
                         SortDirection.DESCENDING))
         );
+    }
 
+    private void setupWordGridStyle() {
         wordDtoGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         wordDtoGrid.setPageSize(10);
         wordDtoGrid.setWidth("60%");
