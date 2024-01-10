@@ -70,7 +70,7 @@ public class UiUtils {
     public static Avatar getAvatar(String firstName, String lastName) {
         String name = firstName + " " + lastName;
         Avatar avatar = new Avatar(name);
-        avatar.setColorIndex(name.length());
+        avatar.setColorIndex(name.length() % 7);
         return avatar;
     }
 
