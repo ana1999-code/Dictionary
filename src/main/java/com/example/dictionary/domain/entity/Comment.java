@@ -38,9 +38,6 @@ public class Comment {
     @JoinColumn
     private Word word;
 
-    public Comment() {
-    }
-
     public Integer getId() {
         return id;
     }

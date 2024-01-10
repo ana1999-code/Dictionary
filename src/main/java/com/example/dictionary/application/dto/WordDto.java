@@ -4,7 +4,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -29,7 +31,7 @@ public class WordDto {
 
     private final Set<UserDto> contributors = new HashSet<>();
 
-    private final Set<CommentDto> comments = new HashSet<>();
+    private final List<CommentDto> comments = new ArrayList<>();
 
     private LocalDateTime addedAt;
 
@@ -86,7 +88,7 @@ public class WordDto {
         return contributors;
     }
 
-    public Set<CommentDto> getComments() {
+    public List<CommentDto> getComments() {
         return comments;
     }
 
@@ -126,19 +128,13 @@ public class WordDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WordDto wordDto = (WordDto) o;
-        return Objects.equals(id, wordDto.id)
-                && Objects.equals(name, wordDto.name)
-                && Objects.equals(definitions, wordDto.definitions)
-                && Objects.equals(examples, wordDto.examples)
-                && Objects.equals(synonyms, wordDto.synonyms)
-                && Objects.equals(antonyms, wordDto.antonyms)
+        return Objects.equals(name, wordDto.name)
                 && Objects.equals(category, wordDto.category)
-                && Objects.equals(contributors, wordDto.contributors)
-                && Objects.equals(comments, wordDto.comments);
+                && Objects.equals(addedAt, wordDto.addedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, definitions, examples, synonyms, antonyms, category, contributors, comments);
+        return Objects.hash(name, category, addedAt);
     }
 }

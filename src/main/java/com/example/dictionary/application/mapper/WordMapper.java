@@ -1,14 +1,18 @@
 package com.example.dictionary.application.mapper;
 
+import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.dto.WordDto;
+import com.example.dictionary.domain.entity.Comment;
 import com.example.dictionary.domain.entity.User;
 import com.example.dictionary.domain.entity.Word;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Mapper
@@ -21,6 +25,7 @@ public interface WordMapper {
     @Mapping(target = "synonyms", source = "synonyms", qualifiedByName = "wordsToWordsName")
     @Mapping(target = "antonyms", source = "antonyms", qualifiedByName = "wordsToWordsName")
     @Mapping(target = "contributors", source = "contributors", qualifiedByName = "userToUserDtoNames")
+    @Mapping(target = "comments", source = "comments", qualifiedByName = "commentsToCommentsDetails")
     WordDto wordToWordDto(Word word);
 
     @Named("userToUserDtoNames")
@@ -50,5 +55,19 @@ public interface WordMapper {
                 }
         );
         return wordDtos;
+    }
+
+    @Named("commentsToCommentsDetails")
+    static List<CommentDto> commentsToCommentsDetails(List<Comment> comments){
+        List<CommentDto> commentDtos = new ArrayList<>();
+        comments.forEach(
+                comment -> {
+                    CommentDto commentDto = new CommentDto();
+                    commentDto.setCommentedAt(comment.getCommentedAt());
+                    commentDto.setText(comment.getText());
+                    commentDtos.add(commentDto);
+                }
+        );
+        return commentDtos;
     }
 }

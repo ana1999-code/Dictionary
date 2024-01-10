@@ -6,6 +6,7 @@ import com.example.dictionary.application.exception.IncorrectUsernameException;
 import com.example.dictionary.application.exception.InvalidPasswordException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import net.sf.dynamicreports.report.exception.DRException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -93,6 +94,16 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<Map<String, String>> handleMissingServletRequestParameterException(
             MissingServletRequestParameterException exception
+    ) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", exception.getMessage());
+        return new ResponseEntity<>(errorMap, BAD_REQUEST);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolationException(
+            DataIntegrityViolationException exception
     ) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error", exception.getMessage());

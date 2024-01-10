@@ -8,6 +8,7 @@ import com.example.dictionary.application.exception.DuplicateResourceException;
 import com.example.dictionary.application.exception.IllegalOperationException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.facade.WordFacade;
+import com.example.dictionary.application.mapper.CommentMapper;
 import com.example.dictionary.application.mapper.DefinitionMapper;
 import com.example.dictionary.application.mapper.ExampleMapper;
 import com.example.dictionary.application.mapper.WordMapper;
@@ -18,11 +19,14 @@ import com.example.dictionary.application.security.util.SecurityUtils;
 import com.example.dictionary.application.util.WordEntityAssociationUtil;
 import com.example.dictionary.application.validator.ExampleValidator;
 import com.example.dictionary.application.validator.WordValidator;
+import com.example.dictionary.domain.entity.Comment;
 import com.example.dictionary.domain.entity.Definition;
 import com.example.dictionary.domain.entity.Example;
 import com.example.dictionary.domain.entity.Word;
+import com.example.dictionary.domain.service.CommentService;
 import com.example.dictionary.domain.service.DefinitionService;
 import com.example.dictionary.domain.service.ExampleService;
+import com.example.dictionary.domain.service.UserService;
 import com.example.dictionary.domain.service.WordService;
 import net.sf.dynamicreports.report.exception.DRException;
 import org.springframework.batch.core.Job;
@@ -40,6 +44,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -62,9 +67,15 @@ public class WordFacadeImpl implements WordFacade {
 
     private final ExampleService exampleService;
 
+    private final UserService userService;
+
+    private final CommentService commentService;
+
     private final DefinitionMapper definitionMapper;
 
     private final ExampleMapper exampleMapper;
+
+    private final CommentMapper commentMapper;
 
     private final WordEntityAssociationUtil associationUtil;
 
@@ -81,8 +92,11 @@ public class WordFacadeImpl implements WordFacade {
                           WordValidator validator,
                           DefinitionService definitionService,
                           ExampleService exampleService,
+                          UserService userService,
+                          CommentService commentService,
                           DefinitionMapper definitionMapper,
                           ExampleMapper exampleMapper,
+                          CommentMapper commentMapper,
                           WordEntityAssociationUtil associationUtil,
                           JobLauncher jobLauncher,
                           Job importWordsFromCsvToDbJob,
@@ -92,8 +106,11 @@ public class WordFacadeImpl implements WordFacade {
         this.validator = validator;
         this.definitionService = definitionService;
         this.exampleService = exampleService;
+        this.userService = userService;
+        this.commentService = commentService;
         this.definitionMapper = definitionMapper;
         this.exampleMapper = exampleMapper;
+        this.commentMapper = commentMapper;
         this.associationUtil = associationUtil;
         this.jobLauncher = jobLauncher;
         this.importWordsFromCsvToDbJob = importWordsFromCsvToDbJob;
@@ -254,10 +271,16 @@ public class WordFacadeImpl implements WordFacade {
         wordService.addWord(word);
     }
 
-    //todo: implement add comment
     @Override
     public void addComment(String name, CommentDto commentDto) {
+        Word word = getWord(name);
 
+        Comment comment = commentMapper.commentDtoToComment(commentDto);
+        comment.setCommentedAt(LocalDate.now());
+        comment.setCommenter(userService.findByEmail(getCurrentUser()).get());
+
+        word.addComment(comment);
+        commentService.addComment(comment);
     }
 
     //todo: implement remove comment

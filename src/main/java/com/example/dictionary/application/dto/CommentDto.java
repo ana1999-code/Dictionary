@@ -2,7 +2,6 @@ package com.example.dictionary.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
@@ -15,13 +14,11 @@ public class CommentDto {
     @NotBlank
     private String text;
 
-    @NotNull
     private UserDto commenter;
 
     @JsonFormat(shape = STRING, pattern = "dd-MM-yyyy")
     private LocalDate commentedAt;
 
-    @NotNull
     private WordDto word;
 
     public Integer getId() {
