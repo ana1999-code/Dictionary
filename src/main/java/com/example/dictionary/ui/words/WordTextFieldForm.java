@@ -2,14 +2,15 @@ package com.example.dictionary.ui.words;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextArea;
 
 import static com.example.dictionary.ui.util.UiUtils.getCloseButton;
 
 public class WordTextFieldForm extends FormLayout {
 
-    private TextField detail = new TextField();
+    private TextArea detail = new TextArea();
 
     private Button delete = getCloseButton();
 
@@ -18,10 +19,11 @@ public class WordTextFieldForm extends FormLayout {
         detail.setWidthFull();
         delete.setVisible(false);
         HorizontalLayout layout = new HorizontalLayout(detail, delete);
+        layout.setVerticalComponentAlignment(FlexComponent.Alignment.CENTER, detail, delete);
         add(layout);
     }
 
-    public TextField getDetail() {
+    public TextArea getDetail() {
         return detail;
     }
 

@@ -1,58 +1,40 @@
-package com.example.dictionary.ui.words.operation;
+package com.example.dictionary.ui.words.operation.add;
 
 import com.example.dictionary.application.facade.WordFacade;
-import com.example.dictionary.ui.words.WordTextFieldForm;
 import com.example.dictionary.ui.words.WordDialog;
+import com.example.dictionary.ui.words.WordView;
+import com.example.dictionary.ui.words.operation.OperationTemplate;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.ValidationException;
 
 import static com.example.dictionary.ui.util.UiUtils.showNotification;
 import static com.example.dictionary.ui.util.UiUtils.showSuccess;
+import static com.example.dictionary.ui.words.operation.DataRefresher.refresh;
 
-public abstract class WordOperationTemplate {
+public abstract class AddOperationTemplate extends OperationTemplate {
 
-    protected final WordFacade wordFacade;
+    private final WordView wordView;
 
-    protected final String wordName;
-
-    private WordTextFieldForm wordTextFieldForm;
-
-    private WordDialog wordDialog;
-
-    protected WordOperationTemplate(WordFacade wordFacade, String wordName) {
-        this.wordFacade = wordFacade;
-        this.wordName = wordName;
+    protected AddOperationTemplate(WordFacade wordFacade, String wordName, WordView wordView) {
+        super(wordFacade, wordName);
+        this.wordView = wordView;
     }
 
-    public void execute(){
-        createWordDetailForm();
-        createWordDialog();
+    @Override
+    public void execute() {
+        super.execute();
         openWordDialog();
         configureSaveButton();
         configureCancelButton();
         configureResetButton();
     }
 
-    private void createWordDetailForm() {
-        wordTextFieldForm = new WordTextFieldForm();
-    }
-
-    private void createWordDialog() {
-        wordDialog = new WordDialog(wordTextFieldForm, getDescription());
-    }
-
-    protected abstract String getDescription();
-
-    private void openWordDialog() {
-        wordDialog.getDialog().open();
-    }
-
     private void configureSaveButton() {
         wordDialog.getSecondRightButton().setText("Save");
         wordDialog.getSecondRightButton().addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         wordDialog.getSecondRightButton().addClickListener(clickEvent -> {
-            TextField detail = wordTextFieldForm.getDetail();
+            TextArea detail = wordTextFieldForm.getDetail();
             createDtoAndExecute(detail);
         });
     }
@@ -64,10 +46,6 @@ public abstract class WordOperationTemplate {
                 .addClickListener(clickEvent -> closeDialog());
     }
 
-    private void closeDialog() {
-        wordDialog.getDialog().close();
-    }
-
     private void configureResetButton() {
         wordDialog.getFirstRightButton().setText("Reset");
         wordDialog.getFirstRightButton().addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -75,17 +53,21 @@ public abstract class WordOperationTemplate {
                 .addClickListener(clickEvent -> wordTextFieldForm.getDetail().clear());
     }
 
-    private void createDtoAndExecute(TextField detail) {
+    private void createDtoAndExecute(TextArea detail) {
         try {
             createBinderAndSave(detail);
             closeDialog();
+            refresh(wordView, wordFacade);
             showSuccess("[%s] Successfully Added".formatted(detail.getValue()));
         } catch (RuntimeException e) {
             showNotification(e.getMessage());
-            e.printStackTrace();
         } catch (ValidationException ignored) {
         }
     }
 
-    protected abstract void createBinderAndSave(TextField detail) throws ValidationException;
+    protected void createWordDialog() {
+        wordDialog = new WordDialog(wordTextFieldForm, getDescription());
+    }
+
+    protected abstract void createBinderAndSave(TextArea detail) throws ValidationException;
 }
