@@ -1,8 +1,9 @@
-package com.example.dictionary.ui.words.operation.remove;
+package com.example.dictionary.ui.words.operation.remove.detail;
 
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.words.WordView;
+import com.example.dictionary.ui.words.operation.remove.RemoveOperationTemplate;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.data.binder.Binder;
 

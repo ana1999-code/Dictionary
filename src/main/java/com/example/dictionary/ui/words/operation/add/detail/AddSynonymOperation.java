@@ -1,8 +1,9 @@
-package com.example.dictionary.ui.words.operation.add;
+package com.example.dictionary.ui.words.operation.add.detail;
 
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.words.WordView;
+import com.example.dictionary.ui.words.operation.add.AddOperationTemplate;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.ValidationException;
 
