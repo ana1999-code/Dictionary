@@ -3,7 +3,6 @@ package com.example.dictionary.ui.words.operation.remove;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.words.WordDialog;
 import com.example.dictionary.ui.words.WordView;
-import com.example.dictionary.ui.words.operation.DataRefresher;
 import com.example.dictionary.ui.words.operation.OperationTemplate;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H4;
@@ -32,7 +31,9 @@ public abstract class RemoveOperationTemplate extends OperationTemplate {
     }
 
     private void setupDeleteFieldButton() {
-        wordTextFieldForm.getDelete().setVisible(true);
+        if (wordView.getPermissionService().hasWordWritePermission()) {
+            wordTextFieldForm.getDelete().setVisible(true);
+        }
         wordTextFieldForm.getDelete().addClickListener(event -> {
             wordDialog.getDialog().open();
             setVisibleFirstRightButtonToFalse();

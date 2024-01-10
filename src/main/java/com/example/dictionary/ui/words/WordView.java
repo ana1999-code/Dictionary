@@ -5,6 +5,7 @@ import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.MainLayout;
+import com.example.dictionary.ui.security.CurrentUserPermissionService;
 import com.example.dictionary.ui.words.operation.add.AddAntonymOperation;
 import com.example.dictionary.ui.words.operation.add.AddDefinitionOperation;
 import com.example.dictionary.ui.words.operation.add.AddExampleOperation;
@@ -44,6 +45,8 @@ import static com.vaadin.flow.component.icon.VaadinIcon.ARROW_LEFT;
 @PermitAll
 public class WordView extends VerticalLayout implements HasUrlParameter<String> {
 
+    private final CurrentUserPermissionService permissionService;
+
     private final WordFacade wordFacade;
 
     private WordDto word;
@@ -74,7 +77,8 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private Button delete = new Button("Delete Word");
 
-    public WordView(WordFacade wordFacade) {
+    public WordView(CurrentUserPermissionService permissionService, WordFacade wordFacade) {
+        this.permissionService = permissionService;
         this.wordFacade = wordFacade;
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
     }
@@ -90,12 +94,19 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         setupWordBinder();
         setupBackAndDeleteButtons();
         setupWordDetails();
+
+        if (permissionService.hasWordWritePermission()) {
+            setupAddWordDetailButtons();
+        }
+
+        add(nameAndCategoryLayout, definitionAndExampleLayout, synonymAndAntonymLayout);
+    }
+
+    private void setupAddWordDetailButtons() {
         setupAddDefinitionButton();
         setupAddExampleButton();
         setupAddSynonymButton();
         setupAddAntonymButton();
-
-        add(nameAndCategoryLayout, definitionAndExampleLayout, synonymAndAntonymLayout);
     }
 
     public void setupWordDetails() {
@@ -142,10 +153,15 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private void setupBackAndDeleteButtons() {
         setupBackButton();
-        setupDeleteButton();
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();
-        buttonsLayout.add(back, delete);
+        buttonsLayout.add(back);
+
+        if (permissionService.hasWordWritePermission()) {
+            setupDeleteButton();
+            buttonsLayout.add(delete);
+        }
+
         buttonsLayout.getStyle().set("flex-wrap", "wrap");
         buttonsLayout.setJustifyContentMode(JustifyContentMode.END);
         back.getStyle().set("margin-inline-end", "auto");
@@ -188,7 +204,10 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private void setupDefinitionsLayout() {
         Set<DefinitionDto> definitions = word.getDefinitions();
-        HorizontalLayout layout = new HorizontalLayout(new H5("Definitions"), addDefinition);
+        HorizontalLayout layout = new HorizontalLayout(new H5("Definitions"));
+        if (permissionService.hasWordWritePermission()) {
+            layout.add(addDefinition);
+        }
         layout.setDefaultVerticalComponentAlignment(Alignment.END);
         definitionLayout.add(layout);
         definitions.forEach(this::setupDefinitionLayout);
@@ -196,7 +215,10 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private void setupExamplesLayout() {
         Set<ExampleDto> examples = word.getExamples();
-        HorizontalLayout layout = new HorizontalLayout(new H5("Examples"), addExample);
+        HorizontalLayout layout = new HorizontalLayout(new H5("Examples"));
+        if (permissionService.hasWordWritePermission()) {
+            layout.add(addDefinition, addExample);
+        }
         layout.setDefaultVerticalComponentAlignment(Alignment.END);
         exampleLayout.add(layout);
         examples.forEach(this::setupExampleLayout);
@@ -204,7 +226,10 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private void setupSynonymsLayout() {
         Set<WordDto> examples = word.getSynonyms();
-        HorizontalLayout layout = new HorizontalLayout(new H5("Synonyms"), addSynonym);
+        HorizontalLayout layout = new HorizontalLayout(new H5("Synonyms"));
+        if (permissionService.hasWordWritePermission()) {
+            layout.add(addSynonym);
+        }
         layout.setDefaultVerticalComponentAlignment(Alignment.END);
         synonymLayout.add(layout);
         examples.forEach(this::setupSynonymLayout);
@@ -212,7 +237,10 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private void setupAntonymsLayout() {
         Set<WordDto> examples = word.getAntonyms();
-        HorizontalLayout layout = new HorizontalLayout(new H5("Antonyms"), addAntonym);
+        HorizontalLayout layout = new HorizontalLayout(new H5("Antonyms"));
+        if (permissionService.hasWordWritePermission()) {
+            layout.add(addAntonym);
+        }
         layout.setDefaultVerticalComponentAlignment(Alignment.END);
         antonymLayout.add(layout);
         examples.forEach(this::setupAntonymLayout);
@@ -302,5 +330,9 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     public VerticalLayout getAntonymLayout() {
         return antonymLayout;
+    }
+
+    public CurrentUserPermissionService getPermissionService() {
+        return permissionService;
     }
 }
