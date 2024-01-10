@@ -151,7 +151,7 @@ public class Word {
     }
 
     public void removeDefinition(Definition definition) {
-        definitions.remove(definition);
+        getDefinitions().remove(definition);
         definition.getWords().remove(this);
     }
 
@@ -163,8 +163,8 @@ public class Word {
     }
 
     public void removeSynonym(Word synonym) {
-        if (synonyms.contains(synonym)) {
-            synonyms.remove(synonym);
+        if (getSynonyms().contains(synonym)) {
+            getSynonyms().remove(synonym);
             synonym.removeSynonym(this);
         }
     }
@@ -177,8 +177,8 @@ public class Word {
     }
 
     public void removeAntonym(Word antonym) {
-        if (antonyms.contains(antonym)) {
-            antonyms.remove(antonym);
+        if (getAntonyms().contains(antonym)) {
+            getAntonyms().remove(antonym);
             antonym.removeAntonym(this);
         }
     }
@@ -189,7 +189,7 @@ public class Word {
     }
 
     public void removeExample(Example example) {
-        examples.remove(example);
+        getExamples().remove(example);
         example.getWords().remove(this);
     }
 
@@ -203,7 +203,7 @@ public class Word {
     }
 
     public void removeComment(Comment comment) {
-        comments.remove(comment);
+        getComments().remove(comment);
         comment.setWord(null);
     }
 

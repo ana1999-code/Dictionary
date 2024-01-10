@@ -39,6 +39,7 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +54,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.example.dictionary.domain.cache.CacheContext.WORDS_CACHE;
+import static com.example.dictionary.domain.cache.CacheContext.WORDS_DETAILS_CACHE;
+import static com.example.dictionary.domain.cache.CacheContext.WORD_CACHE;
 
 @Component
 public class WordFacadeImpl implements WordFacade {
@@ -272,6 +275,8 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
+    @CacheEvict(value = {WORDS_CACHE, WORDS_DETAILS_CACHE, WORD_CACHE}, allEntries = true)
+    @CachePut(value = WORD_CACHE, key = "#name")
     public void addComment(String name, CommentDto commentDto) {
         Word word = getWord(name);
 
@@ -283,10 +288,17 @@ public class WordFacadeImpl implements WordFacade {
         commentService.addComment(comment);
     }
 
-    //todo: implement remove comment
     @Override
-    public void removeComment(String name, CommentDto commentDto) {
+    @CacheEvict(value = {WORDS_CACHE, WORDS_DETAILS_CACHE, WORD_CACHE}, allEntries = true)
+    @CachePut(value = WORD_CACHE, key = "#name")
+    public void removeComment(String name, Integer commentId) {
+        Word word = getWord(name);
 
+        Comment comment = commentService.getCommentById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("No comment found"));
+
+        word.removeComment(comment);
+        commentService.removeComment(comment);
     }
 
     @Override

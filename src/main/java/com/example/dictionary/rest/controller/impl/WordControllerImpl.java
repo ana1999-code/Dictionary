@@ -181,8 +181,8 @@ public class WordControllerImpl implements WordController {
     @ResponseStatus(value = NO_CONTENT)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_LEARNER', 'ROLE_EDITOR')")
     public void removeComment(@PathVariable String name,
-                              @RequestBody CommentDto commentDto) {
-        wordFacade.removeComment(name, commentDto);
+                              @RequestParam("commentId") Integer commentId) {
+        wordFacade.removeComment(name, commentId);
     }
 
     @Override

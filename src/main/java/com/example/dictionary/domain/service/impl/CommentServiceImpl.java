@@ -5,6 +5,8 @@ import com.example.dictionary.domain.repository.CommentRepository;
 import com.example.dictionary.domain.service.CommentService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CommentServiceImpl implements CommentService {
 
@@ -17,5 +19,15 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment addComment(Comment comment) {
         return commentRepository.save(comment);
+    }
+
+    @Override
+    public Optional<Comment> getCommentById(Integer id) {
+        return commentRepository.findById(id);
+    }
+
+    @Override
+    public void removeComment(Comment comment) {
+        commentRepository.delete(comment);
     }
 }

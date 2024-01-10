@@ -11,7 +11,6 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +47,7 @@ public interface WordFacade {
 
     void addComment(String name, CommentDto commentDto);
 
-    void removeComment(String name, CommentDto commentDto);
+    void removeComment(String name, Integer commentId);
 
     void uploadFile(String path, String fileName, String fileLocation) throws
             JobInstanceAlreadyCompleteException,

@@ -11,7 +11,6 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.http.ResponseEntity;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +47,7 @@ public interface WordController {
 
     void addComment(String name, CommentDto commentDto);
 
-    void removeComment(String name, CommentDto commentDto);
+    void removeComment(String name, Integer commentId);
 
     void generateWordsContributionReport() throws
             DRException,
