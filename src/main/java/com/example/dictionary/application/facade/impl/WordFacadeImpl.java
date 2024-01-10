@@ -238,7 +238,6 @@ public class WordFacadeImpl implements WordFacade {
         verifyWordIsNotPresent(word, synonymToAdd);
 
         word.addSynonym(synonymToAdd);
-        wordService.addWord(word);
     }
 
     @Override
@@ -249,7 +248,6 @@ public class WordFacadeImpl implements WordFacade {
         verifyWordIsPresent(synonymToRemove, word.getSynonyms());
 
         word.removeSynonym(synonymToRemove);
-        wordService.addWord(word);
     }
 
     @Override
@@ -260,7 +258,6 @@ public class WordFacadeImpl implements WordFacade {
         verifyWordIsNotPresent(word, antonymToAdd);
 
         word.addAntonym(antonymToAdd);
-        wordService.addWord(word);
     }
 
     @Override
@@ -271,7 +268,6 @@ public class WordFacadeImpl implements WordFacade {
         verifyWordIsPresent(antonymToRemove, word.getAntonyms());
 
         word.removeAntonym(antonymToRemove);
-        wordService.addWord(word);
     }
 
     @Override
