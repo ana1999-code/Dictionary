@@ -200,7 +200,7 @@ class WordFacadeImplTest {
 
     @Test
     void testAddDefinitionToWord_whenAddNewDefinition_thenReturnWordWithDefinition() {
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.empty());
         when(definitionMapper.definitionDtoToDefinition(any(DefinitionDto.class))).thenReturn(DEFINITION);
         when(wordService.addWord(any(Word.class))).thenReturn(WORD);
@@ -215,7 +215,7 @@ class WordFacadeImplTest {
 
     @Test
     void testAddDefinitionToWord_whenAddExistingDefinitionInDatabase_thenReturnWordWithDefinition() {
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(DEFINITION));
         when(wordService.addWord(any(Word.class))).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any(Word.class))).thenReturn(WORD_DTO);
@@ -239,7 +239,7 @@ class WordFacadeImplTest {
             WORD_DTO.addDefinition(DEFINITION_DTO);
             WORD.addDefinition(DEFINITION);
 
-            when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+            when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
             when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(DEFINITION));
 
             assertThrows(
@@ -255,7 +255,7 @@ class WordFacadeImplTest {
         WORD_DTO.addDefinition(DEFINITION_DTO);
 
         when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(DEFINITION);
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(DEFINITION));
         when(wordService.addWord(any())).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any())).thenReturn(WORD_DTO);
@@ -271,7 +271,7 @@ class WordFacadeImplTest {
     @Test
     void testRemoveDefinition_whenRemoveNonExistingDefinition_thenThrow() {
         when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(DEFINITION);
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.empty());
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
@@ -285,7 +285,7 @@ class WordFacadeImplTest {
     @Test
     void testRemoveDefinition_whenRemoveTheOnlyPresentDefinition_thenThrow() {
         when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(EXISTING_DEFINITION_FOR_WORD);
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(EXISTING_DEFINITION_FOR_WORD));
 
         IllegalOperationException illegalOperationException = assertThrows(
@@ -303,7 +303,7 @@ class WordFacadeImplTest {
         WORD_DTO.addDefinition(DEFINITION_DTO);
 
         when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(NON_EXISTING_DEFINITION_FOR_WORD);
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(NON_EXISTING_DEFINITION_FOR_WORD));
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
@@ -317,7 +317,7 @@ class WordFacadeImplTest {
 
     @Test
     void testAddExampleToWord_whenAddNewExample_thenExampleIsAdded() {
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.empty());
         when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE);
         when(wordService.addWord(any())).thenReturn(WORD);
@@ -333,7 +333,7 @@ class WordFacadeImplTest {
 
     @Test
     void testAddExampleToWord_whenAddExistingExampleInDb_thenExampleIsAdded() {
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.of(EXAMPLE));
         when(wordService.addWord(any())).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any())).thenReturn(WORD_DTO);
@@ -349,7 +349,7 @@ class WordFacadeImplTest {
     @Test
     void testAddExampleToWord_whenAddExistingExampleInWord_thenThrow() {
         WORD.addExample(EXAMPLE);
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.of(EXAMPLE));
 
         DuplicateResourceException duplicateResourceException = assertThrows(
@@ -367,7 +367,7 @@ class WordFacadeImplTest {
                             .validate(WORD.getName(), EXAMPLE_WITHOUT_WORD.getText()))
                     .thenThrow(new IllegalOperationException(EXAMPLE_NOT_CONTAINS_WORD));
 
-            when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+            when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
             when(exampleService.getExampleByText(anyString())).thenReturn(Optional.empty());
             when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE_WITHOUT_WORD);
 
@@ -386,7 +386,7 @@ class WordFacadeImplTest {
         WORD_DTO.addExample(EXAMPLE_DTO);
 
         when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE);
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.of(EXAMPLE));
         when(wordService.addWord(any())).thenReturn(WORD);
         when(wordMapper.wordToWordDto(any())).thenReturn(WORD_DTO);
@@ -401,7 +401,7 @@ class WordFacadeImplTest {
     @Test
     void testRemoveExample_whenRemoveNonExistingExample_thenThrow() {
         when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE);
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.empty());
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
@@ -415,7 +415,7 @@ class WordFacadeImplTest {
     @Test
     void testRemoveExample_whenRemoveExampleThatIsNotPresentForTheWord_thenThrow() {
         when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE);
-        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.of(EXAMPLE));
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
@@ -450,22 +450,19 @@ class WordFacadeImplTest {
 
     @Test
     void testAddSynonym() {
-        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
-        when(wordService.getWordByName(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
-        when(wordService.addWord(any())).thenReturn(WORD);
+        when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
 
         wordFacade.addSynonym(WORD.getName(), SYNONYM_DTO);
 
-        verify(wordService).addWord(wordArgumentCaptor.capture());
-        Word updatedWord = wordArgumentCaptor.getValue();
-        assertTrue(updatedWord.getSynonyms().contains(SYNONYM));
+        assertTrue(WORD.getSynonyms().contains(SYNONYM));
     }
 
     @Test
     void testAddSynonym_whenAddExistingSynonym_thenThrow() {
         WORD.addSynonym(SYNONYM);
-        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
-        when(wordService.getWordByName(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
+        when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
 
         DuplicateResourceException duplicateResourceException = assertThrows(
                 DuplicateResourceException.class,
@@ -479,21 +476,18 @@ class WordFacadeImplTest {
     @Test
     void testRemoveSynonym() {
         WORD.addSynonym(SYNONYM);
-        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
-        when(wordService.getWordByName(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
-        when(wordService.addWord(any())).thenReturn(WORD);
+        when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
 
         wordFacade.removeSynonym(WORD.getName(), SYNONYM_DTO);
 
-        verify(wordService).addWord(wordArgumentCaptor.capture());
-        Word updatedWord = wordArgumentCaptor.getValue();
-        assertFalse(updatedWord.getSynonyms().contains(SYNONYM));
+        assertFalse(WORD.getSynonyms().contains(SYNONYM));
     }
 
     @Test
     void testRemoveSynonym_whenRemoveNonSynonym_thenThrow() {
-        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
-        when(wordService.getWordByName(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
+        when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
                 ResourceNotFoundException.class,
@@ -506,22 +500,19 @@ class WordFacadeImplTest {
 
     @Test
     void testAddAntonym() {
-        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
-        when(wordService.getWordByName(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
-        when(wordService.addWord(any())).thenReturn(WORD);
+        when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
 
         wordFacade.addAntonym(WORD.getName(), ANTONYM_DTO);
 
-        verify(wordService).addWord(wordArgumentCaptor.capture());
-        Word updatedWord = wordArgumentCaptor.getValue();
-        assertTrue(updatedWord.getAntonyms().contains(ANTONYM));
+        assertTrue(WORD.getAntonyms().contains(ANTONYM));
     }
 
     @Test
     void testAddAntonym_whenAddExistingSynonym_thenThrow() {
         WORD.addSynonym(ANTONYM);
-        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
-        when(wordService.getWordByName(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
+        when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
 
         DuplicateResourceException duplicateResourceException = assertThrows(
                 DuplicateResourceException.class,
@@ -535,21 +526,18 @@ class WordFacadeImplTest {
     @Test
     void testRemoveAntonym() {
         WORD.addAntonym(ANTONYM);
-        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
-        when(wordService.getWordByName(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
-        when(wordService.addWord(any())).thenReturn(WORD);
+        when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
 
         wordFacade.removeAntonym(WORD.getName(), ANTONYM_DTO);
 
-        verify(wordService).addWord(wordArgumentCaptor.capture());
-        Word updatedWord = wordArgumentCaptor.getValue();
-        assertFalse(updatedWord.getAntonyms().contains(ANTONYM));
+        assertFalse(WORD.getAntonyms().contains(ANTONYM));
     }
 
     @Test
     void testRemoveAntonym_whenRemoveNonSynonym_thenThrow() {
-        when(wordService.getWordByName(WORD.getName())).thenReturn(Optional.of(WORD));
-        when(wordService.getWordByName(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
+        when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
+        when(wordService.getWordByNameWithContributors(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
                 ResourceNotFoundException.class,
