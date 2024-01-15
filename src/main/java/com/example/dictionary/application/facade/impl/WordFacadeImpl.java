@@ -306,7 +306,7 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @CacheEvict(value = WORDS_CACHE, allEntries = true)
+    @CacheEvict(value = {WORDS_CACHE, WORD_CACHE}, allEntries = true)
     public void uploadFile(String path, String fileName, String fileLocation) throws
             JobInstanceAlreadyCompleteException,
             JobExecutionAlreadyRunningException,
