@@ -335,6 +335,8 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
                         SecurityUtils.getUsername()).equalsIgnoreCase(commenter.getEmail()
                 ));
 
+        wordTextFieldForm.setColspan(wordTextFieldForm.getFormLayout(), 2);
+        wordTextFieldForm.getDetail().setWidth("95%");
         commentLayout.add(
                 commenterLayout,
                 wordTextFieldForm

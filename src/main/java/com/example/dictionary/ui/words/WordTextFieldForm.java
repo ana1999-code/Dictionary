@@ -14,13 +14,15 @@ public class WordTextFieldForm extends FormLayout {
 
     private Button delete = getCloseButton();
 
+    private HorizontalLayout formLayout = new HorizontalLayout();
+
     public WordTextFieldForm() {
         detail.setRequired(true);
         detail.setWidthFull();
         delete.setVisible(false);
-        HorizontalLayout layout = new HorizontalLayout(detail, delete);
-        layout.setVerticalComponentAlignment(FlexComponent.Alignment.CENTER, detail, delete);
-        add(layout);
+        formLayout.add(detail, delete);
+        formLayout.setVerticalComponentAlignment(FlexComponent.Alignment.CENTER, detail, delete);
+        add(formLayout);
     }
 
     public TextArea getDetail() {
@@ -29,5 +31,9 @@ public class WordTextFieldForm extends FormLayout {
 
     public Button getDelete() {
         return delete;
+    }
+
+    public HorizontalLayout getFormLayout() {
+        return formLayout;
     }
 }
