@@ -113,11 +113,27 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         setupBackAndDeleteButtons();
         setupWordDetails();
 
+        setupLayoutsStyle(List.of(
+                definitionLayout,
+                exampleLayout,
+                synonymLayout,
+                antonymLayout,
+                commentLayout)
+        );
+
         if (permissionService.hasWordWritePermission()) {
             setupAddWordDetailButtons();
         }
         setupAddCommentButton();
         add(nameAndCategoryLayout, definitionAndExampleLayout, synonymAndAntonymLayout, commentsLayout);
+    }
+
+    private void setupLayoutsStyle(List<VerticalLayout> layouts) {
+        layouts.forEach(
+                layout -> layout.getStyle()
+                        .set("border", "0.5px ridge rgba(0,95,219,0.39)")
+                        .set("border-radius", "5px")
+        );
     }
 
     private void setupAddWordDetailButtons() {
