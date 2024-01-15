@@ -47,7 +47,7 @@ public class WordForm extends FormLayout {
 
     private WordDto word;
 
-    private static int nrOfDefinitions;
+    private int nrOfDefinitions;
 
     public WordForm(WordFacade wordFacade, CategoryFacade categoryFacade) {
         this.wordFacade = wordFacade;
@@ -136,7 +136,7 @@ public class WordForm extends FormLayout {
                                     .remove(new DefinitionDto(definitionValue)));
 
             nrOfDefinitions--;
-            enableDeleteDefinitionButton(nrOfDefinitions == 1);
+            //enableDeleteDefinitionButton(nrOfDefinitions > 1);
         });
 
         definitionsLayout.add(definitionLayout);
@@ -188,10 +188,13 @@ public class WordForm extends FormLayout {
     private void enableDeleteDefinitionButton(boolean enabled) {
         definitionsLayout.getChildren()
                 .forEach(component -> {
-                    for (Component comp : component.getChildren().toList()) {
-                        if (comp instanceof Button) {
+                    List<Component> components = component.getChildren().toList();
+                    int componentIndex = 0;
+                    for (Component comp : components) {
+                        if (comp instanceof Button && componentIndex < components.size()) {
                             ((Button) comp).setEnabled(enabled);
                         }
+                            componentIndex ++;
                     }
                 });
     }
