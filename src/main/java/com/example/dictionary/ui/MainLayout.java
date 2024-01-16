@@ -2,7 +2,7 @@ package com.example.dictionary.ui;
 
 import com.example.dictionary.application.security.ui.SecurityService;
 import com.example.dictionary.ui.profile.ProfileView;
-import com.example.dictionary.ui.quizzes.QuizView;
+import com.example.dictionary.ui.quiz.QuizView;
 import com.example.dictionary.ui.report.ReportView;
 import com.example.dictionary.ui.security.CurrentUserPermissionService;
 import com.example.dictionary.ui.users.UsersView;

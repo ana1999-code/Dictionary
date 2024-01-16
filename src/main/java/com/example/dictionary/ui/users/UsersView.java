@@ -10,17 +10,20 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 import static com.example.dictionary.ui.util.UiUtils.getAvatar;
 import static com.example.dictionary.ui.util.UiUtils.getConfiguredSearchField;
 
 @Route(value = "/users", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
+@PageTitle("Users | " + APP_NAME)
 public class UsersView extends VerticalLayout {
 
     private final UserService userService;

@@ -1,4 +1,4 @@
-package com.example.dictionary.ui.quizzes;
+package com.example.dictionary.ui.quiz;
 
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.WordFacade;
@@ -14,6 +14,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 
@@ -22,10 +23,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_PRIMARY;
 
 @Route(value = "quiz", layout = MainLayout.class)
 @PermitAll
+@PageTitle("Quiz | " + APP_NAME)
 public class QuizView extends VerticalLayout {
 
     private final WordFacade wordFacade;

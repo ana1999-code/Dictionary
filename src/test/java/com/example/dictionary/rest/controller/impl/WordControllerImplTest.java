@@ -7,7 +7,6 @@ import com.example.dictionary.application.exception.DuplicateResourceException;
 import com.example.dictionary.application.exception.IllegalOperationException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import com.example.dictionary.application.facade.WordFacade;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
