@@ -32,4 +32,10 @@ public interface WordRepository extends JpaRepository<Word, Integer> {
     @EntityGraph(attributePaths = {"synonyms", "antonyms", "contributors", "examples", "definitions", "comments"})
     @Query("SELECT w FROM Word w WHERE w.name = :name")
     Optional<Word> findByNameWithContributors(@Param("name") String name);
+
+    @Query("SELECT d.text FROM Word w JOIN w.definitions d WHERE w.name = :name")
+    List<String> getWordDefinitions(@Param("name") String name);
+
+    @Query("SELECT d.text FROM Word w RIGHT JOIN w.definitions d WHERE w.name != :name")
+    List<String> getDefinitionsNotIncludedForWord(@Param("name") String name);
 }

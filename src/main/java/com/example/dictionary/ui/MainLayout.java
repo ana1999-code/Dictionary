@@ -2,6 +2,7 @@ package com.example.dictionary.ui;
 
 import com.example.dictionary.application.security.ui.SecurityService;
 import com.example.dictionary.ui.profile.ProfileView;
+import com.example.dictionary.ui.quizzes.QuizView;
 import com.example.dictionary.ui.report.ReportView;
 import com.example.dictionary.ui.security.CurrentUserPermissionService;
 import com.example.dictionary.ui.users.UsersView;
@@ -55,6 +56,7 @@ public class MainLayout extends AppLayout {
         Tab words = createTab("Words", WordsView.class);
         Tab users = createTab("Users", UsersView.class);
         Tab logout = createTab("Logout", new RouterLink());
+        Tab quizzes = createTab("Quiz", QuizView.class);
 
         if (!permissionService.isAdmin()) {
             reports.setEnabled(false);
@@ -65,6 +67,7 @@ public class MainLayout extends AppLayout {
                 words,
                 users,
                 reports,
+                quizzes,
                 logout);
 
         return tabs;
