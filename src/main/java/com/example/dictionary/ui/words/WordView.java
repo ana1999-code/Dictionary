@@ -335,7 +335,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         UserDto commenter = commentDto.getCommenter();
         String firstName = commenter.getFirstName();
         String lastName = commenter.getLastName();
-        Avatar avatar = getAvatar(firstName, lastName);
+        Avatar avatar = getAvatar(commenter);
         Span name = new Span(firstName + " " + lastName);
         LocalDateTime commentedAt = commentDto.getCommentedAt();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");

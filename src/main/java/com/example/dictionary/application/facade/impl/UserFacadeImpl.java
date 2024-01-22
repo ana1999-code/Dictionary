@@ -23,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -111,12 +113,7 @@ public class UserFacadeImpl implements UserFacade {
     public UserDto getUserProfile() {
         User user = getUser(SecurityUtils.getUsername());
 
-        byte[] logo = null;
-        byte[] dbLogo = user.getProfileImage();
-
-        if (dbLogo != null) {
-            logo = ImageUtils.decompressImage(dbLogo);
-        }
+        byte[] logo = getLogo(user);
 
         UserDto userDto = userMapper.userToUserDto(user);
         userDto.setProfileImage(logo);
@@ -173,6 +170,30 @@ public class UserFacadeImpl implements UserFacade {
         return favorites.stream()
                 .map(Word::getName)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public List<UserDto> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        List<UserDto> userDtos = new ArrayList<>();
+        users.forEach(user -> {
+            byte[] logo = getLogo(user);
+
+            UserDto userDto = userMapper.userToUserDto(user);
+            userDto.setProfileImage(logo);
+            userDtos.add(userDto);
+        });
+        return userDtos;
+    }
+
+    private static byte[] getLogo(User user) {
+        byte[] logo = null;
+        byte[] dbLogo = user.getProfileImage();
+
+        if (dbLogo != null) {
+            logo = ImageUtils.decompressImage(dbLogo);
+        }
+        return logo;
     }
 
     private static Word getWordToRemove(String wordName, Set<Word> favorites) {

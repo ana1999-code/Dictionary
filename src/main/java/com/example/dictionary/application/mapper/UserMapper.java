@@ -26,7 +26,7 @@ public interface UserMapper {
     @Mapping(target = "lastName", source = "lastName", qualifiedByName = "capitalize")
     User userDtoToUser(UserDto userDto);
 
-    @Mapping(target = "key", ignore = true)
+    @Mapping(target = "key", source = "role", qualifiedByName = "roleToKey")
     @Mapping(target = "profileImage", ignore = true)
     @Mapping(source = "userInfo.favorites", target = "userInfo.favorites", qualifiedByName = "wordToWordDtoNames")
     UserDto userToUserDto(User user);
@@ -54,5 +54,10 @@ public interface UserMapper {
             return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
         }
         return value;
+    }
+
+    @Named("roleToKey")
+    static String roleToKey(Role role) {
+        return role.name();
     }
 }

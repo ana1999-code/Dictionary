@@ -5,6 +5,7 @@ import com.example.dictionary.application.dto.UserDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 public interface UserFacade {
@@ -26,4 +27,6 @@ public interface UserFacade {
     Set<String> addWordToFavorities(String wordName);
 
     Set<String> removeWordFromFavorites(String wordName);
+
+    List<UserDto> getAllUsers();
 }

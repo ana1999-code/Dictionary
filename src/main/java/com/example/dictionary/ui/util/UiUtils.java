@@ -1,5 +1,6 @@
 package com.example.dictionary.ui.util;
 
+import com.example.dictionary.application.dto.UserDto;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -7,6 +8,9 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.server.StreamResource;
+
+import java.io.ByteArrayInputStream;
 
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_SMALL;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
@@ -67,10 +71,19 @@ public class UiUtils {
         return searchField;
     }
 
-    public static Avatar getAvatar(String firstName, String lastName) {
-        String name = firstName + " " + lastName;
-        Avatar avatar = new Avatar(name);
-        avatar.setColorIndex(name.length() % 7);
+    public static Avatar getAvatar(UserDto userDto) {
+        String name = userDto.getFirstName() + " " + userDto.getLastName();
+        Avatar avatar = new Avatar();
+
+        byte[] profileImage = userDto.getProfileImage();
+        if (profileImage != null) {
+            StreamResource resource = new StreamResource("image",
+                    () -> new ByteArrayInputStream(profileImage));
+            avatar.setImageResource(resource);
+        } else {
+            avatar.setName(name);
+            avatar.setColorIndex(name.length() % 7);
+        }
         return avatar;
     }
 

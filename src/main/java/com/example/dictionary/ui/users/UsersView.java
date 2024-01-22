@@ -1,8 +1,9 @@
 package com.example.dictionary.ui.users;
 
-import com.example.dictionary.domain.entity.User;
-import com.example.dictionary.domain.service.UserService;
+import com.example.dictionary.application.dto.UserDto;
+import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.ui.MainLayout;
+import com.example.dictionary.ui.util.UiUtils;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
-import static com.example.dictionary.ui.util.UiUtils.getAvatar;
 import static com.example.dictionary.ui.util.UiUtils.getConfiguredSearchField;
 
 @Route(value = "/users", layout = MainLayout.class)
@@ -26,14 +26,14 @@ import static com.example.dictionary.ui.util.UiUtils.getConfiguredSearchField;
 @PageTitle("Users | " + APP_NAME)
 public class UsersView extends VerticalLayout {
 
-    private final UserService userService;
+    private final UserFacade userFacade;
 
-    private Grid<User> userGrid;
+    private Grid<UserDto> userGrid;
 
     private TextField searchField;
 
-    public UsersView(UserService userService) {
-        this.userService = userService;
+    public UsersView(UserFacade userFacade) {
+        this.userFacade = userFacade;
 
         setupSearchField();
         setupUserGrid();
@@ -49,33 +49,34 @@ public class UsersView extends VerticalLayout {
     }
 
     private void setupUserGrid() {
-        userGrid = new Grid<>(User.class, false);
-        List<User> users = userService.getAllUsers();
+        userGrid = new Grid<>(UserDto.class, false);
+        List<UserDto> users = userFacade.getAllUsers();
 
         userGrid.setItems(users);
-        userGrid.addComponentColumn(user -> getAvatar(user.getFirstName(), user.getLastName()))
+        userGrid.addComponentColumn(UiUtils::getAvatar)
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setWidth("5%");
-        userGrid.addColumn(User::getFirstName)
+        userGrid.addColumn(UserDto::getFirstName)
                 .setHeader("First Name")
                 .setKey("firstName")
                 .setSortable(true)
                 .setAutoWidth(true);
-        userGrid.addColumn(User::getLastName)
+        userGrid.addColumn(UserDto::getLastName)
                 .setHeader("Last Name")
                 .setKey("lastName")
                 .setSortable(true)
                 .setAutoWidth(true);
-        userGrid.addColumn(User::getEmail)
+        userGrid.addColumn(UserDto::getEmail)
                 .setHeader("Email")
                 .setSortable(true)
                 .setAutoWidth(true);
-        userGrid.addColumn(User::getRegisteredAt)
+        userGrid.addColumn(UserDto::getRegisteredAt)
                 .setHeader("Register Date")
                 .setSortable(true)
                 .setAutoWidth(true);
-        userGrid.addColumn(User::getRole)
-                .setHeader("Role");
+        userGrid.addColumn(userDto -> userDto.getKey().toUpperCase())
+                .setHeader("Role")
+                .setSortable(true);
 
         userGrid.sort(List.of(new GridSortOrder<>(userGrid.getColumnByKey("firstName"),
                 SortDirection.ASCENDING)));
@@ -85,10 +86,9 @@ public class UsersView extends VerticalLayout {
         add(userGrid);
     }
 
-
     private void resetFilteredData() {
         userGrid.setItems(
-                userService.getAllUsers()
+                userFacade.getAllUsers()
                         .stream()
                         .filter(user ->
                                 user
