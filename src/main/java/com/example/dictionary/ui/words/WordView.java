@@ -21,9 +21,11 @@ import com.example.dictionary.ui.words.operation.remove.detail.RemoveAntonymOper
 import com.example.dictionary.ui.words.operation.remove.detail.RemoveDefinitionOperation;
 import com.example.dictionary.ui.words.operation.remove.detail.RemoveExampleOperation;
 import com.example.dictionary.ui.words.operation.remove.detail.RemoveSynonymOperation;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Span;
@@ -104,20 +106,19 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
     public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String parameter) {
         word = wordFacade.getWordByName(beforeEvent.getRouteParameters().get("wordName").get());
 
-        HorizontalLayout nameAndCategoryLayout = getNameAndCategoryLayout();
         HorizontalLayout definitionAndExampleLayout = getDefinitionAndExampleLayout();
         HorizontalLayout synonymAndAntonymLayout = getSynonymAndAntonymLayout();
         HorizontalLayout commentsLayout = getCommentsHorizontalLayout();
 
         setupWordBinder();
+        HorizontalLayout nameAndCategoryLayout = getNameAndCategoryLayout();
+
         setupBackAndDeleteButtons();
         setupWordDetails();
 
         setupLayoutsStyle(List.of(
-                definitionLayout,
-                exampleLayout,
-                synonymLayout,
-                antonymLayout,
+                definitionAndExampleLayout,
+                synonymAndAntonymLayout,
                 commentLayout)
         );
 
@@ -128,10 +129,10 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         add(nameAndCategoryLayout, definitionAndExampleLayout, synonymAndAntonymLayout, commentsLayout);
     }
 
-    private void setupLayoutsStyle(List<VerticalLayout> layouts) {
+    private void setupLayoutsStyle(List<Component> layouts) {
         layouts.forEach(
                 layout -> layout.getStyle()
-                        .set("border", "0.5px ridge rgba(0,95,219,0.39)")
+                        .set("border", "0.5px ridge rgba(27,43,65,0.2)")
                         .set("border-radius", "5px")
         );
     }
@@ -152,8 +153,13 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
     }
 
     private HorizontalLayout getNameAndCategoryLayout() {
-        HorizontalLayout nameAndCategoryLayout = new HorizontalLayout(name, category);
-        return nameAndCategoryLayout;
+        H2 nameValue = new H2(name.getValue().toUpperCase());
+        Span categoryValue = new Span("[" + category.getValue() + "]");
+        categoryValue.getStyle().set("font-style", "italic");
+
+        HorizontalLayout layout = new HorizontalLayout(nameValue, categoryValue);
+        layout.setDefaultVerticalComponentAlignment(CENTER);
+        return layout;
     }
 
     private HorizontalLayout getDefinitionAndExampleLayout() {
