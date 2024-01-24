@@ -15,6 +15,11 @@ public class AchievementDto {
     @NotNull
     private Integer numberOfWordsRequired;
 
+    public AchievementDto(String name, Integer numberOfWordsRequired) {
+        this.name = name;
+        this.numberOfWordsRequired = numberOfWordsRequired;
+    }
+
     public Integer getId() {
         return id;
     }

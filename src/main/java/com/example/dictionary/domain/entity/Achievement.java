@@ -25,6 +25,11 @@ public class Achievement {
     public Achievement() {
     }
 
+    public Achievement(String name, Integer numberOfWordsRequired) {
+        this.name = name;
+        this.numberOfWordsRequired = numberOfWordsRequired;
+    }
+
     public Integer getId() {
         return id;
     }

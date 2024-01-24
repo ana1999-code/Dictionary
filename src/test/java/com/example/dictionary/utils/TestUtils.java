@@ -1,11 +1,13 @@
 package com.example.dictionary.utils;
 
+import com.example.dictionary.application.dto.AchievementDto;
 import com.example.dictionary.application.dto.CategoryDto;
 import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.dto.WordDto;
+import com.example.dictionary.domain.entity.Achievement;
 import com.example.dictionary.domain.entity.Category;
 import com.example.dictionary.domain.entity.Comment;
 import com.example.dictionary.domain.entity.Definition;
@@ -128,4 +130,10 @@ public class TestUtils {
     public static final CommentDto COMMENT_DTO = new CommentDto("Test Comment");
 
     public static final String COMMENT_NOT_FOUND = "No comment found";
+
+    public static final Achievement ACHIEVEMENT =
+            new Achievement("Test Achievement", 100);
+
+    public static final AchievementDto ACHIEVEMENT_DTO =
+            new AchievementDto("Test Achievement", 100);
 }
