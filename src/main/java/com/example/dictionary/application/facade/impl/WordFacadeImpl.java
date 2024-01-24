@@ -230,6 +230,7 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void addSynonym(String name, WordDto synonym) {
         Word word = getWordWithContributors(name);
         Word synonymToAdd = getWordWithContributors(synonym.getName());
@@ -237,9 +238,11 @@ public class WordFacadeImpl implements WordFacade {
         verifyWordIsNotPresent(word, synonymToAdd);
 
         word.addSynonym(synonymToAdd);
+        wordService.addWord(word);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void removeSynonym(String name, WordDto synonym) {
         Word word = getWordWithContributors(name);
         Word synonymToRemove = getWordWithContributors(synonym.getName());
@@ -247,9 +250,12 @@ public class WordFacadeImpl implements WordFacade {
         verifyWordIsPresent(synonymToRemove, word.getSynonyms());
 
         word.removeSynonym(synonymToRemove);
+        wordService.addWord(word);
+        wordService.addWord(synonymToRemove);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void addAntonym(String name, WordDto antonym) {
         Word word = getWordWithContributors(name);
         Word antonymToAdd = getWordWithContributors(antonym.getName());
@@ -257,9 +263,11 @@ public class WordFacadeImpl implements WordFacade {
         verifyWordIsNotPresent(word, antonymToAdd);
 
         word.addAntonym(antonymToAdd);
+        wordService.addWord(word);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void removeAntonym(String name, WordDto antonym) {
         Word word = getWordWithContributors(name);
         Word antonymToRemove = getWordWithContributors(antonym.getName());
@@ -267,6 +275,8 @@ public class WordFacadeImpl implements WordFacade {
         verifyWordIsPresent(antonymToRemove, word.getAntonyms());
 
         word.removeAntonym(antonymToRemove);
+        wordService.addWord(word);
+        wordService.addWord(antonymToRemove);
     }
 
     @Override
@@ -469,7 +479,7 @@ public class WordFacadeImpl implements WordFacade {
         }
     }
 
-    private static void verifyWordIsNotPresent(Word word, Word wordToAdd) {
+    private void verifyWordIsNotPresent(Word word, Word wordToAdd) {
         if (isWordContaining(word, wordToAdd)) {
             throw new DuplicateResourceException(
                     "Synonym or Antonym [%s] is already linked with word [%s]"
