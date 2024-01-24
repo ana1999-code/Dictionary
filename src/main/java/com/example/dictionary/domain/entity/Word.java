@@ -23,6 +23,7 @@ import java.util.Set;
 
 import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.TemporalType.TIMESTAMP;
@@ -65,7 +66,7 @@ public class Word {
     @Cascade({CascadeType.PERSIST, CascadeType.MERGE})
     private final Set<Word> antonyms = new HashSet<>();
 
-    @ManyToOne(fetch = LAZY, cascade = {PERSIST, MERGE})
+    @ManyToOne(fetch = EAGER, cascade = {PERSIST, MERGE})
     @JoinColumn(nullable = false)
     private Category category;
 
