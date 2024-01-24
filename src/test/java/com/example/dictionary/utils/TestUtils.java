@@ -1,11 +1,13 @@
 package com.example.dictionary.utils;
 
 import com.example.dictionary.application.dto.CategoryDto;
+import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.domain.entity.Category;
+import com.example.dictionary.domain.entity.Comment;
 import com.example.dictionary.domain.entity.Definition;
 import com.example.dictionary.domain.entity.Example;
 import com.example.dictionary.domain.entity.User;
@@ -59,9 +61,11 @@ public class TestUtils {
 
     public static final String INVALID_WORD = "Word must not be empty and must contain only letters";
 
-    public static final UserDto USER_DTO = new UserDto();
+    public static final UserDto USER_DTO =
+            new UserDto("John", "Smith", "john1@mail.com", "Pass_1234");
 
-    public static final User USER = new User();
+    public static final User USER =
+            new User("John", "Smith", "john1@mail.com", "Pass_1234");
 
     public static final String EMAIL_IS_TAKEN = "Email [%s] is already taken";
 
@@ -118,4 +122,10 @@ public class TestUtils {
     public static final String WORD_IS_ALREADY_LINKED = "Synonym or Antonym [%s] is already linked with word [%s]";
 
     public static final String WORD_IS_NOT_LINKED = "Synonym or Antonym [%s] is not present";
+
+    public static final Comment COMMENT = new Comment("Test Comment");
+
+    public static final CommentDto COMMENT_DTO = new CommentDto("Test Comment");
+
+    public static final String COMMENT_NOT_FOUND = "No comment found";
 }

@@ -39,6 +39,13 @@ public class Comment {
     @JoinColumn
     private Word word;
 
+    public Comment() {
+    }
+
+    public Comment(String text) {
+        this.text = text;
+    }
+
     public Integer getId() {
         return id;
     }

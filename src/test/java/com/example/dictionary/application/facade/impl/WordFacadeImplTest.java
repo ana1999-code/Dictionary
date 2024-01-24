@@ -1,20 +1,25 @@
 package com.example.dictionary.application.facade.impl;
 
+import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.exception.DuplicateResourceException;
 import com.example.dictionary.application.exception.IllegalOperationException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
+import com.example.dictionary.application.mapper.CommentMapper;
 import com.example.dictionary.application.mapper.DefinitionMapper;
 import com.example.dictionary.application.mapper.ExampleMapper;
 import com.example.dictionary.application.mapper.WordMapper;
+import com.example.dictionary.application.security.util.SecurityUtils;
 import com.example.dictionary.application.util.WordEntityAssociationUtil;
 import com.example.dictionary.application.validator.ExampleValidator;
 import com.example.dictionary.application.validator.WordValidator;
 import com.example.dictionary.domain.entity.Word;
 import com.example.dictionary.domain.service.CategoryService;
+import com.example.dictionary.domain.service.CommentService;
 import com.example.dictionary.domain.service.DefinitionService;
 import com.example.dictionary.domain.service.ExampleService;
+import com.example.dictionary.domain.service.UserService;
 import com.example.dictionary.domain.service.WordService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +38,9 @@ import java.util.Set;
 
 import static com.example.dictionary.utils.TestUtils.ANTONYM;
 import static com.example.dictionary.utils.TestUtils.ANTONYM_DTO;
+import static com.example.dictionary.utils.TestUtils.COMMENT;
+import static com.example.dictionary.utils.TestUtils.COMMENT_DTO;
+import static com.example.dictionary.utils.TestUtils.COMMENT_NOT_FOUND;
 import static com.example.dictionary.utils.TestUtils.DEFINITION;
 import static com.example.dictionary.utils.TestUtils.DEFINITION_DTO;
 import static com.example.dictionary.utils.TestUtils.DEFINITION_IS_PRESENT;
@@ -53,6 +61,7 @@ import static com.example.dictionary.utils.TestUtils.NON_EXISTING_DEFINITION_FOR
 import static com.example.dictionary.utils.TestUtils.ONLY_ONE_DEFINITION;
 import static com.example.dictionary.utils.TestUtils.SYNONYM;
 import static com.example.dictionary.utils.TestUtils.SYNONYM_DTO;
+import static com.example.dictionary.utils.TestUtils.USER;
 import static com.example.dictionary.utils.TestUtils.WORD;
 import static com.example.dictionary.utils.TestUtils.WORD_DTO;
 import static com.example.dictionary.utils.TestUtils.WORD_IS_ALREADY_LINKED;
@@ -64,6 +73,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mockStatic;
@@ -90,6 +100,12 @@ class WordFacadeImplTest {
     private ExampleService exampleService;
 
     @Mock
+    private CommentService commentService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
     private WordMapper wordMapper;
 
     @Mock
@@ -100,6 +116,9 @@ class WordFacadeImplTest {
 
     @Mock
     private ExampleMapper exampleMapper;
+
+    @Mock
+    private CommentMapper commentMapper;
 
     @Mock
     private WordEntityAssociationUtil associationUtil;
@@ -546,6 +565,47 @@ class WordFacadeImplTest {
 
         assertEquals(WORD_IS_NOT_LINKED.formatted(ANTONYM.getName()),
                 resourceNotFoundException.getMessage());
+    }
+
+    @Test
+    void testAddComment() {
+        try (MockedStatic<SecurityUtils> utilsMockedStatic = mockStatic(SecurityUtils.class)) {
+            when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+            when(commentMapper.commentDtoToComment(any())).thenReturn(COMMENT);
+            utilsMockedStatic.when(SecurityUtils::getUsername).thenReturn(USER.getEmail());
+            when(userService.findByEmail(anyString())).thenReturn(Optional.of(USER));
+            when(commentService.addComment(any())).thenReturn(COMMENT);
+            assertDoesNotThrow(() -> wordFacade.addComment(WORD.getName(), COMMENT_DTO));
+        }
+    }
+
+    @Test
+    void testRemoveComment_whenRemoveExistingComment() {
+        COMMENT.setId(1);
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(commentService.getCommentById(anyInt())).thenReturn(Optional.of(COMMENT));
+        doNothing().when(commentService).removeComment(COMMENT);
+        assertDoesNotThrow(() -> wordFacade.removeComment(WORD.getName(), COMMENT.getId()));
+    }
+
+    @Test
+    void testRemoveComment_whenRemoveNonExistingComment_thenThrow() {
+        COMMENT.setId(1);
+        when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
+        when(commentService.getCommentById(anyInt())).thenReturn(Optional.empty());
+        ResourceNotFoundException resourceNotFoundException = assertThrows(ResourceNotFoundException.class,
+                () -> wordFacade.removeComment(WORD.getName(), COMMENT.getId()));
+
+        assertEquals(COMMENT_NOT_FOUND, resourceNotFoundException.getMessage());
+    }
+
+    @Test
+    void testGetAllCommentsByWord() {
+        when(commentService.getAllCommentsByWord(anyString())).thenReturn(List.of(COMMENT));
+        when(commentMapper.commentToCommentDto(any())).thenReturn(COMMENT_DTO);
+
+        List<CommentDto> actualResult = wordFacade.getAllCommentsByWord(WORD.getName());
+        assertTrue(actualResult.contains(COMMENT_DTO));
     }
 
     @AfterAll
