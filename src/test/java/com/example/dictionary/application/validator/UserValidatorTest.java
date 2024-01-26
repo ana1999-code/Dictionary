@@ -2,6 +2,7 @@ package com.example.dictionary.application.validator;
 
 import com.example.dictionary.application.exception.DuplicateResourceException;
 import com.example.dictionary.application.exception.InvalidPasswordException;
+import com.example.dictionary.application.validator.password.PasswordValidator;
 import com.example.dictionary.domain.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
 
 import static com.example.dictionary.utils.TestUtils.EMAIL_IS_TAKEN;
 import static com.example.dictionary.utils.TestUtils.PASSWORD_VALIDATION_ERRORS;
@@ -17,6 +19,7 @@ import static com.example.dictionary.utils.TestUtils.USER_DTO;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -29,6 +32,9 @@ class UserValidatorTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private MessageSource messageSource;
 
     @BeforeEach
     void setUp() {
@@ -48,6 +54,8 @@ class UserValidatorTest {
 
     @Test
     void testValidate_whenUserEmailIsTaken_thenThrow() {
+        when(messageSource.getMessage(anyString(), any(), any()))
+                .thenReturn(EMAIL_IS_TAKEN.formatted(USER_DTO.getEmail()));
         when(userService.existsUserByEmail(anyString())).thenReturn(true);
 
         DuplicateResourceException duplicateResourceException = assertThrows(DuplicateResourceException.class,

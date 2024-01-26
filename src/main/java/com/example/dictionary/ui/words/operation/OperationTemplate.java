@@ -3,8 +3,9 @@ package com.example.dictionary.ui.words.operation;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.words.WordDialog;
 import com.example.dictionary.ui.words.WordTextFieldForm;
+import com.vaadin.flow.component.html.Div;
 
-public abstract class OperationTemplate {
+public abstract class OperationTemplate extends Div {
 
     protected final WordFacade wordFacade;
 

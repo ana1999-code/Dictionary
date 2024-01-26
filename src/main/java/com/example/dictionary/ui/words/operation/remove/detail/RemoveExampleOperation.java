@@ -20,7 +20,7 @@ public class RemoveExampleOperation extends RemoveOperationTemplate {
 
     @Override
     protected String getDescription() {
-        return "Delete example";
+        return getTranslation("delete") + " " + getTranslation("word.example");
     }
 
     @Override
@@ -36,7 +36,7 @@ public class RemoveExampleOperation extends RemoveOperationTemplate {
 
     @Override
     protected H4 getConfirmationMessage() {
-        return new H4("Are you sure you want to delete example [%s]?".formatted(example.getText()));
+        return new H4(getTranslation("word.delete.message", getTranslation("word.antonym"), example.getText()));
     }
 
     @Override

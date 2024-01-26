@@ -130,7 +130,7 @@ public class WordsView extends VerticalLayout {
         uploadFile = new Upload();
         uploadFile.setDropAllowed(false);
         uploadFile.setAcceptedFileTypes(CSV);
-        uploadFile.setUploadButton(new Button("Upload File", new Icon(VaadinIcon.UPLOAD)));
+        uploadFile.setUploadButton(new Button(getTranslation("words.upload"), new Icon(VaadinIcon.UPLOAD)));
         uploadFile.setReceiver(memoryBuffer);
         uploadFile.addFileRejectedListener(event -> showNotification(event.getErrorMessage()));
 
@@ -168,12 +168,12 @@ public class WordsView extends VerticalLayout {
     }
 
     private void setupAddButton() {
-        addWord = new Button("Add Word");
+        addWord = new Button(getTranslation("add") + " " + getTranslation("word.name"));
         addWord.addThemeVariants(LUMO_PRIMARY);
         addWord.setIcon(new Icon(VaadinIcon.PLUS));
 
         wordForm = new WordForm(wordFacade, categoryFacade);
-        dialogForm = new WordDialog(wordForm, "New Word");
+        dialogForm = new WordDialog(wordForm, getTranslation("words.new"));
         dialog = dialogForm.getDialog();
 
         addWord.addClickListener(event -> dialog.open());
@@ -187,13 +187,13 @@ public class WordsView extends VerticalLayout {
 
     private void setupSaveButton() {
         Button saveButton = dialogForm.getSecondRightButton();
-        saveButton.setText("Save");
+        saveButton.setText(getTranslation("save"));
         saveButton.addThemeVariants(LUMO_PRIMARY);
         saveButton.addClickListener(event -> {
             try {
                 wordForm.saveWord();
                 wordDtoGrid.setItems(wordFacade.getAllWords());
-                showSuccess("Word [%s] successfully added".formatted(wordForm.getName()));
+                showSuccess(getTranslation("word.message.success", wordForm.getName()));
                 refreshWordForm();
             } catch (ValidationException ignored) {
             } catch (RuntimeException exception) {
@@ -204,7 +204,7 @@ public class WordsView extends VerticalLayout {
 
     private void setupCancelButton() {
         Button cancelButton = dialogForm.getLeftButton();
-        cancelButton.setText("Cancel");
+        cancelButton.setText(getTranslation("cancel"));
         cancelButton.addThemeVariants(LUMO_ERROR);
         cancelButton.addClickListener(event -> {
             refreshWordForm();
@@ -213,13 +213,13 @@ public class WordsView extends VerticalLayout {
 
     private void setupResetButton() {
         Button resetButton = dialogForm.getFirstRightButton();
-        resetButton.setText("Reset");
+        resetButton.setText(getTranslation("reset"));
         resetButton.addThemeVariants(LUMO_TERTIARY);
         resetButton.addClickListener(event -> wordForm.reset());
     }
 
     private void setupSearchField() {
-        searchField = getConfiguredSearchField();
+        searchField = getConfiguredSearchField(getTranslation("search"));
         searchField.addValueChangeListener(event -> resetFilteredData());
     }
 
@@ -258,25 +258,25 @@ public class WordsView extends VerticalLayout {
     private void setWordColumns(List<WordDto> words) {
         wordDtoGrid.setItems(words);
         wordDtoGrid.addColumn(WordDto::getName)
-                .setHeader("Word")
-                .setFooter("Total: %s words".formatted(words.size()));
+                .setHeader(getTranslation("word.name"))
+                .setFooter(getTranslation("words.total", words.size()));
         wordDtoGrid.addColumn(wordDto -> wordDto.getCategory().getName())
-                .setHeader("Category");
+                .setHeader(getTranslation("word.category"));
         wordDtoGrid.addColumn(wordDto -> wordDto.getDefinitions().size())
-                .setHeader("Nr. Definitions");
+                .setHeader(getTranslation("words.nr") + " " + getTranslation("word.definitions"));
         wordDtoGrid.addColumn(wordDto -> wordDto.getSynonyms().size())
-                .setHeader("Nr. Synonyms");
+                .setHeader(getTranslation("words.nr") + " " + getTranslation("word.synonyms"));
         wordDtoGrid.addColumn(wordDto -> wordDto.getAntonyms().size())
-                .setHeader("Nr. Antonyms");
+                .setHeader(getTranslation("words.nr") + " " + getTranslation("word.antonyms"));
         wordDtoGrid.addColumn(wordDto -> wordDto.getExamples().size())
-                .setHeader("Nr. Examples");
+                .setHeader(getTranslation("words.nr") + " " + getTranslation("word.examples"));
         wordDtoGrid.addColumn(
                         new LocalDateTimeRenderer<>(WordDto::getAddedAt, DD_MM_YYYY)
                 )
                 .setKey("addedAt")
                 .setSortProperty("addedAt")
                 .setComparator(Comparator.comparing(WordDto::getAddedAt))
-                .setHeader("Added At");
+                .setHeader(getTranslation("words.added"));
         wordDtoGrid.getColumns()
                 .forEach(col -> col
                         .setSortable(true)

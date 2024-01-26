@@ -74,7 +74,7 @@ public class UserProgressLayout extends VerticalLayout {
         progressLabel.getStyle().set("color", APP_COLOR)
                 .set("font-weight", "bold");
 
-        Span progressDescription = new Span("Number of contributions to words: ");
+        Span progressDescription = new Span(getTranslation("profile.contributors") + " ");
         HorizontalLayout progressLayout = new HorizontalLayout(progressDescription, progressLabel);
         add(progressLayout);
     }
@@ -83,7 +83,7 @@ public class UserProgressLayout extends VerticalLayout {
         allAchievements = achievementFacade.getAllAchievements();
         userAchievements = userInfo.getAchievements();
 
-        Span achievementsLabel = new Span("Achievements:");
+        Span achievementsLabel = new Span(getTranslation("profile.achievements"));
         Grid<AchievementDto> achievementGrid = new Grid<>();
         achievementGrid.setItems(allAchievements);
         achievementGrid.
@@ -103,7 +103,7 @@ public class UserProgressLayout extends VerticalLayout {
         favorites = userInfo.getFavorites();
 
         favoriteWordsGrid = new Grid<>(WordDto.class, false);
-        Details favouriteWordsDetails = new Details("Favorites");
+        Details favouriteWordsDetails = new Details(getTranslation("profile.favorites"));
         favouriteWordsDetails.addThemeVariants(DetailsVariant.REVERSE);
         favouriteWordsDetails.setWidth("110%");
 

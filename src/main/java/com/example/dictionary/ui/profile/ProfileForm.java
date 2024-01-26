@@ -39,11 +39,11 @@ public class ProfileForm extends HorizontalLayout {
     private VerticalLayout userCredentialsLayout;
 
     public ProfileForm() {
-        image = new Image("images/img.png", "Profile Image");
+        image = new Image("images/img.png", getTranslation("profile.image"));
         image.setHeight("19em");
         image.setWidth("18em");
 
-        Button uploadButton = new Button("Upload Profile Image...");
+        Button uploadButton = new Button(getTranslation("profile.image.upload"));
         uploadButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         uploadButton.getStyle().set("padding", "0 4em");
 
@@ -55,16 +55,16 @@ public class ProfileForm extends HorizontalLayout {
                 .set("border", "1px dashed " + APP_COLOR)
                 .set("border-radius", "5px");
 
-        firstName = new TextField("First Name");
+        firstName = new TextField(getTranslation("firstname"));
         firstName.setWidth("100%");
 
-        lastName = new TextField("Last Name");
+        lastName = new TextField(getTranslation("lastname"));
         lastName.setWidth("100%");
 
-        email = new TextField("Email");
+        email = new TextField(getTranslation("email"));
         email.setWidth("100%");
 
-        edit = new Button("Edit profile");
+        edit = new Button(getTranslation("profile.edit"));
         edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
         save = new Button();

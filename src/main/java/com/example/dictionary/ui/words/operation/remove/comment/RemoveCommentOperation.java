@@ -20,7 +20,7 @@ public class RemoveCommentOperation extends RemoveOperationTemplate {
 
     @Override
     protected String getDescription() {
-        return "Remove Comment";
+        return getTranslation("delete") + " " + getTranslation("word.comment");
     }
 
     @Override
@@ -36,7 +36,7 @@ public class RemoveCommentOperation extends RemoveOperationTemplate {
 
     @Override
     protected H4 getConfirmationMessage() {
-        return new H4("Are you sure you want to delete comment [%s]?".formatted(commentDto.getText()));
+        return new H4(getTranslation("word.delete.message", getTranslation("word.comment"), commentDto.getText()));
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.rest.controller.UserController;
 import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
+@Profile("rest")
 public class UserControllerImpl implements UserController {
 
     private final UserFacade userFacade;

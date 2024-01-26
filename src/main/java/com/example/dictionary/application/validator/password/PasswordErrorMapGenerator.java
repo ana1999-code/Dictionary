@@ -1,46 +1,52 @@
-package com.example.dictionary.application.validator;
+package com.example.dictionary.application.validator.password;
 
-import com.example.dictionary.application.exception.InvalidPasswordException;
+import com.example.dictionary.application.i18n.LocaleConfig;
+import org.springframework.context.MessageSource;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
-public class PasswordValidator {
+public class PasswordErrorMapGenerator {
 
-    public static void validate(String password) {
+    private final MessageSource messageSource;
 
-        final Map<String, String> errorMap = getErrorMap(password);
-
-        if (!errorMap.isEmpty()) {
-            throw new InvalidPasswordException(errorMap);
-        }
+    public PasswordErrorMapGenerator() {
+        LocaleConfig localeConfig = new LocaleConfig();
+        this.messageSource = localeConfig.messageSource();
     }
 
-    private static Map<String, String> getErrorMap(String password) {
+    public Map<String, String> getErrorMap(String password) {
         final Map<String, String> errorMap = new HashMap<>();
 
         if (password.length() < 8) {
-            errorMap.put("length", "Password should have at least 8 chars");
+            errorMap.put("length",
+                    messageSource.getMessage("password.length", null, Locale.getDefault()));
         }
 
         if (!containsUppercase(password)) {
-            errorMap.put("upper_letter", "Password should have at least one uppercase char");
+            errorMap.put("upper_letter",
+                    messageSource.getMessage("password.uppercase",null, Locale.getDefault()));
         }
 
         if (!containsLowercase(password)) {
-            errorMap.put("lower_letter", "Password should have at least one lowercase char");
+            errorMap.put("lower_letter",
+                    messageSource.getMessage("password.lowercase",null, Locale.getDefault()));
         }
 
         if (!containsNumber(password)) {
-            errorMap.put("number", "Password should have at least one number");
+            errorMap.put("number",
+                    messageSource.getMessage("password.number",null, Locale.getDefault()));
         }
 
         if (containsWhitespace(password)) {
-            errorMap.put("whitespace", "Password should not have any whitespaces");
+            errorMap.put("whitespace",
+                    messageSource.getMessage("password.whitespace",null, Locale.getDefault()));
         }
 
         if (!containsSpecialCharacter(password)) {
-            errorMap.put("special_char", "Password should have at least one special char");
+            errorMap.put("special_char",
+                    messageSource.getMessage("password.specialchar",null, Locale.getDefault()));
         }
         return errorMap;
     }

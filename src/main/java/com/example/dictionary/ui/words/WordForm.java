@@ -67,13 +67,13 @@ public class WordForm extends FormLayout {
     }
 
     private void setupNameField() {
-        name = new TextField("Word");
+        name = new TextField(getTranslation("word.name"));
         name.setRequired(true);
         add(name);
     }
 
     private void setupCategoryField() {
-        category = new ComboBox<>("Category");
+        category = new ComboBox<>(getTranslation("word.category"));
         category.setAllowCustomValue(true);
         category.setRequired(true);
         allCategories = new ArrayList<>(categoryFacade.getAllCategories());
@@ -85,7 +85,7 @@ public class WordForm extends FormLayout {
             handleCustomCategoryValue(customCategoryName);
         });
         wordBinder.forField(category)
-                .asRequired("Category must not be empty")
+                .asRequired(getTranslation("word.category.error.message"))
                 .bind(WordDto::getCategory, WordDto::setCategory);
 
         add(category);
@@ -93,7 +93,7 @@ public class WordForm extends FormLayout {
 
     private void setupDefAndExampleLayouts() {
         definitionsLayout = new VerticalLayout();
-        definitionsLayout.add(new NativeLabel("Definitions"));
+        definitionsLayout.add(new NativeLabel(getTranslation("word.definitions")));
 
         examplesLayout = new VerticalLayout();
 
@@ -136,14 +136,13 @@ public class WordForm extends FormLayout {
                                     .remove(new DefinitionDto(definitionValue)));
 
             nrOfDefinitions--;
-            //enableDeleteDefinitionButton(nrOfDefinitions > 1);
         });
 
         definitionsLayout.add(definitionLayout);
     }
 
     private void setupExamplesLayout() {
-        NativeLabel examplesLabel = new NativeLabel("Examples");
+        NativeLabel examplesLabel = new NativeLabel(getTranslation("word.examples"));
 
         Button addExample = new Button(new Icon(VaadinIcon.PLUS));
         addExample.addThemeVariants(ButtonVariant.LUMO_TERTIARY);

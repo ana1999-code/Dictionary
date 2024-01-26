@@ -33,9 +33,9 @@ import static com.example.dictionary.ui.util.UiUtils.showSuccess;
 @RolesAllowed("ADMIN")
 public class ReportView extends VerticalLayout {
 
-    public static final String WORDS_CONTRIBUTIONS_REPORT = "Words Contributions Report";
+    public final String WORDS_CONTRIBUTIONS_REPORT = getTranslation("reports.words.contributions");
 
-    public static final String WORDS_STATISTIC_REPORT = "Words Statistic Report";
+    public final String WORDS_STATISTIC_REPORT = getTranslation("reports.words.statistic");
 
     private Select<String> selectReportType;
 
@@ -47,9 +47,9 @@ public class ReportView extends VerticalLayout {
 
     private Div reportDescription = new Div();
 
-    private ComboBox<Integer> yearComboBox = new ComboBox<>("Year");
+    private ComboBox<Integer> yearComboBox = new ComboBox<>(getTranslation("year"));
 
-    private ComboBox<String> monthComboBox = new ComboBox<>("Month");
+    private ComboBox<String> monthComboBox = new ComboBox<>(getTranslation("month"));
 
     private Registration registration;
 
@@ -61,7 +61,7 @@ public class ReportView extends VerticalLayout {
         this.wordFacade = wordFacade;
         wordsDetails = wordFacade.getAllWordsDetails();
 
-        generateReport = new Button("Generate Report");
+        generateReport = new Button(getTranslation("reports.generate"));
         reportDescription.setMaxWidth("40%");
         reportDescription.getStyle().set("text-align", "center");
 
@@ -77,7 +77,7 @@ public class ReportView extends VerticalLayout {
 
     private void setupReportTypeSelection() {
         selectReportType = new Select<>();
-        selectReportType.setLabel("Select Report Type");
+        selectReportType.setLabel(getTranslation("reports.select.type"));
         selectReportType.setItems(WORDS_CONTRIBUTIONS_REPORT, WORDS_STATISTIC_REPORT);
         selectReportType.addValueChangeListener(event -> {
             String reportTypeValue = event.getValue();
@@ -99,13 +99,12 @@ public class ReportView extends VerticalLayout {
     }
 
     private void setupWordsContributionsReport() {
-        reportDescription.add("This report lists users and the words they contributed, " +
-                "offering a quick overview of individual contributions to the database.");
+        reportDescription.add(getTranslation("reports.words.contribution.description"));
 
         registration = generateReport.addClickListener(event -> {
             try {
                 wordFacade.generateWordsContributionReport();
-                showSuccess("Report Successfully Generated");
+                showSuccess(getTranslation("reports.success.message"));
             } catch (DRException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
                      JobParametersInvalidException | JobRestartException | IOException exception) {
                 showNotification(exception.getMessage());
@@ -116,16 +115,14 @@ public class ReportView extends VerticalLayout {
     }
 
     private void setupWordsStatisticReport() {
-        reportDescription.add("To generate this report, select a specific month and year. " +
-                "The resulting chart provides a quick overview of daily word additions during the chosen period, " +
-                "aiding in the analysis of database growth patterns.");
+        reportDescription.add(getTranslation("reports.words.statistic.description"));
 
         monthComboBox.setEnabled(false);
         setupYearComboBox();
         registration = generateReport.addClickListener(event -> {
             try {
                 wordFacade.generateWordsStatisticsReport(selectedYear, selectedMonth);
-                showSuccess("Report Successfully Generated");
+                showSuccess(getTranslation("reports.success.message"));
             } catch (DRException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
                      JobParametersInvalidException | JobRestartException | IOException exception) {
                 showNotification(exception.getMessage());

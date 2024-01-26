@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -49,6 +50,9 @@ class UserFacadeImplTest {
 
     @Mock
     private UserValidator userValidator;
+
+    @Mock
+    private MessageSource messageSource;
 
     @Spy
     private PasswordEncoder passwordEncoder;
@@ -122,6 +126,8 @@ class UserFacadeImplTest {
     @Test
     void testFindUserByEmail_whenProvideInvalidEmail_thenThrow() {
         when(userService.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(messageSource.getMessage(anyString(), any(), any()))
+                .thenReturn(USER_NOT_FOUND.formatted(USER.getEmail()));
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(ResourceNotFoundException.class,
                 () -> userFacade.findUserByEmail(USER.getEmail()));
@@ -148,6 +154,8 @@ class UserFacadeImplTest {
     @Test
     void testUpdateUserProgress_whenUserDoesNotExist_thenThrow() {
         when(userService.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(messageSource.getMessage(anyString(), any(), any()))
+                .thenReturn(USER_NOT_FOUND.formatted(USER.getEmail()));
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(ResourceNotFoundException.class,
                 () -> userFacade.updateUserProgress(USER_DTO));

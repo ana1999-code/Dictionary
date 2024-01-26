@@ -15,7 +15,7 @@ public class AddSynonymOperation extends AddOperationTemplate {
 
     @Override
     protected String getDescription() {
-        return "Add Synonym";
+        return getTranslation("add") + " " + getTranslation("word.synonym");
     }
 
     @Override

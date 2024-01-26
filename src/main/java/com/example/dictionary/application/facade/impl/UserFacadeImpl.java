@@ -17,6 +17,7 @@ import com.example.dictionary.domain.entity.User;
 import com.example.dictionary.domain.entity.UserInfo;
 import com.example.dictionary.domain.entity.Word;
 import com.example.dictionary.domain.service.UserService;
+import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,13 +47,16 @@ public class UserFacadeImpl implements UserFacade {
 
     private final WordMapper wordMapper;
 
+    private final MessageSource messageSource;
+
     public UserFacadeImpl(UserService userService,
                           UserMapper userMapper,
                           UserValidator userValidator,
                           PasswordEncoder passwordEncoder,
                           AchievementMapper achievementMapper,
                           WordFacade wordFacade,
-                          WordMapper wordMapper) {
+                          WordMapper wordMapper,
+                          MessageSource messageSource) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.userValidator = userValidator;
@@ -59,6 +64,7 @@ public class UserFacadeImpl implements UserFacade {
         this.achievementMapper = achievementMapper;
         this.wordFacade = wordFacade;
         this.wordMapper = wordMapper;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -162,7 +168,7 @@ public class UserFacadeImpl implements UserFacade {
         User user = getUser(SecurityUtils.getUsername());
         Set<Word> favorites = user.getUserInfo().getFavorites();
 
-        Word wordToRemove = getWordToRemove(wordName, favorites);
+        Word wordToRemove = getWordToRemove(wordName, favorites, messageSource);
 
         favorites.remove(wordToRemove);
         userService.registerUser(user);
@@ -196,15 +202,16 @@ public class UserFacadeImpl implements UserFacade {
         return logo;
     }
 
-    private static Word getWordToRemove(String wordName, Set<Word> favorites) {
+    private static Word getWordToRemove(String wordName, Set<Word> favorites, MessageSource messageSource) {
         return favorites
                 .stream()
                 .filter(word -> word.getName().equalsIgnoreCase(wordName))
                 .findAny()
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                                "Word [%s] not found in favorites".formatted(wordName)
-                        )
+                                messageSource.getMessage("user.favorite.error.not.found",
+                                        new Object[]{wordName},
+                                        Locale.getDefault()))
                 );
     }
 
@@ -228,6 +235,9 @@ public class UserFacadeImpl implements UserFacade {
 
     private User getUser(String email) {
         return userService.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User with email [%s] not found".formatted(email)));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        messageSource.getMessage("user.email.error.not.found",
+                                new Object[]{email},
+                                Locale.getDefault())));
     }
 }

@@ -13,12 +13,12 @@ public class RemoveSynonymOperation extends RemoveWordOperation {
 
     @Override
     protected String getDescription() {
-        return "Delete synonym";
+        return getTranslation("delete") + " " + getTranslation("word.synonym");
     }
 
     @Override
     protected H4 getConfirmationMessage() {
-        return new H4("Are you sure you want to delete synonym [%s]?".formatted(word.getName()));
+        return new H4(getTranslation("word.delete.message", getTranslation("word.synonym"), word.getName()));
     }
 
     @Override

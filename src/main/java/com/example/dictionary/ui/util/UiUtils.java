@@ -62,9 +62,9 @@ public class UiUtils {
         return close;
     }
 
-    public static TextField getConfiguredSearchField() {
+    public static TextField getConfiguredSearchField(String placeholder) {
         TextField searchField = new TextField();
-        searchField.setPlaceholder("Search...");
+        searchField.setPlaceholder(placeholder);
         searchField.setValueChangeMode(EAGER);
         searchField.setSuffixComponent(new Icon(SEARCH));
         searchField.setWidthFull();

@@ -1,6 +1,7 @@
 package com.example.dictionary.application.report;
 
 import com.example.dictionary.application.exception.ValueRequiredException;
+import com.example.dictionary.application.i18n.LocaleConfig;
 import com.example.dictionary.domain.entity.Word;
 import net.sf.dynamicreports.report.builder.chart.AxisFormatBuilder;
 import net.sf.dynamicreports.report.builder.chart.BarChartBuilder;
@@ -11,16 +12,17 @@ import net.sf.dynamicreports.report.constant.PageOrientation;
 import net.sf.dynamicreports.report.constant.PageType;
 import net.sf.dynamicreports.report.datasource.DRDataSource;
 import net.sf.dynamicreports.report.exception.DRException;
+import org.springframework.context.MessageSource;
 
 import java.io.IOException;
 import java.time.Month;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.example.dictionary.application.report.util.ReportUtils.BLUE;
 import static com.example.dictionary.application.report.util.ReportUtils.MARGIN;
-import static com.example.dictionary.application.report.util.ReportUtils.WORD_STATISTICS;
 import static com.example.dictionary.application.report.util.ReportUtils.filePath;
 import static com.example.dictionary.application.report.util.ReportUtils.getFooterComponents;
 import static com.example.dictionary.application.report.util.ReportUtils.getOutputStream;
@@ -46,7 +48,11 @@ public class WordsStatisticReportGenerator implements ReportGenerator {
 
     private int totalWords;
 
+    private final MessageSource messageSource;
+
     public WordsStatisticReportGenerator(List<Word> words, String currentUser) {
+        LocaleConfig localeConfig = new LocaleConfig();
+        this.messageSource = localeConfig.messageSource();
         this.words = words;
         this.currentUser = currentUser;
     }
@@ -54,16 +60,21 @@ public class WordsStatisticReportGenerator implements ReportGenerator {
     public void generate() throws IOException, DRException {
         totalWords = 0;
         report()
-                .title(getTitle("WORD STATISTICS FOR " + month + " " + year))
+                .setLocale(Locale.getDefault())
+                .title(getTitle(messageSource.getMessage("report.word.statistics.title",
+                        new Object[]{month, year},
+                        Locale.getDefault())))
                 .setDataSource(getDataSource())
                 .setPageMargin(margin(MARGIN))
                 .setPageFormat(PageType.A4, PageOrientation.LANDSCAPE)
                 .summary(getBarChartBuilder())
                 .pageFooter(getFooterComponents())
-                .pageHeader(getPageHeader(currentUser))
+                .pageHeader(getPageHeader(currentUser, messageSource))
                 .setPageHeaderStyle(getPageHeaderStyle())
                 .setPageFooterStyle(getPageFooterStyle())
-                .toPdf(getOutputStream(WORD_STATISTICS));
+                .toPdf(getOutputStream(messageSource.getMessage(
+                        "report.word.statistics.file.name",
+                        null, Locale.getDefault())));
     }
 
     private DRDataSource getDataSource() {
@@ -100,7 +111,8 @@ public class WordsStatisticReportGenerator implements ReportGenerator {
 
     private BarChartBuilder getBarChartBuilder() {
         return cht.barChart()
-                .setTitle("Words Added Per Month")
+                .setTitle(messageSource.getMessage("report.word.statistics.chart.title",
+                        null, Locale.getDefault()))
                 .seriesColors(BLUE)
                 .setCategory(getCategory())
                 .series(getSeries())
@@ -108,18 +120,21 @@ public class WordsStatisticReportGenerator implements ReportGenerator {
                 .setValueAxisFormat(getValueAxisFormat());
     }
 
-    private static AxisFormatBuilder getValueAxisFormat() {
-        return cht.axisFormat().setLabel("Number of Words");
+    private AxisFormatBuilder getValueAxisFormat() {
+        return cht.axisFormat().setLabel(messageSource.getMessage("report.word.statistics.ox.title",
+                null, Locale.getDefault()));
     }
 
-    private static AxisFormatBuilder getCategoryAxisFormat() {
-        return cht.axisFormat().setLabel("Day");
+    private AxisFormatBuilder getCategoryAxisFormat() {
+        return cht.axisFormat().setLabel(messageSource.getMessage("report.word.statistics.oy.title",
+                null, Locale.getDefault()));
     }
 
     private CategoryChartSerieBuilder getSeries() {
         return serie(col
                 .column("nrOfWords", DataTypes.integerType()))
-                .setLabel("Total words: " + totalWords);
+                .setLabel(messageSource.getMessage("report.word.statistics.total",
+                        new Object[]{totalWords}, Locale.getDefault()));
     }
 
     private static TextColumnBuilder<String> getCategory() {

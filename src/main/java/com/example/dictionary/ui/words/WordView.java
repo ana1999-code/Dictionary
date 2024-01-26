@@ -66,9 +66,9 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private WordDto word;
 
-    private TextField name = new TextField("Name");
+    private TextField name = new TextField(getTranslation("word.name"));
 
-    private TextField category = new TextField("Category");
+    private TextField category = new TextField(getTranslation("word.category"));
 
     private Binder<WordDto> wordBinder = new Binder<>(WordDto.class);
 
@@ -94,7 +94,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private Button back = new Button();
 
-    private Button delete = new Button("Delete Word");
+    private Button delete = new Button(getTranslation("delete") + " " + getTranslation("word.name"));
 
     public WordView(CurrentUserPermissionService permissionService, WordFacade wordFacade) {
         this.permissionService = permissionService;
@@ -229,20 +229,20 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
             try {
                 String wordValue = name.getValue();
                 WordDialog dialog = new WordDialog(
-                        new H4("Are you sure you want to delete word [%s]?".formatted(wordValue)),
-                        "Delete word");
+                        new H4(getTranslation("word.delete.message", getTranslation("word.name.articulate"), wordValue)),
+                        getTranslation("delete") + " " + getTranslation("word.name"));
                 dialog.getDialog().open();
                 dialog.getFirstRightButton().setVisible(false);
-                dialog.getSecondRightButton().setText("Delete");
+                dialog.getSecondRightButton().setText(getTranslation("delete"));
                 dialog.getSecondRightButton().addThemeVariants(LUMO_PRIMARY, LUMO_ERROR);
                 dialog.getSecondRightButton()
                         .addClickListener(dialogEvent -> {
                             wordFacade.deleteWordByName(wordValue);
                             dialog.getDialog().close();
                             UI.getCurrent().navigate(WordsView.class);
-                            showSuccess("Successfully Removed");
+                            showSuccess(getTranslation("delete.success.message"));
                         });
-                dialog.getLeftButton().setText("Cancel");
+                dialog.getLeftButton().setText(getTranslation("cancel"));
                 dialog.getLeftButton().addClickListener(dialogEvent -> dialog.getDialog().close());
             } catch (RuntimeException exception) {
                 showNotification(exception.getMessage());
@@ -252,7 +252,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private void setupDefinitionsLayout() {
         Set<DefinitionDto> definitions = word.getDefinitions();
-        HorizontalLayout layout = new HorizontalLayout(new H5("Definitions"));
+        HorizontalLayout layout = new HorizontalLayout(new H5(getTranslation("word.definitions")));
         if (permissionService.hasWordWritePermission()) {
             layout.add(addDefinition);
         }
@@ -263,7 +263,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private void setupExamplesLayout() {
         Set<ExampleDto> examples = word.getExamples();
-        HorizontalLayout layout = new HorizontalLayout(new H5("Examples"));
+        HorizontalLayout layout = new HorizontalLayout(new H5(getTranslation("word.examples")));
         if (permissionService.hasWordWritePermission()) {
             layout.add(addExample);
         }
@@ -274,7 +274,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private void setupSynonymsLayout() {
         Set<WordDto> examples = word.getSynonyms();
-        HorizontalLayout layout = new HorizontalLayout(new H5("Synonyms"));
+        HorizontalLayout layout = new HorizontalLayout(new H5(getTranslation("word.synonyms")));
         if (permissionService.hasWordWritePermission()) {
             layout.add(addSynonym);
         }
@@ -285,7 +285,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private void setupAntonymsLayout() {
         Set<WordDto> examples = word.getAntonyms();
-        HorizontalLayout layout = new HorizontalLayout(new H5("Antonyms"));
+        HorizontalLayout layout = new HorizontalLayout(new H5(getTranslation("word.antonyms")));
         if (permissionService.hasWordWritePermission()) {
             layout.add(addAntonym);
         }
@@ -296,7 +296,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private void setupCommentsLayout() {
         List<CommentDto> comments = wordFacade.getAllCommentsByWord(name.getValue());
-        HorizontalLayout layout = new HorizontalLayout(new H4("Comments"));
+        HorizontalLayout layout = new HorizontalLayout(new H4(getTranslation("word.comments")));
         layout.add(addComment);
         layout.setDefaultVerticalComponentAlignment(CENTER);
         commentLayout.add(layout);

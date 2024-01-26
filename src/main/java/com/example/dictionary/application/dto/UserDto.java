@@ -13,19 +13,20 @@ public class UserDto {
 
     private Integer id;
 
-    @NotEmpty(message = "First Name is required")
+    @NotEmpty(message = "{validation.firstname.required}")
     private String firstName;
 
-    @NotEmpty(message = "Last Name is required")
+    @NotEmpty(message = "{validation.lastname.required}")
     private String lastName;
 
-    @Email(message = "Incorrect email format")
+    @Email(message = "{validation.email.incorrect}")
+    @NotEmpty(message = "{validation.email.required}")
     private String email;
 
-    @NotEmpty(message = "Password is required")
+    @NotEmpty(message = "{validation.password.required}")
     private String password;
 
-    @NotEmpty(message = "Key is required")
+    @NotEmpty(message = "{validation.key.required}")
     private String key;
 
     private byte[] profileImage;

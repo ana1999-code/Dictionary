@@ -18,7 +18,7 @@ public class AddCommentOperation extends AddOperationTemplate {
 
     @Override
     protected String getDescription() {
-        return "Add Comment";
+        return getTranslation("add") + " " + getTranslation("word.comment");
     }
 
     @Override

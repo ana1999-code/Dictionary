@@ -13,12 +13,12 @@ public class RemoveAntonymOperation extends RemoveWordOperation {
 
     @Override
     protected String getDescription() {
-        return "Delete antonym";
+        return getTranslation("delete") + " " + getTranslation("word.antonym");
     }
 
     @Override
     protected H4 getConfirmationMessage() {
-        return new H4("Are you sure you want to delete antonym [%s]?".formatted(word.getName()));
+        return new H4(getTranslation("word.delete.message", getTranslation("word.antonym"), word.getName()));
     }
 
     @Override

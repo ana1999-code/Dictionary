@@ -66,12 +66,12 @@ public class QuizView extends VerticalLayout {
     }
 
     private void setupResetButton() {
-        reset = new Button("Refresh");
+        reset = new Button(getTranslation("quiz.refresh"));
         reset.addClickListener(event -> UI.getCurrent().getPage().reload());
     }
 
     private void setupSubmitButton() {
-        submit = new Button("Submit");
+        submit = new Button(getTranslation("quiz.submit"));
         submit.addThemeVariants(LUMO_PRIMARY);
         submit.addClickListener(event -> radioButtonGroupList.forEach(
                 radioButtonGroup -> radioButtonGroup.getHelperComponent().setVisible(true)));
@@ -114,14 +114,14 @@ public class QuizView extends VerticalLayout {
 
     private Span getIncorrect() {
         Span incorrect = new Span(createIcon(VaadinIcon.EXCLAMATION_CIRCLE_O),
-                new Span("Incorrect"));
+                new Span(getTranslation("quiz.incorrect")));
         incorrect.getElement().getThemeList().add("badge error");
         return incorrect;
     }
 
     private Span getCorrect() {
         Span correct = new Span(createIcon(VaadinIcon.CHECK),
-                new Span("Correct"));
+                new Span(getTranslation("quiz.correct")));
         correct.getElement().getThemeList().add("badge success");
         return correct;
     }
@@ -133,7 +133,7 @@ public class QuizView extends VerticalLayout {
     }
 
     private void setupTitle() {
-        title = new H4("Select correct definition for each word");
+        title = new H4(getTranslation("quiz.title"));
     }
 
     private Icon createIcon(VaadinIcon vaadinIcon) {

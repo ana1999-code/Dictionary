@@ -39,7 +39,7 @@ public class RegistrationForm extends FormLayout {
     private Button login;
 
     public RegistrationForm() {
-        title = new H2(APP_NAME + " Registration");
+        title = new H2(APP_NAME + " " + getTranslation("registration.title"));
         title.getStyle()
                 .set("color", "var(--_lumo-button-primary-color, var(--lumo-primary-contrast-color))");
 
@@ -50,13 +50,13 @@ public class RegistrationForm extends FormLayout {
                 .set("text-align", "center")
                 .set("border-radius", "5px");
 
-        firstName = new TextField("First Name");
-        lastName = new TextField("Last Name");
-        email = new EmailField("Email");
-        password = new PasswordField("Password");
-        confirmPassword = new PasswordField("Confirm Password");
-        key = new TextField("Access Key");
-        login = new Button("Login");
+        firstName = new TextField(getTranslation("firstname"));
+        lastName = new TextField(getTranslation("lastname"));
+        email = new EmailField(getTranslation("email"));
+        password = new PasswordField(getTranslation("password"));
+        confirmPassword = new PasswordField(getTranslation("registration.password.confirm"));
+        key = new TextField(getTranslation("registration.key"));
+        login = new Button(getTranslation("registration.login"));
 
         setRequiredIndicatorVisible(
                 firstName,
@@ -69,7 +69,7 @@ public class RegistrationForm extends FormLayout {
 
         errorMessageField = new Span();
 
-        register = new Button("Register");
+        register = new Button(getTranslation("register"));
         register.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         login.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 

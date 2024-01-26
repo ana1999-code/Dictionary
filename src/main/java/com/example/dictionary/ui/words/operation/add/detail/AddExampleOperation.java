@@ -19,7 +19,7 @@ public class AddExampleOperation extends AddOperationTemplate {
 
     @Override
     protected String getDescription() {
-        return "Add Example";
+        return getTranslation("add") + " " + getTranslation("word.example");
     }
 
     @Override

@@ -12,7 +12,7 @@ import com.example.dictionary.application.mapper.ExampleMapper;
 import com.example.dictionary.application.mapper.WordMapper;
 import com.example.dictionary.application.security.util.SecurityUtils;
 import com.example.dictionary.application.util.WordEntityAssociationUtil;
-import com.example.dictionary.application.validator.ExampleValidator;
+import com.example.dictionary.application.validator.example.ExampleValidator;
 import com.example.dictionary.application.validator.WordValidator;
 import com.example.dictionary.domain.entity.Word;
 import com.example.dictionary.domain.service.CategoryService;
@@ -31,6 +31,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
 
 import java.util.List;
 import java.util.Optional;
@@ -123,6 +124,9 @@ class WordFacadeImplTest {
     @Mock
     private WordEntityAssociationUtil associationUtil;
 
+    @Mock
+    private MessageSource messageSource;
+
     @Captor
     private ArgumentCaptor<Word> wordArgumentCaptor;
 
@@ -165,6 +169,7 @@ class WordFacadeImplTest {
 
     @Test
     void testGetWordByName_whenGetWordByInvalidName_thenThrow() {
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn(WORD_NOT_FOUND);
         when(wordService.getWordByName(anyString())).thenReturn(Optional.empty());
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
@@ -209,6 +214,7 @@ class WordFacadeImplTest {
 
     @Test
     void testDeleteByName_whenWordDoesNotExists_thenThrow() {
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn(WORD_NOT_FOUND);
         when(wordService.getWordByName(anyString())).thenReturn(Optional.empty());
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(ResourceNotFoundException.class,
@@ -249,7 +255,7 @@ class WordFacadeImplTest {
     @Test
     void testAddDefinitionToWord_whenAddExistingDefinitionInWord_thenThrow() {
         try (MockedStatic<WordFacadeImpl> wordFacadeMocked = mockStatic(WordFacadeImpl.class)) {
-            wordFacadeMocked.when(() -> WordFacadeImpl.verifyDefinitionIsNotPresent(any(), any()))
+            wordFacadeMocked.when(() -> WordFacadeImpl.verifyDefinitionIsNotPresent(any(), any(), any()))
                     .thenThrow(
                             new DuplicateResourceException(
                                     DEFINITION_IS_PRESENT
@@ -292,6 +298,7 @@ class WordFacadeImplTest {
         when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(DEFINITION);
         when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.empty());
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn(DEFINITION_NOT_FOUND);
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
                 ResourceNotFoundException.class,
@@ -306,6 +313,7 @@ class WordFacadeImplTest {
         when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(EXISTING_DEFINITION_FOR_WORD);
         when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(EXISTING_DEFINITION_FOR_WORD));
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn(ONLY_ONE_DEFINITION);
 
         IllegalOperationException illegalOperationException = assertThrows(
                 IllegalOperationException.class,
@@ -324,6 +332,7 @@ class WordFacadeImplTest {
         when(definitionMapper.definitionDtoToDefinition(any())).thenReturn(NON_EXISTING_DEFINITION_FOR_WORD);
         when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(definitionService.getDefinitionByText(anyString())).thenReturn(Optional.of(NON_EXISTING_DEFINITION_FOR_WORD));
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn(DEFINITION_NOT_FOUND_FOR_THE_WORD);
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
                 ResourceNotFoundException.class,
@@ -370,6 +379,7 @@ class WordFacadeImplTest {
         WORD.addExample(EXAMPLE);
         when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.of(EXAMPLE));
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn(EXAMPLE_ALREADY_PRESENT);
 
         DuplicateResourceException duplicateResourceException = assertThrows(
                 DuplicateResourceException.class,
@@ -422,6 +432,7 @@ class WordFacadeImplTest {
         when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE);
         when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.empty());
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn(EXAMPLE_NOT_FOUND);
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
                 ResourceNotFoundException.class,
@@ -436,6 +447,7 @@ class WordFacadeImplTest {
         when(exampleMapper.exampleDtoToExample(any())).thenReturn(EXAMPLE);
         when(wordService.getWordByNameWithContributors(anyString())).thenReturn(Optional.of(WORD));
         when(exampleService.getExampleByText(anyString())).thenReturn(Optional.of(EXAMPLE));
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn(EXAMPLE_NOT_FOUND_FOR_THE_WORD);
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
                 ResourceNotFoundException.class,
@@ -482,6 +494,8 @@ class WordFacadeImplTest {
         WORD.addSynonym(SYNONYM);
         when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
         when(wordService.getWordByNameWithContributors(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
+        when(messageSource.getMessage(anyString(), any(), any()))
+                .thenReturn(WORD_IS_ALREADY_LINKED.formatted(SYNONYM.getName(), WORD.getName()));
 
         DuplicateResourceException duplicateResourceException = assertThrows(
                 DuplicateResourceException.class,
@@ -507,6 +521,8 @@ class WordFacadeImplTest {
     void testRemoveSynonym_whenRemoveNonSynonym_thenThrow() {
         when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
         when(wordService.getWordByNameWithContributors(SYNONYM.getName())).thenReturn(Optional.of(SYNONYM));
+        when(messageSource.getMessage(anyString(), any(), any()))
+                .thenReturn(WORD_IS_NOT_LINKED.formatted(SYNONYM.getName()));
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
                 ResourceNotFoundException.class,
@@ -532,6 +548,8 @@ class WordFacadeImplTest {
         WORD.addSynonym(ANTONYM);
         when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
         when(wordService.getWordByNameWithContributors(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
+        when(messageSource.getMessage(anyString(), any(), any()))
+                .thenReturn(WORD_IS_ALREADY_LINKED.formatted(ANTONYM.getName(), WORD.getName()));
 
         DuplicateResourceException duplicateResourceException = assertThrows(
                 DuplicateResourceException.class,
@@ -557,6 +575,8 @@ class WordFacadeImplTest {
     void testRemoveAntonym_whenRemoveNonSynonym_thenThrow() {
         when(wordService.getWordByNameWithContributors(WORD.getName())).thenReturn(Optional.of(WORD));
         when(wordService.getWordByNameWithContributors(ANTONYM.getName())).thenReturn(Optional.of(ANTONYM));
+        when(messageSource.getMessage(anyString(), any(), any()))
+                .thenReturn(WORD_IS_NOT_LINKED.formatted(ANTONYM.getName()));
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
                 ResourceNotFoundException.class,
@@ -593,6 +613,7 @@ class WordFacadeImplTest {
         COMMENT.setId(1);
         when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
         when(commentService.getCommentById(anyInt())).thenReturn(Optional.empty());
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn(COMMENT_NOT_FOUND);
         ResourceNotFoundException resourceNotFoundException = assertThrows(ResourceNotFoundException.class,
                 () -> wordFacade.removeComment(WORD.getName(), COMMENT.getId()));
 

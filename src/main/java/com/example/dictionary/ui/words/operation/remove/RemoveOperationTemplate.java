@@ -44,12 +44,12 @@ public abstract class RemoveOperationTemplate extends OperationTemplate {
     }
 
     private void setupCancelButtton() {
-        wordDialog.getLeftButton().setText("Cancel");
+        wordDialog.getLeftButton().setText(getTranslation("cancel"));
         wordDialog.getLeftButton().addClickListener(dialogEvent -> wordDialog.getDialog().close());
     }
 
     private void setupDeleteButton() {
-        getDeleteButton().setText("Delete");
+        getDeleteButton().setText(getTranslation("delete"));
         getDeleteButton().addThemeVariants(LUMO_PRIMARY, LUMO_ERROR);
         getDeleteButton()
                 .addClickListener(dialogEvent -> {
@@ -58,7 +58,7 @@ public abstract class RemoveOperationTemplate extends OperationTemplate {
                         executeRemoveOperation();
                         closeDialog();
                         refresh(wordView, wordFacade);
-                        showSuccess("Successfully Removed");
+                        showSuccess(getTranslation("delete.success.message"));
                     } catch (RuntimeException exception) {
                         showNotification(exception.getMessage());
                     }

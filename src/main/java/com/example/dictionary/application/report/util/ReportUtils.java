@@ -7,6 +7,7 @@ import net.sf.dynamicreports.report.builder.component.TextFieldBuilder;
 import net.sf.dynamicreports.report.builder.style.BorderBuilder;
 import net.sf.dynamicreports.report.builder.style.PenBuilder;
 import net.sf.dynamicreports.report.builder.style.StyleBuilder;
+import org.springframework.context.MessageSource;
 
 import java.awt.Color;
 import java.io.FileOutputStream;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 import static java.awt.Color.BLACK;
@@ -42,10 +44,6 @@ public class ReportUtils {
 
     public static String filePath;
 
-    public static final String WORD_CONTRIBUTIONS = "Word_Contributions_";
-
-    public static final String WORD_STATISTICS = "Word_Statistics_";
-
     public static final String DD_MMYYYY_HHMMSS = "ddMMyyyyHHmmss";
 
     public static final int MARGIN = 50;
@@ -72,9 +70,11 @@ public class ReportUtils {
                 );
     }
 
-    public static HorizontalListBuilder getPageHeader(String currentUser) {
+    public static HorizontalListBuilder getPageHeader(String currentUser, MessageSource messageSource) {
         return cmp.horizontalList(cmp.text(APP_NAME),
-                cmp.text("Reported by " + currentUser)
+                cmp.text(messageSource.getMessage("report.reported.by",
+                                new Object[]{currentUser},
+                                Locale.getDefault()))
                         .setHorizontalTextAlignment(RIGHT));
     }
 

@@ -17,8 +17,8 @@ import com.example.dictionary.application.report.WordsStatisticReportGenerator;
 import com.example.dictionary.application.report.data.WordDetail;
 import com.example.dictionary.application.security.util.SecurityUtils;
 import com.example.dictionary.application.util.WordEntityAssociationUtil;
-import com.example.dictionary.application.validator.ExampleValidator;
 import com.example.dictionary.application.validator.WordValidator;
+import com.example.dictionary.application.validator.example.ExampleValidator;
 import com.example.dictionary.domain.entity.Comment;
 import com.example.dictionary.domain.entity.Definition;
 import com.example.dictionary.domain.entity.Example;
@@ -40,6 +40,7 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -89,6 +91,8 @@ public class WordFacadeImpl implements WordFacade {
     @Qualifier("openFileLocationJop")
     private final Job openFileLocationJop;
 
+    private final MessageSource messageSource;
+
     public WordFacadeImpl(WordService wordService,
                           WordMapper wordMapper,
                           WordValidator validator,
@@ -102,7 +106,8 @@ public class WordFacadeImpl implements WordFacade {
                           WordEntityAssociationUtil associationUtil,
                           JobLauncher jobLauncher,
                           Job importWordsFromCsvToDbJob,
-                          Job openFileLocationJop) {
+                          Job openFileLocationJop,
+                          MessageSource messageSource) {
         this.wordService = wordService;
         this.wordMapper = wordMapper;
         this.validator = validator;
@@ -117,6 +122,7 @@ public class WordFacadeImpl implements WordFacade {
         this.jobLauncher = jobLauncher;
         this.importWordsFromCsvToDbJob = importWordsFromCsvToDbJob;
         this.openFileLocationJop = openFileLocationJop;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -163,7 +169,7 @@ public class WordFacadeImpl implements WordFacade {
         Word word = getWordWithContributors(name);
 
         Definition definition = getOrCreateDefinition(definitionDto);
-        verifyDefinitionIsNotPresent(word, definition);
+        verifyDefinitionIsNotPresent(word, definition, messageSource);
 
         word.addDefinition(definition);
         Word addedWord = wordService.addWord(word);
@@ -247,7 +253,7 @@ public class WordFacadeImpl implements WordFacade {
         Word word = getWordWithContributors(name);
         Word synonymToRemove = getWordWithContributors(synonym.getName());
 
-        verifyWordIsPresent(synonymToRemove, word.getSynonyms());
+        verifyWordIsPresent(synonymToRemove, word.getSynonyms(), messageSource);
 
         word.removeSynonym(synonymToRemove);
         wordService.addWord(word);
@@ -272,7 +278,7 @@ public class WordFacadeImpl implements WordFacade {
         Word word = getWordWithContributors(name);
         Word antonymToRemove = getWordWithContributors(antonym.getName());
 
-        verifyWordIsPresent(antonymToRemove, word.getAntonyms());
+        verifyWordIsPresent(antonymToRemove, word.getAntonyms(), messageSource);
 
         word.removeAntonym(antonymToRemove);
         wordService.addWord(word);
@@ -300,7 +306,8 @@ public class WordFacadeImpl implements WordFacade {
         Word word = getWord(name);
 
         Comment comment = commentService.getCommentById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("No comment found"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        messageSource.getMessage("word.comment.error.message", null, Locale.getDefault())));
 
         word.removeComment(comment);
         commentService.removeComment(comment);
@@ -390,14 +397,14 @@ public class WordFacadeImpl implements WordFacade {
     private Word getWord(String name) {
         return wordService.getWordByName(name)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Word [%s] not found".formatted(name))
+                        messageSource.getMessage("word.error.not.found", new Object[]{name}, Locale.getDefault()))
                 );
     }
 
     private Word getWordWithContributors(String name) {
         return wordService.getWordByNameWithContributors(name)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Word [%s] not found".formatted(name))
+                        messageSource.getMessage("word.error.not.found", new Object[]{name}, Locale.getDefault()))
                 );
     }
 
@@ -412,11 +419,12 @@ public class WordFacadeImpl implements WordFacade {
         });
     }
 
-    public static void verifyDefinitionIsNotPresent(Word word, Definition definition) {
+    public static void verifyDefinitionIsNotPresent(Word word, Definition definition, MessageSource messageSource) {
         if (word.getDefinitions().contains(definition)) {
             throw new DuplicateResourceException(
-                    "Definition [%s] is already present in word definitions"
-                            .formatted(definition.getText())
+                    messageSource.getMessage("word.definition.error.already.present",
+                            new Object[]{definition.getText()},
+                            Locale.getDefault())
             );
         }
     }
@@ -426,15 +434,21 @@ public class WordFacadeImpl implements WordFacade {
 
         Definition definitionToDelete = definitionService.getDefinitionByText(text)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Definition [%s] not found".formatted(text)));
+                        messageSource.getMessage("word.definition.error.not.found",
+                                new Object[]{text},
+                                Locale.getDefault())));
 
         if (word.getDefinitions().size() == 1) {
             throw new IllegalOperationException(
-                    "Word [%s] has only one definition that is required".formatted(word.getName())
+                    messageSource.getMessage("word.definition.error.required",
+                            new Object[]{word.getName()},
+                            Locale.getDefault())
             );
         } else if (!word.getDefinitions().contains(definitionToDelete)) {
-            throw new ResourceNotFoundException("Definition [%s] not found for the word [%s]"
-                    .formatted(text, word.getName())
+            throw new ResourceNotFoundException(
+                    messageSource.getMessage("word.definition.error.not.found.for.word",
+                            new Object[]{text, word.getName()},
+                            Locale.getDefault())
             );
         }
         return definitionToDelete;
@@ -446,12 +460,15 @@ public class WordFacadeImpl implements WordFacade {
 
         Example exampleToDelete = exampleService.getExampleByText(text)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Example [%s] not found".formatted(text)));
+                        messageSource.getMessage("word.example.error.not.found",
+                                new Object[]{text},
+                                Locale.getDefault())));
 
         if (!word.getExamples().contains(exampleToDelete)) {
             throw new ResourceNotFoundException(
-                    "Example [%s] not found for the word [%s]"
-                            .formatted(text, word.getName())
+                    messageSource.getMessage("word.example.error.not.found.for.word",
+                            new Object[]{text, word.getName()},
+                            Locale.getDefault())
             );
         }
 
@@ -473,8 +490,9 @@ public class WordFacadeImpl implements WordFacade {
 
         if (word.getExamples().contains(example)) {
             throw new DuplicateResourceException(
-                    "Example [%s] is already present in word examples"
-                            .formatted(example.getText())
+                    messageSource.getMessage("word.example.error.already.present",
+                            new Object[]{example.getText()},
+                            Locale.getDefault())
             );
         }
     }
@@ -482,8 +500,9 @@ public class WordFacadeImpl implements WordFacade {
     private void verifyWordIsNotPresent(Word word, Word wordToAdd) {
         if (isWordContaining(word, wordToAdd)) {
             throw new DuplicateResourceException(
-                    "Synonym or Antonym [%s] is already linked with word [%s]"
-                            .formatted(wordToAdd.getName(), word.getName()));
+                    messageSource.getMessage("word.synonym.antonym.error.already.present",
+                            new Object[]{wordToAdd.getName(), word.getName()},
+                            Locale.getDefault()));
         }
     }
 
@@ -494,10 +513,12 @@ public class WordFacadeImpl implements WordFacade {
                 && word.getAntonyms().contains(linkedWord);
     }
 
-    private static void verifyWordIsPresent(Word wordToRemove, Set<Word> synonyms) {
+    private static void verifyWordIsPresent(Word wordToRemove, Set<Word> synonyms, MessageSource messageSource) {
         if (!synonyms.contains(wordToRemove)) {
-            throw new ResourceNotFoundException("Synonym or Antonym [%s] is not present"
-                    .formatted(wordToRemove.getName()));
+            throw new ResourceNotFoundException(
+                    messageSource.getMessage("word.synonym.antonym.error.not.present",
+                            new Object[]{wordToRemove.getName()},
+                            Locale.getDefault()));
         }
     }
 }

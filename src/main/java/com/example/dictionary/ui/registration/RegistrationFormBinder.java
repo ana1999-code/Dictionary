@@ -3,7 +3,7 @@ package com.example.dictionary.ui.registration;
 import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.exception.InvalidPasswordException;
 import com.example.dictionary.application.facade.UserFacade;
-import com.example.dictionary.application.validator.PasswordValidator;
+import com.example.dictionary.application.validator.password.PasswordValidator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
@@ -90,6 +90,7 @@ public class RegistrationFormBinder {
             return ValidationResult.ok();
         }
 
-        return ValidationResult.error("Password do not match");
+        return ValidationResult.error(registrationForm
+                .getTranslation("registration.password.confirmation.error"));
     }
 }

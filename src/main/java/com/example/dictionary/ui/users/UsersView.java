@@ -42,7 +42,7 @@ public class UsersView extends VerticalLayout {
     }
 
     private void setupSearchField() {
-        searchField = getConfiguredSearchField();
+        searchField = getConfiguredSearchField(getTranslation("search"));
         searchField.addValueChangeListener(event -> resetFilteredData());
         searchField.setWidth("50%");
         add(searchField);
@@ -57,25 +57,25 @@ public class UsersView extends VerticalLayout {
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setWidth("5%");
         userGrid.addColumn(UserDto::getFirstName)
-                .setHeader("First Name")
+                .setHeader(getTranslation("firstname"))
                 .setKey("firstName")
                 .setSortable(true)
                 .setAutoWidth(true);
         userGrid.addColumn(UserDto::getLastName)
-                .setHeader("Last Name")
+                .setHeader(getTranslation("lastname"))
                 .setKey("lastName")
                 .setSortable(true)
                 .setAutoWidth(true);
         userGrid.addColumn(UserDto::getEmail)
-                .setHeader("Email")
+                .setHeader(getTranslation("email"))
                 .setSortable(true)
                 .setAutoWidth(true);
         userGrid.addColumn(UserDto::getRegisteredAt)
-                .setHeader("Register Date")
+                .setHeader(getTranslation("users.registered.date"))
                 .setSortable(true)
                 .setAutoWidth(true);
         userGrid.addColumn(userDto -> userDto.getKey().toUpperCase())
-                .setHeader("Role")
+                .setHeader(getTranslation("users.role"))
                 .setSortable(true);
 
         userGrid.sort(List.of(new GridSortOrder<>(userGrid.getColumnByKey("firstName"),

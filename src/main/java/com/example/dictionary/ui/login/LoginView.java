@@ -26,14 +26,18 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
         loginI18n.getHeader().setTitle(APP_NAME);
         loginI18n.setAdditionalInformation(null);
         loginI18n.setForm(new LoginI18n.Form());
-        loginI18n.getForm().setSubmit("Sign in");
-        loginI18n.getForm().setUsername("Email");
-        loginI18n.getForm().setPassword("Password");
-        loginI18n.getForm().setForgotPassword("Register");
+        loginI18n.getForm().setSubmit(getTranslation("login.signin"));
+        loginI18n.getForm().setUsername(getTranslation("email"));
+        loginI18n.getForm().setPassword(getTranslation("password"));
+        loginI18n.getForm().setForgotPassword(getTranslation("register"));
+        LoginI18n.ErrorMessage errorMessage = loginI18n.getErrorMessage();
+        errorMessage.setTitle(getTranslation("login.error.title"));
+        errorMessage.setMessage(getTranslation("login.error.message"));
+        loginI18n.setErrorMessage(errorMessage);
+        loginI18n.getErrorMessage().setUsername(getTranslation("validation.email.required"));
+        loginI18n.getErrorMessage().setPassword(getTranslation("validation.password.required"));
 
-        addForgotPasswordListener(event -> {
-            getUI().ifPresent(ui -> ui.navigate(RegistrationView.class));
-        });
+        addForgotPasswordListener(event -> getUI().ifPresent(ui -> ui.navigate(RegistrationView.class)));
 
         setI18n(loginI18n);
         setAction("login");

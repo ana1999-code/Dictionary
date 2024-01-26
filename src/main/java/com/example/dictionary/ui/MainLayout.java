@@ -1,6 +1,7 @@
 package com.example.dictionary.ui;
 
 import com.example.dictionary.application.security.ui.SecurityService;
+import com.example.dictionary.ui.i18n.SimpleI18NProvider;
 import com.example.dictionary.ui.profile.ProfileView;
 import com.example.dictionary.ui.quiz.QuizView;
 import com.example.dictionary.ui.report.ReportView;
@@ -8,11 +9,17 @@ import com.example.dictionary.ui.security.CurrentUserPermissionService;
 import com.example.dictionary.ui.users.UsersView;
 import com.example.dictionary.ui.words.WordsView;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.VaadinService;
+import jakarta.servlet.http.Cookie;
+
+import java.util.Locale;
 
 import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 
@@ -21,6 +28,11 @@ public class MainLayout extends AppLayout {
     private final SecurityService securityService;
 
     private final CurrentUserPermissionService permissionService;
+
+    private final Select<Locale> languageSelect;
+
+    private final SimpleI18NProvider i18NProvider = SimpleI18NProvider.getSimpleI18NProvider();
+
 
     public MainLayout(SecurityService securityService,
                       CurrentUserPermissionService permissionService) {
@@ -38,25 +50,43 @@ public class MainLayout extends AppLayout {
             }
 
             event.getSelectedTab().getId().ifPresent(id -> {
-                if ("logout".equals(id)) {
+                if (getTranslation("tab.logout.name").equalsIgnoreCase(id)) {
                     securityService.logout();
                 }
             });
         });
 
-        addToNavbar(title, tabs);
+        languageSelect = new Select<>();
+        languageSelect.setItems(i18NProvider.getProvidedLocales());
+        languageSelect.setItemLabelGenerator(Locale::getLanguage);
+        languageSelect.setValue(UI.getCurrent().getLocale());
+        languageSelect.addValueChangeListener(event -> saveLocalePreference(event.getValue()));
+
+        languageSelect.getStyle().set("font-size", "var(--lumo-font-size-l)")
+                .set("right", "var(--lumo-space-l)").set("margin", "0")
+                .set("position", "absolute");
+
+        addToNavbar(title, tabs, languageSelect);
+    }
+
+    private void saveLocalePreference(Locale locale) {
+        Locale.setDefault(locale);
+        getUI().get().setLocale(locale);
+        VaadinService.getCurrentResponse()
+                .addCookie(new Cookie("locale", locale.toLanguageTag()));
+        UI.getCurrent().getPage().reload();
     }
 
     private Tabs getTabs() {
         Tabs tabs = new Tabs();
         tabs.getStyle().set("margin", "auto");
 
-        Tab profile = createTab("Profile", ProfileView.class);
-        Tab reports = createTab("Reports", ReportView.class);
-        Tab words = createTab("Words", WordsView.class);
-        Tab users = createTab("Users", UsersView.class);
-        Tab logout = createTab("Logout", new RouterLink());
-        Tab quizzes = createTab("Quiz", QuizView.class);
+        Tab profile = createTab(getTranslation("tab.profile.name"), ProfileView.class);
+        Tab reports = createTab(getTranslation("tab.reports.name"), ReportView.class);
+        Tab words = createTab(getTranslation("tab.words.name"), WordsView.class);
+        Tab users = createTab(getTranslation("tab.users.name"), UsersView.class);
+        Tab logout = createTab(getTranslation("tab.logout.name"), new RouterLink());
+        Tab quizzes = createTab(getTranslation("tab.quiz.name"), QuizView.class);
 
         if (!permissionService.isAdmin()) {
             reports.setEnabled(false);

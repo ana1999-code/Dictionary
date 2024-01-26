@@ -20,7 +20,7 @@ public class RemoveDefinitionOperation extends RemoveOperationTemplate {
 
     @Override
     protected String getDescription() {
-        return "Delete definition";
+        return getTranslation("delete") + " " + getTranslation("word.definition");
     }
 
     @Override
@@ -36,7 +36,7 @@ public class RemoveDefinitionOperation extends RemoveOperationTemplate {
 
     @Override
     public H4 getConfirmationMessage() {
-        return new H4("Are you sure you want to delete definition [%s]?".formatted(definition.getText()));
+        return new H4(getTranslation("word.delete.message", getTranslation("word.definition"), definition.getText()));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.dictionary.application.validator;
 
 import com.example.dictionary.application.exception.InvalidPasswordException;
+import com.example.dictionary.application.validator.password.PasswordValidator;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 

@@ -33,7 +33,7 @@ public abstract class AddOperationTemplate extends OperationTemplate {
     }
 
     private void configureSaveButton() {
-        wordDialog.getSecondRightButton().setText("Save");
+        wordDialog.getSecondRightButton().setText(getTranslation("save"));
         wordDialog.getSecondRightButton().addThemeVariants(LUMO_PRIMARY);
         wordDialog.getSecondRightButton().addClickListener(clickEvent -> {
             TextArea detail = wordTextFieldForm.getDetail();
@@ -42,14 +42,14 @@ public abstract class AddOperationTemplate extends OperationTemplate {
     }
 
     private void configureCancelButton() {
-        wordDialog.getLeftButton().setText("Cancel");
+        wordDialog.getLeftButton().setText(getTranslation("cancel"));
         wordDialog.getLeftButton().addThemeVariants(LUMO_ERROR);
         wordDialog.getLeftButton()
                 .addClickListener(clickEvent -> closeDialog());
     }
 
     private void configureResetButton() {
-        wordDialog.getFirstRightButton().setText("Reset");
+        wordDialog.getFirstRightButton().setText(getTranslation("reset"));
         wordDialog.getFirstRightButton().addThemeVariants(LUMO_TERTIARY);
         wordDialog.getFirstRightButton()
                 .addClickListener(clickEvent -> wordTextFieldForm.getDetail().clear());
@@ -60,7 +60,7 @@ public abstract class AddOperationTemplate extends OperationTemplate {
             createBinderAndSave(detail);
             closeDialog();
             refresh(wordView, wordFacade);
-            showSuccess("[%s] Successfully Added".formatted(detail.getValue()));
+            showSuccess(getTranslation("add.success.message", detail.getValue()));
         } catch (RuntimeException e) {
             showNotification(e.getMessage());
         } catch (ValidationException ignored) {

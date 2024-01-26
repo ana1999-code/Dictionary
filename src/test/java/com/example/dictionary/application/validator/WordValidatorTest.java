@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
 
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ import static com.example.dictionary.utils.TestUtils.WORD_DTO;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,6 +37,9 @@ class WordValidatorTest {
 
     @InjectMocks
     private WordValidator wordValidator;
+
+    @Mock
+    private MessageSource messageSource;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +59,7 @@ class WordValidatorTest {
     @Test
     void testValidate_whenWordIsPresentInDatabase_thenThrow() {
         WORD_DTO.addDefinition(DEFINITION_DTO);
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn(DUPLICATE_WORD);
         when(wordService.getWordByName(anyString())).thenReturn(Optional.of(WORD));
 
         DuplicateResourceException duplicateResourceException = assertThrows(
@@ -67,6 +73,7 @@ class WordValidatorTest {
     @Test
     void testValidate_whenWordDoesNotHaveDefinition_thenThrow() {
         WORD_DTO.getDefinitions().clear();
+        when(messageSource.getMessage(anyString(), any(), any())).thenReturn(DEFINITION_NOT_FOUND_FOR_WORD);
 
         ResourceNotFoundException resourceNotFoundException = assertThrows(
                 ResourceNotFoundException.class,

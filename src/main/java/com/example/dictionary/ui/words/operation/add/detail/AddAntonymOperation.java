@@ -15,7 +15,7 @@ public class AddAntonymOperation extends AddOperationTemplate {
 
     @Override
     protected String getDescription() {
-        return "Add Antonym";
+        return getTranslation("add") + " " + getTranslation("word.antonym");
     }
 
     @Override

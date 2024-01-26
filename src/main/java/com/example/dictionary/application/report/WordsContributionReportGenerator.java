@@ -1,5 +1,6 @@
 package com.example.dictionary.application.report;
 
+import com.example.dictionary.application.i18n.LocaleConfig;
 import com.example.dictionary.application.report.data.WordDetail;
 import com.example.dictionary.domain.entity.User;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
@@ -16,19 +17,20 @@ import net.sf.dynamicreports.report.exception.DRException;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.springframework.context.MessageSource;
 
 import java.io.IOException;
 import java.io.Serial;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.example.dictionary.application.report.util.ReportUtils.COLUMN_SPACE;
 import static com.example.dictionary.application.report.util.ReportUtils.DD_MM_YYYY;
 import static com.example.dictionary.application.report.util.ReportUtils.MARGIN;
-import static com.example.dictionary.application.report.util.ReportUtils.WORD_CONTRIBUTIONS;
 import static com.example.dictionary.application.report.util.ReportUtils.filePath;
 import static com.example.dictionary.application.report.util.ReportUtils.getDetailStyle;
 import static com.example.dictionary.application.report.util.ReportUtils.getFooterComponents;
@@ -59,7 +61,11 @@ public class WordsContributionReportGenerator implements ReportGenerator {
 
     private final String currentUser;
 
+    private final MessageSource messageSource;
+
     public WordsContributionReportGenerator(List<WordDetail> words, String currentUser) {
+        LocaleConfig localeConfig = new LocaleConfig();
+        this.messageSource = localeConfig.messageSource();
         this.words = words;
         this.userWords = words.stream()
                 .collect(Collectors.groupingBy(WordDetail::getContributor));
@@ -71,17 +77,21 @@ public class WordsContributionReportGenerator implements ReportGenerator {
         SubreportBuilder subreport = cmp.subreport(new SubreportExpression())
                 .setDataSource(new SubreportDataSourceExpression());
         report()
-                .title(getTitle("USER WORD CONTRIBUTIONS REPORT"))
+                .setLocale(Locale.getDefault())
+                .title(getTitle(messageSource
+                        .getMessage("report.user.contributions.title", null, Locale.getDefault())))
                 .detail(subreport)
                 .setDataSource(createDataSource())
                 .setPageMargin(margin(MARGIN))
                 .setPageFormat(PageType.A4)
                 .setDetailStyle(getDetailStyle())
                 .pageFooter(getFooterComponents())
-                .pageHeader(getPageHeader(currentUser))
+                .pageHeader(getPageHeader(currentUser, messageSource))
                 .setPageHeaderStyle(getPageHeaderStyle())
                 .setPageFooterStyle(getPageFooterStyle())
-                .toPdf(getOutputStream(WORD_CONTRIBUTIONS));
+                .toPdf(getOutputStream(messageSource.getMessage(
+                        "report.user.contributions.file.name",
+                        null, Locale.getDefault())));
     }
 
     private JRDataSource createDataSource() {
@@ -102,7 +112,7 @@ public class WordsContributionReportGenerator implements ReportGenerator {
             TextColumnBuilder<String> addedAt = col.column(new DateColumn(DD_MM_YYYY));
 
             VariableBuilder<Long> subtotal = variable(name, Calculation.COUNT);
-            TextFieldBuilder<String> summarySubtotal = cmp.text(new CustomTextSubtotal(subtotal));
+            TextFieldBuilder<String> summarySubtotal = cmp.text(new CustomTextSubtotal(subtotal, messageSource));
             TextFieldBuilder<String> title = cmp.text(user.getFirstName() + " " + user.getLastName())
                     .setStyle(stl.style().setFont(stl.font()).bold());
             report
@@ -138,13 +148,18 @@ public class WordsContributionReportGenerator implements ReportGenerator {
 
         private final VariableBuilder<Long> subtotal;
 
-        public CustomTextSubtotal(VariableBuilder<Long> subtotal) {
+        private final MessageSource messageSource;
+
+        public CustomTextSubtotal(VariableBuilder<Long> subtotal, MessageSource messageSource) {
             this.subtotal = subtotal;
+            this.messageSource = messageSource;
         }
 
         @Override
         public String evaluate(ReportParameters reportParameters) {
-            return "Total word contributions: " + type.longType().valueToString(subtotal, reportParameters);
+            return messageSource.getMessage("report.user.contributions.total",
+                    new Object[]{type.longType().valueToString(subtotal, reportParameters)},
+                    Locale.getDefault());
         }
     }
 
