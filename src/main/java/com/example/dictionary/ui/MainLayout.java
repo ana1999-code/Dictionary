@@ -12,9 +12,14 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinService;
 import jakarta.servlet.http.Cookie;
@@ -58,17 +63,27 @@ public class MainLayout extends AppLayout {
 
         languageSelect = new Select<>();
         languageSelect.setItems(i18NProvider.getProvidedLocales());
-        languageSelect.setItemLabelGenerator(Locale::getLanguage);
+        languageSelect.setRenderer(languageRenderer);
         languageSelect.setValue(UI.getCurrent().getLocale());
         languageSelect.addValueChangeListener(event -> saveLocalePreference(event.getValue()));
 
         languageSelect.getStyle().set("font-size", "var(--lumo-font-size-l)")
-                .set("right", "var(--lumo-space-l)").set("margin", "0")
-                .set("position", "absolute");
+                .set("right", "var(--lumo-space-l)")
+                .set("margin", "0")
+                .set("position", "absolute")
+                .set("width", "9em");
 
         addToNavbar(title, tabs, languageSelect);
     }
-
+    private ComponentRenderer<HorizontalLayout, Locale> languageRenderer = new ComponentRenderer<>(item -> {
+        HorizontalLayout hLayout = new HorizontalLayout();
+        Image languageFlag = new Image("img/languageflags/"+item.getLanguage()+".jpg", "flag for "+item.getLanguage());
+        languageFlag.setHeight("19px");
+        hLayout.add(languageFlag);
+        hLayout.add(new Span(getTranslation("language." + item.getLanguage())));
+        hLayout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+        return hLayout;
+    });
     private void saveLocalePreference(Locale locale) {
         Locale.setDefault(locale);
         getUI().get().setLocale(locale);
