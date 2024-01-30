@@ -88,7 +88,7 @@ public class ProfileFormBinder {
                 boolean isChanged = userFacade.updateUser(userDto);
 
                 if (isChanged) {
-                    showSuccess("Successful Updated");
+                    showSuccess(edit.getTranslation("update.success.message"));
                 }
                 binder.readBean(userFacade.getUserProfile());
                 updateButtonsAfterAction();
