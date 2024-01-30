@@ -55,7 +55,7 @@ public class UsersView extends VerticalLayout {
         userGrid.setItems(users);
         userGrid.addComponentColumn(UiUtils::getAvatar)
                 .setTextAlign(ColumnTextAlign.CENTER)
-                .setWidth("5%");
+                .setWidth("6%");
         userGrid.addColumn(UserDto::getFirstName)
                 .setHeader(getTranslation("firstname"))
                 .setKey("firstName")
@@ -74,9 +74,10 @@ public class UsersView extends VerticalLayout {
                 .setHeader(getTranslation("users.registered.date"))
                 .setSortable(true)
                 .setAutoWidth(true);
-        userGrid.addColumn(userDto -> userDto.getKey().toUpperCase())
+        userGrid.addColumn(userDto -> getTranslation("user.role." + userDto.getKey().toLowerCase()))
                 .setHeader(getTranslation("users.role"))
-                .setSortable(true);
+                .setSortable(true)
+                .setAutoWidth(true);
 
         userGrid.sort(List.of(new GridSortOrder<>(userGrid.getColumnByKey("firstName"),
                 SortDirection.ASCENDING)));
