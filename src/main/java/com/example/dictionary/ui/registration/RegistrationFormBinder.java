@@ -50,7 +50,7 @@ public class RegistrationFormBinder {
 
                 userFacade.registerUser(userDto);
 
-                showSuccess("Successful Registration");
+                showSuccess(registrationForm.getTranslation("registration.success"));
                 navigate(register);
             } catch (RuntimeException | ValidationException exception) {
                 showNotification(exception.getMessage());

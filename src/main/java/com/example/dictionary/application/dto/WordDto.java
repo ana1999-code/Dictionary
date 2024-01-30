@@ -15,7 +15,7 @@ public class WordDto {
     private Integer id;
 
     @Pattern(regexp = "^[a-zA-Z]+$",
-            message = "Word must not be empty and must contain only letters")
+            message = "{word.error.empty}")
     private String name;
 
     private final Set<DefinitionDto> definitions = new HashSet<>();
@@ -26,7 +26,7 @@ public class WordDto {
 
     private final Set<WordDto> antonyms = new HashSet<>();
 
-    @NotNull(message = "Category is required")
+    @NotNull(message = "{word.category.error.message}")
     private CategoryDto category = new CategoryDto();
 
     private final Set<UserDto> contributors = new HashSet<>();

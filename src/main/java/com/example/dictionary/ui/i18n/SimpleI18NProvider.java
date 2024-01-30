@@ -29,7 +29,7 @@ public class SimpleI18NProvider implements I18NProvider {
     private void initMap() {
         localeMap = new HashMap<>();
         for (final Locale locale : getProvidedLocales()) {
-            final ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", locale);
+            final ResourceBundle resourceBundle = ResourceBundle.getBundle("ValidationMessages", locale);
             localeMap.put(locale.getLanguage(), resourceBundle);
         }
     }

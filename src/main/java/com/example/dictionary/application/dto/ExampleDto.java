@@ -8,7 +8,7 @@ public class ExampleDto {
 
     private Integer id;
 
-    @NotEmpty(message = "Example must not be empty")
+    @NotEmpty(message = "{word.example.error.empty}")
     private String text;
 
     public ExampleDto() {

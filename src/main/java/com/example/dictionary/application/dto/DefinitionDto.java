@@ -8,7 +8,7 @@ public class DefinitionDto {
 
     private Integer id;
 
-    @NotEmpty(message = "Definition must not be empty")
+    @NotEmpty(message = "{word.definition.error.empty}")
     private String text;
 
     public DefinitionDto() {

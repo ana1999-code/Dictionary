@@ -8,7 +8,7 @@ public class CategoryDto {
 
     private Integer id;
 
-    @NotEmpty(message = "Category must not be empty")
+    @NotEmpty(message = "{word.category.error.message}")
     private String name;
 
     public CategoryDto() {
