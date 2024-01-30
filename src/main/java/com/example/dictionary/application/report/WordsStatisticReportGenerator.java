@@ -16,6 +16,7 @@ import org.springframework.context.MessageSource;
 
 import java.io.IOException;
 import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class WordsStatisticReportGenerator implements ReportGenerator {
         report()
                 .setLocale(Locale.getDefault())
                 .title(getTitle(messageSource.getMessage("report.word.statistics.title",
-                        new Object[]{month, year},
+                        new Object[]{getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()), year.toString()},
                         Locale.getDefault())))
                 .setDataSource(getDataSource())
                 .setPageMargin(margin(MARGIN))
@@ -147,6 +148,10 @@ public class WordsStatisticReportGenerator implements ReportGenerator {
 
     public void setMonth(Month month) {
         this.month = month;
+    }
+
+    public Month getMonth() {
+        return month;
     }
 
     public String getPath() {

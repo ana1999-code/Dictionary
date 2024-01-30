@@ -20,7 +20,10 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 
 import java.io.IOException;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,7 +52,7 @@ public class ReportView extends VerticalLayout {
 
     private ComboBox<Integer> yearComboBox = new ComboBox<>(getTranslation("year"));
 
-    private ComboBox<String> monthComboBox = new ComboBox<>(getTranslation("month"));
+    private ComboBox<Month> monthComboBox = new ComboBox<>(getTranslation("month"));
 
     private Registration registration;
 
@@ -149,16 +152,16 @@ public class ReportView extends VerticalLayout {
 
     private void setupMonthComboBox(Integer year) {
         monthComboBox.setEnabled(true);
-        Set<String> months = wordsDetails.stream()
+        Set<Month> months = wordsDetails.stream()
                 .filter(wordDetail -> wordDetail.getAddedAt().getYear() == year)
-                .map(wordDetail -> wordDetail.getAddedAt().getMonth().toString())
+                .map(wordDetail -> wordDetail.getAddedAt()
+                        .getMonth())
                 .collect(Collectors.toSet());
 
         monthComboBox.setItems(months);
+        monthComboBox.setItemLabelGenerator(item -> item.getDisplayName(TextStyle.FULL, Locale.getDefault()));
         monthComboBox.setRequired(true);
 
-        monthComboBox.addValueChangeListener(event -> {
-            selectedMonth = event.getValue();
-        });
+        monthComboBox.addValueChangeListener(event -> selectedMonth = event.getValue().toString());
     }
 }
