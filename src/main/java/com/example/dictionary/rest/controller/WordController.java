@@ -19,6 +19,8 @@ public interface WordController {
 
     ResponseEntity<List<WordDto>> getAllWords();
 
+    ResponseEntity<List<WordDto>> getAllWords(int page, int pageSize);
+
     ResponseEntity<WordDto> getWordByName(String name);
 
     ResponseEntity<WordDto> addWord(WordDto wordDto);

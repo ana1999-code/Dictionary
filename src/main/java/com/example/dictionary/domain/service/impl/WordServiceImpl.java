@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +34,12 @@ public class WordServiceImpl implements WordService {
     @Cacheable(value = WORDS_CACHE, keyGenerator = "cacheKeyGenerator")
     public List<Word> getAllWords() {
         return wordRepository.findAll();
+    }
+
+    @Override
+    @Cacheable(value = WORDS_CACHE, key = "#page + #pageSize")
+    public List<Word> getAllWords(int page, int pageSize) {
+        return wordRepository.findAll(PageRequest.of(page, pageSize)).toList();
     }
 
     @Override

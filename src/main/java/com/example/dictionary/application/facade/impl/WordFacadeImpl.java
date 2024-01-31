@@ -126,12 +126,19 @@ public class WordFacadeImpl implements WordFacade {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<WordDto> getAllWords() {
         List<Word> allWords = wordService.getAllWords();
         return allWords.stream()
                 .map(wordMapper::wordToWordDto)
                 .toList();
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<WordDto> getAllWords(int page, int pageSize) {
+        List<Word> allWords = wordService.getAllWords(page, pageSize);
+        return allWords.stream().map(wordMapper::wordToWordDto).toList();
     }
 
     @Override

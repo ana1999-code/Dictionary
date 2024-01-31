@@ -75,15 +75,17 @@ public class MainLayout extends AppLayout {
 
         addToNavbar(title, tabs, languageSelect);
     }
+
     private ComponentRenderer<HorizontalLayout, Locale> languageRenderer = new ComponentRenderer<>(item -> {
         HorizontalLayout hLayout = new HorizontalLayout();
-        Image languageFlag = new Image("img/languageflags/"+item.getLanguage()+".jpg", "flag for "+item.getLanguage());
+        Image languageFlag = new Image("img/languageflags/" + item.getLanguage() + ".jpg", "flag for " + item.getLanguage());
         languageFlag.setHeight("19px");
         hLayout.add(languageFlag);
         hLayout.add(new Span(getTranslation("language." + item.getLanguage())));
         hLayout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         return hLayout;
     });
+
     private void saveLocalePreference(Locale locale) {
         Locale.setDefault(locale);
         getUI().get().setLocale(locale);

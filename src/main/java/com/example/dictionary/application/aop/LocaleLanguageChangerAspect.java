@@ -20,7 +20,7 @@ public class LocaleLanguageChangerAspect {
                 .currentRequestAttributes())
                 .getRequest();
         String header = request.getHeader("Accept-Language");
-        if (header != null){
+        if (header != null) {
             Locale locale = Locale.forLanguageTag(header);
             Locale.setDefault(locale);
         }

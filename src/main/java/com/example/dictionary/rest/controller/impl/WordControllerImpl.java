@@ -54,6 +54,15 @@ public class WordControllerImpl implements WordController {
     }
 
     @Override
+    @GetMapping(params = {"page", "pageSize"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_LEARNER', 'ROLE_EDITOR')")
+    public ResponseEntity<List<WordDto>> getAllWords(
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int pageSize) {
+        return new ResponseEntity<>(wordFacade.getAllWords(page, pageSize), OK);
+    }
+
+    @Override
     @GetMapping("{name}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_LEARNER', 'ROLE_EDITOR')")
     public ResponseEntity<WordDto> getWordByName(@PathVariable("name") String name) {

@@ -10,7 +10,7 @@ public class ExampleValidator {
         ExampleValidatorErrorGenerator generator = new ExampleValidatorErrorGenerator();
         Map<String, String> errorMap = generator.validate(name, example);
 
-        if (!errorMap.isEmpty()){
+        if (!errorMap.isEmpty()) {
             throw new IllegalOperationException(errorMap.get("error"));
         }
     }

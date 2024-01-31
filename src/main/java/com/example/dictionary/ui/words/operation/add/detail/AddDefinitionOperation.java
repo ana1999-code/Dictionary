@@ -19,7 +19,7 @@ public class AddDefinitionOperation extends AddOperationTemplate {
 
     @Override
     protected String getDescription() {
-            return getTranslation("add") + " " + getTranslation("word.definition");
+        return getTranslation("add") + " " + getTranslation("word.definition");
     }
 
     @Override

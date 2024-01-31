@@ -10,6 +10,8 @@ public interface WordService {
 
     List<Word> getAllWords();
 
+    List<Word> getAllWords(int page, int pageSize);
+
     Optional<Word> getWordByName(String name);
 
     Word addWord(Word word);

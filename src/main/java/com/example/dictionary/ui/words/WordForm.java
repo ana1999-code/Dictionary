@@ -193,7 +193,7 @@ public class WordForm extends FormLayout {
                         if (comp instanceof Button && componentIndex < components.size()) {
                             ((Button) comp).setEnabled(enabled);
                         }
-                            componentIndex ++;
+                        componentIndex++;
                     }
                 });
     }

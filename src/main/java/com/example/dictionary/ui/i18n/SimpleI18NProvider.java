@@ -41,8 +41,8 @@ public class SimpleI18NProvider implements I18NProvider {
 
     @Override
     public String getTranslation(String key, Locale locale, Object... params) {
-            return MessageFormat
-                    .format(localeMap.get(locale.getLanguage()).getString(key), params);
+        return MessageFormat
+                .format(localeMap.get(locale.getLanguage()).getString(key), params);
     }
 
     public static SimpleI18NProvider getSimpleI18NProvider() {

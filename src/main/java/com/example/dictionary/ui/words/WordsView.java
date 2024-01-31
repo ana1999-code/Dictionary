@@ -246,20 +246,19 @@ public class WordsView extends VerticalLayout {
 
     private void setupWordsGrid() {
         wordDtoGrid = new Grid<>(WordDto.class, false);
-        List<WordDto> words = wordFacade.getAllWords();
 
-        setWordColumns(words);
+        setWordColumns();
         addItemClickListener();
         addWordSorting();
 
         setupWordGridStyle();
     }
 
-    private void setWordColumns(List<WordDto> words) {
-        wordDtoGrid.setItems(words);
+    private void setWordColumns() {
+        wordDtoGrid.setItems(query -> wordFacade.getAllWords(query.getPage(), query.getPageSize()).stream());
         wordDtoGrid.addColumn(WordDto::getName)
                 .setHeader(getTranslation("word.name"))
-                .setFooter(getTranslation("words.total", words.size()));
+                .setFooter(getTranslation("words.total", wordFacade.getAllWords().size()));
         wordDtoGrid.addColumn(wordDto -> wordDto.getCategory().getName())
                 .setHeader(getTranslation("word.category"));
         wordDtoGrid.addColumn(wordDto -> wordDto.getDefinitions().size())

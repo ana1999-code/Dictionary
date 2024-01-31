@@ -26,27 +26,27 @@ public class PasswordErrorMapGenerator {
 
         if (!containsUppercase(password)) {
             errorMap.put("upper_letter",
-                    messageSource.getMessage("password.uppercase",null, Locale.getDefault()));
+                    messageSource.getMessage("password.uppercase", null, Locale.getDefault()));
         }
 
         if (!containsLowercase(password)) {
             errorMap.put("lower_letter",
-                    messageSource.getMessage("password.lowercase",null, Locale.getDefault()));
+                    messageSource.getMessage("password.lowercase", null, Locale.getDefault()));
         }
 
         if (!containsNumber(password)) {
             errorMap.put("number",
-                    messageSource.getMessage("password.number",null, Locale.getDefault()));
+                    messageSource.getMessage("password.number", null, Locale.getDefault()));
         }
 
         if (containsWhitespace(password)) {
             errorMap.put("whitespace",
-                    messageSource.getMessage("password.whitespace",null, Locale.getDefault()));
+                    messageSource.getMessage("password.whitespace", null, Locale.getDefault()));
         }
 
         if (!containsSpecialCharacter(password)) {
             errorMap.put("special_char",
-                    messageSource.getMessage("password.specialchar",null, Locale.getDefault()));
+                    messageSource.getMessage("password.specialchar", null, Locale.getDefault()));
         }
         return errorMap;
     }
