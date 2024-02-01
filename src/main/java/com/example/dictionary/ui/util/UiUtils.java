@@ -31,7 +31,9 @@ public class UiUtils {
 
     public static final String DD_MM_YYYY = "dd-MM-yyyy";
 
-    public static final String CSV = ".csv";
+    public static final String CSV = "text/csv";
+
+    public static final String JSON = "application/json";
 
     public static final String[] IMAGE_FILE_TYPES = {".png", ".jpeg", ".jpg"};
 

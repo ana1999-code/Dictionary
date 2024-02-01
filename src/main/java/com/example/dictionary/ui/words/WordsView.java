@@ -6,12 +6,6 @@ import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.MainLayout;
 import com.example.dictionary.ui.security.CurrentUserPermissionService;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.CSVWriter;
-import com.opencsv.exceptions.CsvException;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -37,10 +31,10 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -53,6 +47,7 @@ import static com.example.dictionary.ui.util.UiUtils.APP_NAME;
 import static com.example.dictionary.ui.util.UiUtils.CSV;
 import static com.example.dictionary.ui.util.UiUtils.DD_MM_YYYY;
 import static com.example.dictionary.ui.util.UiUtils.FILE_LOCATION;
+import static com.example.dictionary.ui.util.UiUtils.JSON;
 import static com.example.dictionary.ui.util.UiUtils.PROCESSED;
 import static com.example.dictionary.ui.util.UiUtils.getConfiguredSearchField;
 import static com.example.dictionary.ui.util.UiUtils.showNotification;
@@ -129,42 +124,43 @@ public class WordsView extends VerticalLayout {
         MemoryBuffer memoryBuffer = new MemoryBuffer();
         uploadFile = new Upload();
         uploadFile.setDropAllowed(false);
-        uploadFile.setAcceptedFileTypes(CSV);
+        uploadFile.setAcceptedFileTypes(JSON, CSV);
         uploadFile.setUploadButton(new Button(getTranslation("words.upload"), new Icon(VaadinIcon.UPLOAD)));
         uploadFile.setReceiver(memoryBuffer);
-        uploadFile.addFileRejectedListener(event -> showNotification(event.getErrorMessage()));
+        uploadFile.addFileRejectedListener(event -> showNotification(getTranslation("upload.file.type.error")));
 
         uploadFile.addSucceededListener(event -> {
             try {
                 Files.createDirectories(Paths.get(FILE_LOCATION));
-                String csvFilePath = getCsvFilePath(memoryBuffer);
+                String csvFilePath = getFilePath(memoryBuffer);
 
                 wordFacade.uploadFile(csvFilePath, memoryBuffer.getFileName(), FILE_LOCATION);
                 uploadFile.clearFileList();
                 wordDtoGrid.setItems(wordFacade.getAllWords());
             } catch (JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
-                     JobParametersInvalidException | JobRestartException | IOException | CsvException exception) {
+                     JobParametersInvalidException | JobRestartException | IOException exception) {
                 showNotification(exception.getMessage());
             }
         });
     }
 
-    private static String getCsvFilePath(MemoryBuffer memoryBuffer) throws IOException, CsvException {
+    private static String getFilePath(MemoryBuffer memoryBuffer) throws IOException {
         InputStream inputStream = memoryBuffer.getInputStream();
         String fileName = memoryBuffer.getFileName();
-        CSVParser parser = new CSVParserBuilder().withSeparator(',').build();
-        String csvFilePath = FILE_LOCATION + PROCESSED + fileName;
 
-        try (CSVReader reader =
-                     new CSVReaderBuilder(new InputStreamReader(inputStream)).withCSVParser(parser).build();
-             CSVWriter writer = new CSVWriter(new FileWriter(csvFilePath))) {
-            List<String[]> data = reader.readAll();
-            writer.writeAll(data);
+        String processedFilePath = FILE_LOCATION + PROCESSED + fileName;
+
+        try (OutputStream outputStream = new FileOutputStream(processedFilePath)) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
         } catch (IOException exception) {
             showNotification(exception.getMessage());
         }
 
-        return csvFilePath;
+        return processedFilePath;
     }
 
     private void setupAddButton() {

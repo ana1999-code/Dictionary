@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ItemProcessListener;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.support.AbstractFileItemWriter;
 import org.springframework.batch.item.validator.ValidationException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -21,17 +21,16 @@ public class WordProcessorListener implements ItemProcessListener<WordInfo, Word
     private final static Logger LOGGER = LoggerFactory.getLogger(WordProcessorListener.class);
 
     @Qualifier("successWordValidatingItemWriter")
-    private final FlatFileItemWriter<WordInfo> successItemWriter;
+    private final AbstractFileItemWriter<WordInfo> successItemWriter;
 
     @Qualifier("failedWordValidatingItemWriter")
-    private final FlatFileItemWriter<FailedWordInfo> failedItemWriter;
+    private final AbstractFileItemWriter<FailedWordInfo> failedItemWriter;
 
-    public WordProcessorListener(FlatFileItemWriter<WordInfo> successItemWriter,
-                                 FlatFileItemWriter<FailedWordInfo> failedItemWriter) {
+    public WordProcessorListener(AbstractFileItemWriter<WordInfo> successItemWriter,
+                                 AbstractFileItemWriter<FailedWordInfo> failedItemWriter) {
         this.successItemWriter = successItemWriter;
         this.failedItemWriter = failedItemWriter;
     }
-
 
     @Override
     public void beforeProcess(WordInfo item) {
@@ -68,6 +67,7 @@ public class WordProcessorListener implements ItemProcessListener<WordInfo, Word
         LOGGER.error("Failed word info {}", failedWordInfo);
 
         try {
+            failedItemWriter.setTransactional(false);
             failedItemWriter.open(new ExecutionContext());
             failedItemWriter.write(Chunk.of(failedWordInfo));
         } catch (Exception ex) {

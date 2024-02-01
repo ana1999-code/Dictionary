@@ -21,9 +21,17 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
+import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
+import org.springframework.batch.item.json.JacksonJsonObjectReader;
+import org.springframework.batch.item.json.JsonFileItemWriter;
+import org.springframework.batch.item.json.JsonItemReader;
+import org.springframework.batch.item.json.builder.JsonFileItemWriterBuilder;
+import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
+import org.springframework.batch.item.support.AbstractFileItemWriter;
 import org.springframework.batch.item.support.builder.CompositeItemProcessorBuilder;
 import org.springframework.batch.item.validator.BeanValidatingItemProcessor;
 import org.springframework.batch.item.validator.ValidationException;
@@ -53,6 +61,8 @@ public class BatchImportConfigForWords {
 
     public static final String FAILURE = "FAILURE_";
 
+    public static final String CSV = "csv";
+
     @Autowired
     private JobRepository jobRepository;
 
@@ -62,11 +72,18 @@ public class BatchImportConfigForWords {
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
-    @Bean
+    @Bean("wordInfoItemReader")
     @StepScope
-    public FlatFileItemReader<WordInfo> wordInfoItemReader(
-            @Value("#{jobParameters['filePath']}") String path
+    public ResourceAwareItemReaderItemStream<WordInfo> wordInfoItemReader(
+            @Value("#{jobParameters['filePath']}") String path,
+            @Value("#{jobParameters['fileType']}") String fileType
     ) {
+        return fileType.equalsIgnoreCase(CSV) ?
+                getCsvWordInfoItemReader(path) :
+                getJsonWordInfoItemReader(path);
+    }
+
+    private static FlatFileItemReader<WordInfo> getCsvWordInfoItemReader(String path) {
         return new FlatFileItemReaderBuilder<WordInfo>()
                 .name("wordInfoItemReader")
                 .resource(new FileSystemResource(path))
@@ -74,6 +91,14 @@ public class BatchImportConfigForWords {
                 .delimited()
                 .names(WORD_INFO_FIELDS)
                 .fieldSetMapper(new WordInfoSetMapper())
+                .build();
+    }
+
+    private static JsonItemReader<WordInfo> getJsonWordInfoItemReader(String path) {
+        return new JsonItemReaderBuilder<WordInfo>()
+                .name("wordInfoItemReader")
+                .resource(new FileSystemResource(path))
+                .jsonObjectReader(new JacksonJsonObjectReader<>(WordInfo.class))
                 .build();
     }
 
@@ -87,29 +112,36 @@ public class BatchImportConfigForWords {
 
     @Bean("successWordValidatingItemWriter")
     @StepScope
-    public FlatFileItemWriter<WordInfo> successWordValidatingItemWriter(
+    public AbstractFileItemWriter<WordInfo> successWordValidatingItemWriter(
             @Value("#{jobParameters['fileLocation']}") String fileLocation,
-            @Value("#{jobParameters['fileName']}") String fileName
+            @Value("#{jobParameters['fileName']}") String fileName,
+            @Value("#{jobParameters['fileType']}") String fileType
     ) {
-        return wordValidatingItemWriter(fileLocation, fileName, SUCCESS, WORD_INFO_FIELDS);
+        return fileType.equalsIgnoreCase(CSV) ?
+                csvWordValidatingItemWriter(fileLocation, fileName, SUCCESS, WORD_INFO_FIELDS) :
+                jsonWordValidatingItemWriter(fileLocation, fileName, SUCCESS);
     }
 
     @Bean("failedWordValidatingItemWriter")
     @StepScope
-    public FlatFileItemWriter<FailedWordInfo> failedWordValidatingItemWriter(
+    public AbstractFileItemWriter<FailedWordInfo> failedWordValidatingItemWriter(
             @Value("#{jobParameters['fileLocation']}") String fileLocation,
-            @Value("#{jobParameters['fileName']}") String fileName
+            @Value("#{jobParameters['fileName']}") String fileName,
+            @Value("#{jobParameters['fileType']}") String fileType
     ) {
-        return wordValidatingItemWriter(fileLocation, fileName, FAILURE, FAILED_WORD_INFO_FIELDS);
+        return fileType.equalsIgnoreCase(CSV) ?
+                csvWordValidatingItemWriter(fileLocation, fileName, FAILURE, FAILED_WORD_INFO_FIELDS) :
+                jsonWordValidatingItemWriter(fileLocation, fileName, FAILURE);
     }
 
-    private <T> FlatFileItemWriter<T> wordValidatingItemWriter(
+    private <T> FlatFileItemWriter<T> csvWordValidatingItemWriter(
             String fileLocation,
             String fileName,
             String result,
             String[] fields
     ) {
         FlatFileItemWriter<T> itemWriter = new FlatFileItemWriter<>();
+        itemWriter.setName(result + "csvWordValidatingItemWriter");
 
         String path = fileLocation + result + fileName;
         itemWriter.setResource(
@@ -125,6 +157,19 @@ public class BatchImportConfigForWords {
 
         itemWriter.setTransactional(false);
         return itemWriter;
+    }
+
+    private <T> JsonFileItemWriter<T> jsonWordValidatingItemWriter(
+            String fileLocation,
+            String fileName,
+            String result
+    ) {
+        String path = fileLocation + result + fileName;
+        return new JsonFileItemWriterBuilder<T>()
+                .jsonObjectMarshaller(new JacksonJsonObjectMarshaller<>())
+                .resource(new FileSystemResource(path))
+                .name(result + "jsonWordValidatingItemWriter")
+                .build();
     }
 
     @Bean
@@ -153,12 +198,12 @@ public class BatchImportConfigForWords {
                 .build();
     }
 
-    @Bean("importWordsFromCsvToDbStep")
-    public Step importWordsFromCsvToDbStep(
-            ItemReader<WordInfo> reader,
+    @Bean("importWordsFromFileToDbStep")
+    public Step importWordsFromFileToDbStep(
+            @Qualifier("wordInfoItemReader") ItemReader<WordInfo> reader,
             @Qualifier("wordItemWriter") ItemWriter<Word> writer,
             WordProcessorListener wordProcessorListener) {
-        return new StepBuilder("importWordsFromCsvToDbStep", jobRepository)
+        return new StepBuilder("importWordsFromFileToDbStep", jobRepository)
                 .<WordInfo, Word>chunk(1, transactionManager)
                 .reader(reader)
                 .processor(compositeItemProcessor())
@@ -166,7 +211,7 @@ public class BatchImportConfigForWords {
                 .faultTolerant()
                 .skip(RuntimeException.class)
                 .skip(ValidationException.class)
-                .skipLimit(100)
+                .skipLimit(10000)
                 .writer(writer)
                 .build();
     }
@@ -192,21 +237,21 @@ public class BatchImportConfigForWords {
                 .build();
     }
 
-    @Bean("importWordsFromCsvToDbJob")
-    public Job importWordsFromCsvToDbJob(
-            @Qualifier("importWordsFromCsvToDbStep") Step importStep,
+    @Bean("importWordsFromFileToDbJob")
+    public Job importWordsFromFileToDbJob(
+            @Qualifier("importWordsFromFileToDbStep") Step importStep,
             @Qualifier("openFilesLocationStep") Step openFolderStep) {
-        return new JobBuilder("importWordsFromCsvToDbJob", jobRepository)
+        return new JobBuilder("importWordsFromFileToDbJob", jobRepository)
                 .start(importStep)
                 .next(openFolderStep)
                 .build();
     }
 
-    @Bean("openFileLocationJop")
-    public Job openFileLocationJop(
+    @Bean("openFileLocationJob")
+    public Job openFileLocationJob(
             @Qualifier("openFilesLocationStep") Step openFolderStep
     ) {
-        return new JobBuilder("openFileLocationJop", jobRepository)
+        return new JobBuilder("openFileLocationJob", jobRepository)
                 .start(openFolderStep)
                 .build();
     }

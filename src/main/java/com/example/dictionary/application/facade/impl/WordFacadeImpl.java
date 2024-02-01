@@ -48,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -85,11 +86,11 @@ public class WordFacadeImpl implements WordFacade {
 
     private final JobLauncher jobLauncher;
 
-    @Qualifier("importWordsFromCsvToDbJob")
-    private final Job importWordsFromCsvToDbJob;
+    @Qualifier("importWordsFromFileToDbJob")
+    private final Job importWordsFromFileToDbJob;
 
-    @Qualifier("openFileLocationJop")
-    private final Job openFileLocationJop;
+    @Qualifier("openFileLocationJob")
+    private final Job openFileLocationJob;
 
     private final MessageSource messageSource;
 
@@ -105,8 +106,8 @@ public class WordFacadeImpl implements WordFacade {
                           CommentMapper commentMapper,
                           WordEntityAssociationUtil associationUtil,
                           JobLauncher jobLauncher,
-                          Job importWordsFromCsvToDbJob,
-                          Job openFileLocationJop,
+                          Job importWordsFromFileToDbJob,
+                          Job openFileLocationJob,
                           MessageSource messageSource) {
         this.wordService = wordService;
         this.wordMapper = wordMapper;
@@ -120,8 +121,8 @@ public class WordFacadeImpl implements WordFacade {
         this.commentMapper = commentMapper;
         this.associationUtil = associationUtil;
         this.jobLauncher = jobLauncher;
-        this.importWordsFromCsvToDbJob = importWordsFromCsvToDbJob;
-        this.openFileLocationJop = openFileLocationJop;
+        this.importWordsFromFileToDbJob = importWordsFromFileToDbJob;
+        this.openFileLocationJob = openFileLocationJob;
         this.messageSource = messageSource;
     }
 
@@ -341,9 +342,10 @@ public class WordFacadeImpl implements WordFacade {
                 .addString("fileName", fileName)
                 .addString("fileLocation", fileLocation)
                 .addString("JobID", String.valueOf(System.currentTimeMillis()))
+                .addString("fileType", Arrays.stream(fileName.split("\\.")).toList().get(1))
                 .toJobParameters();
 
-        jobLauncher.run(importWordsFromCsvToDbJob, params);
+        jobLauncher.run(importWordsFromFileToDbJob, params);
     }
 
     @Override
@@ -394,7 +396,7 @@ public class WordFacadeImpl implements WordFacade {
                 .addString("JobID", String.valueOf(System.currentTimeMillis()))
                 .toJobParameters();
 
-        jobLauncher.run(openFileLocationJop, params);
+        jobLauncher.run(openFileLocationJob, params);
     }
 
     private String getCurrentUser() {
