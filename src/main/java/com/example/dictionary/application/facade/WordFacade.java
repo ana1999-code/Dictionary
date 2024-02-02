@@ -10,6 +10,7 @@ import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.data.domain.Sort;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,7 +20,7 @@ public interface WordFacade {
 
     List<WordDto> getAllWords();
 
-    List<WordDto> getAllWords(int page, int pageSize);
+    List<WordDto> getAllWords(int page, int pageSize, Sort sort);
 
     WordDto getWordByName(String name);
 

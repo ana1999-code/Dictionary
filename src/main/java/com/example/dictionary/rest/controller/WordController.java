@@ -19,7 +19,7 @@ public interface WordController {
 
     ResponseEntity<List<WordDto>> getAllWords();
 
-    ResponseEntity<List<WordDto>> getAllWords(int page, int pageSize);
+    ResponseEntity<List<WordDto>> getAllWords(int page, int pageSize, String sortBy);
 
     ResponseEntity<WordDto> getWordByName(String name);
 

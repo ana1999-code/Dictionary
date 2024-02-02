@@ -82,7 +82,7 @@ class WordControllerImplTest {
     void testGetAllWords() throws Exception {
         when(wordFacade.getAllWords()).thenReturn(List.of(WORD_DTO));
 
-        String response = mockMvc.perform(get(URL))
+        String response = mockMvc.perform(get(URL + "/all"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andReturn()

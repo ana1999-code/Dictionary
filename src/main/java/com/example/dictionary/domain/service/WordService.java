@@ -2,6 +2,7 @@ package com.example.dictionary.domain.service;
 
 import com.example.dictionary.application.report.data.WordDetail;
 import com.example.dictionary.domain.entity.Word;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +11,7 @@ public interface WordService {
 
     List<Word> getAllWords();
 
-    List<Word> getAllWords(int page, int pageSize);
+    List<Word> getAllWords(int page, int pageSize, Sort sort);
 
     Optional<Word> getWordByName(String name);
 

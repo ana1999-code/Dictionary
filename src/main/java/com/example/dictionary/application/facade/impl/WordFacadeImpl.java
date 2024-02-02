@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,8 +138,8 @@ public class WordFacadeImpl implements WordFacade {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<WordDto> getAllWords(int page, int pageSize) {
-        List<Word> allWords = wordService.getAllWords(page, pageSize);
+    public List<WordDto> getAllWords(int page, int pageSize, Sort sort) {
+        List<Word> allWords = wordService.getAllWords(page, pageSize, sort);
         return allWords.stream().map(wordMapper::wordToWordDto).toList();
     }
 

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,12 +36,12 @@ class WordServiceImplTest {
     @Test
     void testGetAllWords() {
         List<Word> expectedList = List.of(WORD);
-        when(wordRepository.findAll()).thenReturn(expectedList);
+        when(wordRepository.findAll(any(Sort.class))).thenReturn(expectedList);
 
         List<Word> actualList = wordService.getAllWords();
 
         assertEquals(expectedList, actualList);
-        verify(wordRepository).findAll();
+        verify(wordRepository).findAll(any(Sort.class));
     }
 
     @Test

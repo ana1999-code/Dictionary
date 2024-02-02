@@ -38,10 +38,9 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
-    @Cacheable(value = WORDS_CACHE, key = "#page + #pageSize")
-    public List<Word> getAllWords(int page, int pageSize) {
-        return wordRepository.findAll(PageRequest.of(page, pageSize,
-                Sort.by(Sort.Direction.DESC, "addedAt"))).toList();
+    @Cacheable(value = WORDS_CACHE, key = "#page + #pageSize + #sort.hashCode()")
+    public List<Word> getAllWords(int page, int pageSize, Sort sort) {
+        return wordRepository.findAll(PageRequest.of(page, pageSize, sort)).toList();
     }
 
     @Override

@@ -20,6 +20,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.PageTitle;
@@ -30,6 +31,7 @@ import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.data.domain.Sort;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -251,12 +253,19 @@ public class WordsView extends VerticalLayout {
     }
 
     private void setWordColumns() {
-        wordDtoGrid.setItems(query -> wordFacade.getAllWords(query.getPage(), query.getPageSize()).stream());
+        wordDtoGrid.setItems(query -> {
+            Sort sort = toSpringDataSort(query.getSortOrders());
+            return wordFacade.getAllWords(query.getPage(), query.getPageSize(), sort).stream();
+        });
         wordDtoGrid.addColumn(WordDto::getName)
                 .setHeader(getTranslation("word.name"))
-                .setFooter(getTranslation("words.total", wordFacade.getAllWords().size()));
+                .setFooter(getTranslation("words.total", wordFacade.getAllWords().size()))
+                .setKey("name")
+                .setSortProperty("name");
         wordDtoGrid.addColumn(wordDto -> wordDto.getCategory().getName())
-                .setHeader(getTranslation("word.category"));
+                .setHeader(getTranslation("word.category"))
+                .setKey("category")
+                .setSortProperty("category");
         wordDtoGrid.addColumn(wordDto -> wordDto.getDefinitions().size())
                 .setHeader(getTranslation("words.nr") + " " + getTranslation("word.definitions"));
         wordDtoGrid.addColumn(wordDto -> wordDto.getSynonyms().size())
@@ -274,13 +283,23 @@ public class WordsView extends VerticalLayout {
                 .setHeader(getTranslation("words.added"));
         wordDtoGrid.getColumns()
                 .forEach(col -> col
-                        .setSortable(true)
-                        .setSortProperty("")
                         .setTextAlign(CENTER)
                         .setAutoWidth(false));
         wordDtoGrid.addComponentColumn(this::getHeartButton)
                 .setTextAlign(CENTER)
                 .setWidth("5%");
+    }
+
+    public static Sort toSpringDataSort(List<QuerySortOrder> vaadinSortOrders) {
+        return Sort.by(
+                vaadinSortOrders.stream()
+                        .map(sortOrder ->
+                                sortOrder.getDirection() == SortDirection.ASCENDING ?
+                                        Sort.Order.asc(sortOrder.getSorted()) :
+                                        Sort.Order.desc(sortOrder.getSorted())
+                        )
+                        .collect(Collectors.toList())
+        );
     }
 
     private void addItemClickListener() {
