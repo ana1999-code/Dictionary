@@ -211,7 +211,7 @@ public class BatchImportConfigForWords {
                 .faultTolerant()
                 .skip(RuntimeException.class)
                 .skip(ValidationException.class)
-                .skipLimit(10000)
+                .skipPolicy((throwable, count) -> true)
                 .writer(writer)
                 .build();
     }
