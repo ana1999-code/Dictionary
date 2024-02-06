@@ -204,7 +204,7 @@ public class BatchImportConfigForWords {
             @Qualifier("wordItemWriter") ItemWriter<Word> writer,
             WordProcessorListener wordProcessorListener) {
         return new StepBuilder("importWordsFromFileToDbStep", jobRepository)
-                .<WordInfo, Word>chunk(1, transactionManager)
+                .<WordInfo, Word>chunk(100, transactionManager)
                 .reader(reader)
                 .processor(compositeItemProcessor())
                 .listener(wordProcessorListener)

@@ -1,5 +1,6 @@
 package com.example.dictionary.application.facade.impl;
 
+import com.example.dictionary.application.batch.processor.WordValidatingItemProcessor;
 import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
@@ -40,6 +41,7 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -95,6 +97,8 @@ public class WordFacadeImpl implements WordFacade {
 
     private final MessageSource messageSource;
 
+    private final ApplicationContext applicationContext;
+
     public WordFacadeImpl(WordService wordService,
                           WordMapper wordMapper,
                           WordValidator validator,
@@ -109,7 +113,8 @@ public class WordFacadeImpl implements WordFacade {
                           JobLauncher jobLauncher,
                           Job importWordsFromFileToDbJob,
                           Job openFileLocationJob,
-                          MessageSource messageSource) {
+                          MessageSource messageSource,
+                          ApplicationContext applicationContext) {
         this.wordService = wordService;
         this.wordMapper = wordMapper;
         this.validator = validator;
@@ -125,6 +130,7 @@ public class WordFacadeImpl implements WordFacade {
         this.importWordsFromFileToDbJob = importWordsFromFileToDbJob;
         this.openFileLocationJob = openFileLocationJob;
         this.messageSource = messageSource;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -338,6 +344,10 @@ public class WordFacadeImpl implements WordFacade {
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,
             JobRestartException {
+        WordValidatingItemProcessor wordValidatingItemProcessor =
+                applicationContext.getBean(WordValidatingItemProcessor.class);
+        wordValidatingItemProcessor.resetWordNames();
+
         JobParameters params = new JobParametersBuilder()
                 .addString("filePath", path)
                 .addString("fileName", fileName)
