@@ -1,6 +1,6 @@
 package com.example.dictionary.application.facade.impl;
 
-import com.example.dictionary.application.batch.processor.WordValidatingItemProcessor;
+import com.example.dictionary.application.batch.processor.DuplicatedWordValidator;
 import com.example.dictionary.application.dto.CommentDto;
 import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
@@ -344,9 +344,9 @@ public class WordFacadeImpl implements WordFacade {
             JobExecutionAlreadyRunningException,
             JobParametersInvalidException,
             JobRestartException {
-        WordValidatingItemProcessor wordValidatingItemProcessor =
-                applicationContext.getBean(WordValidatingItemProcessor.class);
-        wordValidatingItemProcessor.resetWordNames();
+        DuplicatedWordValidator duplicatedWordValidator =
+                applicationContext.getBean(DuplicatedWordValidator.class);
+        duplicatedWordValidator.resetWordNames();
 
         JobParameters params = new JobParametersBuilder()
                 .addString("filePath", path)

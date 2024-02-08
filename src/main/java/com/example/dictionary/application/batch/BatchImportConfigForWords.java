@@ -198,13 +198,14 @@ public class BatchImportConfigForWords {
                 .build();
     }
 
+    //TODO: resolve with error handling
     @Bean("importWordsFromFileToDbStep")
     public Step importWordsFromFileToDbStep(
             @Qualifier("wordInfoItemReader") ItemReader<WordInfo> reader,
             @Qualifier("wordItemWriter") ItemWriter<Word> writer,
             WordProcessorListener wordProcessorListener) {
         return new StepBuilder("importWordsFromFileToDbStep", jobRepository)
-                .<WordInfo, Word>chunk(100, transactionManager)
+                .<WordInfo, Word>chunk(1, transactionManager)
                 .reader(reader)
                 .processor(compositeItemProcessor())
                 .listener(wordProcessorListener)
