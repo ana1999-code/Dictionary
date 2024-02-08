@@ -25,6 +25,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.H5;
@@ -322,7 +323,9 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         RemoveOperationTemplate synonym =
                 new RemoveSynonymOperation(wordFacade, name.getValue(), synonymDto, this);
         synonym.execute();
-        synonym.getWordTextFieldForm().getDetail().setHeight("2.25em");
+        Anchor anchor = new Anchor("word/" + synonymDto.getName(), synonymDto.getName());
+        anchor.getElement().setAttribute("router-ignore", "");
+        synonym.getWordTextFieldForm().setAnchor(anchor);
         synonymLayout.add(synonym.getWordTextFieldForm());
     }
 
@@ -330,7 +333,9 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         RemoveOperationTemplate antonym =
                 new RemoveAntonymOperation(wordFacade, name.getValue(), antonymDto, this);
         antonym.execute();
-        antonym.getWordTextFieldForm().getDetail().setHeight("2.25em");
+        Anchor anchor = new Anchor("word/" + antonymDto.getName(), antonymDto.getName());
+        anchor.getElement().setAttribute("router-ignore", "");
+        antonym.getWordTextFieldForm().setAnchor(anchor);
         antonymLayout.add(antonym.getWordTextFieldForm());
     }
 

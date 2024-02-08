@@ -2,6 +2,7 @@ package com.example.dictionary.ui.words;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -35,5 +36,13 @@ public class WordTextFieldForm extends FormLayout {
 
     public HorizontalLayout getFormLayout() {
         return formLayout;
+    }
+
+    public void setAnchor(Anchor anchor) {
+        formLayout.removeAll();
+        formLayout.add(anchor, delete);
+        formLayout.setVerticalComponentAlignment(FlexComponent.Alignment.CENTER, anchor, delete);
+        formLayout.setFlexGrow(2, anchor);
+        formLayout.getStyle().set("padding-left", "2%");
     }
 }
