@@ -2,10 +2,13 @@ package com.example.dictionary.ui.words;
 
 import com.example.dictionary.application.dto.CategoryDto;
 import com.example.dictionary.application.dto.DefinitionDto;
+import com.example.dictionary.application.dto.DictionaryDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.CategoryFacade;
+import com.example.dictionary.application.facade.DictionaryFacade;
 import com.example.dictionary.application.facade.WordFacade;
+import com.example.dictionary.ui.words.dictionary.DictionarySelector;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -22,6 +25,7 @@ import com.vaadin.flow.data.binder.ValidationException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.example.dictionary.ui.util.UiUtils.getCloseButton;
 import static com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment.CENTER;
@@ -49,9 +53,16 @@ public class WordForm extends FormLayout {
 
     private int nrOfDefinitions;
 
-    public WordForm(WordFacade wordFacade, CategoryFacade categoryFacade) {
+    private DictionarySelector dictionarySelector;
+
+    private final DictionaryFacade dictionaryFacade;
+
+    public WordForm(WordFacade wordFacade,
+                    CategoryFacade categoryFacade,
+                    DictionaryFacade dictionaryFacade) {
         this.wordFacade = wordFacade;
         this.categoryFacade = categoryFacade;
+        this.dictionaryFacade = dictionaryFacade;
 
         setupNameField();
         setupForm();
@@ -64,6 +75,10 @@ public class WordForm extends FormLayout {
 
         wordBinder.bindInstanceFields(this);
         setupDefAndExampleLayouts();
+
+        Set<DictionaryDto> dictionaries = word.getDictionaries();
+        dictionarySelector = new DictionarySelector(dictionaryFacade, wordBinder, dictionaries);
+        add(dictionarySelector);
     }
 
     private void setupNameField() {
@@ -112,8 +127,12 @@ public class WordForm extends FormLayout {
         definition.addValueChangeListener(event -> {
             wordBinder.forField(definition)
                     .bind(wordDto -> "",
-                            (wordDto, definitionValue) -> wordDto.getDefinitions()
-                                    .add(new DefinitionDto(definitionValue)));
+                            (wordDto, definitionValue) -> {
+                                DefinitionDto definitionDto = new DefinitionDto(definitionValue);
+                                definitionDto.addDictionary(dictionarySelector.getDictionary().getValue());
+                                wordDto.getDefinitions()
+                                        .add(definitionDto);
+                            });
             definition.setReadOnly(true);
 
             setupDefinitionFields();
@@ -132,8 +151,12 @@ public class WordForm extends FormLayout {
             definitionsLayout.remove(definitionLayout);
             wordBinder.forField(definition)
                     .bind(wordDto -> "",
-                            (wordDto, definitionValue) -> wordDto.getDefinitions()
-                                    .remove(new DefinitionDto(definitionValue)));
+                            (wordDto, definitionValue) -> {
+                                DefinitionDto definitionDto = new DefinitionDto(definitionValue);
+                                definitionDto.addDictionary(dictionarySelector.getDictionary().getValue());
+                                wordDto.getDefinitions()
+                                        .remove(definitionDto);
+                            });
 
             nrOfDefinitions--;
         });
@@ -222,7 +245,7 @@ public class WordForm extends FormLayout {
 
     public void reset() {
         name.clear();
-        remove(category, definitionsLayout, examplesLayout);
+        remove(category, definitionsLayout, examplesLayout, dictionarySelector);
         setupForm();
     }
 

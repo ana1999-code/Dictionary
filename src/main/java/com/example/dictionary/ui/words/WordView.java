@@ -5,10 +5,12 @@ import com.example.dictionary.application.dto.DefinitionDto;
 import com.example.dictionary.application.dto.ExampleDto;
 import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.dto.WordDto;
+import com.example.dictionary.application.facade.DictionaryFacade;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.application.security.util.SecurityUtils;
 import com.example.dictionary.ui.MainLayout;
 import com.example.dictionary.ui.security.CurrentUserPermissionService;
+import com.example.dictionary.ui.words.common.CommonDialog;
 import com.example.dictionary.ui.words.operation.add.AddOperationTemplate;
 import com.example.dictionary.ui.words.operation.add.comments.AddCommentOperation;
 import com.example.dictionary.ui.words.operation.add.detail.AddAntonymOperation;
@@ -25,10 +27,12 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -65,6 +69,8 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private final WordFacade wordFacade;
 
+    private final DictionaryFacade dictionaryFacade;
+
     private WordDto word;
 
     private TextField name = new TextField(getTranslation("word.name"));
@@ -72,6 +78,8 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
     private TextField category = new TextField(getTranslation("word.category"));
 
     private Binder<WordDto> wordBinder = new Binder<>(WordDto.class);
+
+    private Details sources;
 
     private VerticalLayout definitionLayout = new VerticalLayout();
 
@@ -82,6 +90,8 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
     private VerticalLayout antonymLayout = new VerticalLayout();
 
     private VerticalLayout commentLayout = new VerticalLayout();
+
+    private VerticalLayout sourcesLayout = new VerticalLayout();
 
     private Button addDefinition = getAddButton();
 
@@ -97,9 +107,12 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     private Button delete = new Button(getTranslation("delete") + " " + getTranslation("word.name"));
 
-    public WordView(CurrentUserPermissionService permissionService, WordFacade wordFacade) {
+    public WordView(CurrentUserPermissionService permissionService,
+                    WordFacade wordFacade,
+                    DictionaryFacade dictionaryFacade) {
         this.permissionService = permissionService;
         this.wordFacade = wordFacade;
+        this.dictionaryFacade = dictionaryFacade;
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
     }
 
@@ -115,6 +128,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         HorizontalLayout nameAndCategoryLayout = getNameAndCategoryLayout();
 
         setupBackAndDeleteButtons();
+        setupSourceDetail();
         setupWordDetails();
 
         setupLayoutsStyle(List.of(
@@ -127,7 +141,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
             setupAddWordDetailButtons();
         }
         setupAddCommentButton();
-        add(nameAndCategoryLayout, definitionAndExampleLayout, synonymAndAntonymLayout, commentsLayout);
+        add(nameAndCategoryLayout, sources, definitionAndExampleLayout, synonymAndAntonymLayout, commentsLayout);
     }
 
     private void setupLayoutsStyle(List<Component> layouts) {
@@ -146,11 +160,39 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
     }
 
     public void setupWordDetails() {
+        setupSourcesLayout();
         setupDefinitionsLayout();
         setupExamplesLayout();
         setupSynonymsLayout();
         setupAntonymsLayout();
         setupCommentsLayout();
+    }
+
+    private void setupSourceDetail() {
+        H5 sourceTitle = new H5(getTranslation("word.sources"));
+        sourceTitle.getStyle().set("font-style", "italic");
+        sources = new Details(sourceTitle);
+
+        sources.add(sourcesLayout);
+        sources.setWidth("50%");
+        sourcesLayout.getStyle().set("padding-left", "5%");
+    }
+
+    private void setupSourcesLayout() {
+        word.getDictionaries().forEach(
+                dictionary -> {
+                    Anchor anchor = new Anchor(dictionary.getUrl() + word.getName(), dictionary.getName());
+                    if (dictionary.getUrl().isEmpty()) {
+                        anchor.setEnabled(false);
+                        anchor.getStyle().set("color", "#005FDB");
+                    }
+                    sourcesLayout.add(new ListItem(
+                            anchor
+                    ));
+                }
+        );
+        sourcesLayout.setSpacing(false);
+        sourcesLayout.setPadding(false);
     }
 
     private HorizontalLayout getNameAndCategoryLayout() {
@@ -229,7 +271,7 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
         delete.addClickListener(event -> {
             try {
                 String wordValue = name.getValue();
-                WordDialog dialog = new WordDialog(
+                CommonDialog dialog = new CommonDialog(
                         new H4(getTranslation("word.delete.message", getTranslation("word.name.articulate"), wordValue)),
                         getTranslation("delete") + " " + getTranslation("word.name"));
                 dialog.getDialog().open();
@@ -440,5 +482,9 @@ public class WordView extends VerticalLayout implements HasUrlParameter<String> 
 
     public CurrentUserPermissionService getPermissionService() {
         return permissionService;
+    }
+
+    public VerticalLayout getSourcesLayout() {
+        return sourcesLayout;
     }
 }

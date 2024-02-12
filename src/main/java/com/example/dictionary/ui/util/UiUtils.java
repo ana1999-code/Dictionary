@@ -1,6 +1,7 @@
 package com.example.dictionary.ui.util;
 
 import com.example.dictionary.application.dto.UserDto;
+import com.example.dictionary.ui.words.common.CommonDialog;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -12,6 +13,8 @@ import com.vaadin.flow.server.StreamResource;
 
 import java.io.ByteArrayInputStream;
 
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_ERROR;
+import static com.vaadin.flow.component.button.ButtonVariant.LUMO_PRIMARY;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_SMALL;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.CLOSE;
@@ -93,5 +96,26 @@ public class UiUtils {
         Button button = new Button(new Icon(PLUS));
         button.addThemeVariants(LUMO_TERTIARY);
         return button;
+    }
+
+    public static Button getSaveButton(CommonDialog dialog) {
+        Button saveButton = dialog.getSecondRightButton();
+        saveButton.setText(dialog.getTranslation("save"));
+        saveButton.addThemeVariants(LUMO_PRIMARY);
+        return saveButton;
+    }
+
+    public static Button getCancelButton(CommonDialog dialog) {
+        Button cancelButton = dialog.getLeftButton();
+        cancelButton.setText(dialog.getTranslation("cancel"));
+        cancelButton.addThemeVariants(LUMO_ERROR);
+        return cancelButton;
+    }
+
+    public static Button getResetButton(CommonDialog dialog) {
+        Button resetButton = dialog.getFirstRightButton();
+        resetButton.setText(dialog.getTranslation("reset"));
+        resetButton.addThemeVariants(LUMO_TERTIARY);
+        return resetButton;
     }
 }

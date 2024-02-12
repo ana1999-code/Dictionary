@@ -2,7 +2,9 @@ package com.example.dictionary.application.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class DefinitionDto {
 
@@ -10,6 +12,8 @@ public class DefinitionDto {
 
     @NotEmpty(message = "{word.definition.error.empty}")
     private String text;
+
+    private final Set<DictionaryDto> dictionaries = new HashSet<>();
 
     public DefinitionDto() {
     }
@@ -32,6 +36,14 @@ public class DefinitionDto {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public Set<DictionaryDto> getDictionaries() {
+        return dictionaries;
+    }
+
+    public void addDictionary(DictionaryDto dictionaryDto) {
+        dictionaries.add(dictionaryDto);
     }
 
     @Override

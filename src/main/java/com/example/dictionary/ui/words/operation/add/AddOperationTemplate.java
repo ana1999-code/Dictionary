@@ -1,7 +1,7 @@
 package com.example.dictionary.ui.words.operation.add;
 
 import com.example.dictionary.application.facade.WordFacade;
-import com.example.dictionary.ui.words.WordDialog;
+import com.example.dictionary.ui.words.common.CommonDialog;
 import com.example.dictionary.ui.words.WordView;
 import com.example.dictionary.ui.words.operation.OperationTemplate;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -33,25 +33,25 @@ public abstract class AddOperationTemplate extends OperationTemplate {
     }
 
     private void configureSaveButton() {
-        wordDialog.getSecondRightButton().setText(getTranslation("save"));
-        wordDialog.getSecondRightButton().addThemeVariants(LUMO_PRIMARY);
-        wordDialog.getSecondRightButton().addClickListener(clickEvent -> {
+        commonDialog.getSecondRightButton().setText(getTranslation("save"));
+        commonDialog.getSecondRightButton().addThemeVariants(LUMO_PRIMARY);
+        commonDialog.getSecondRightButton().addClickListener(clickEvent -> {
             TextArea detail = wordTextFieldForm.getDetail();
             createDtoAndExecute(detail);
         });
     }
 
     private void configureCancelButton() {
-        wordDialog.getLeftButton().setText(getTranslation("cancel"));
-        wordDialog.getLeftButton().addThemeVariants(LUMO_ERROR);
-        wordDialog.getLeftButton()
+        commonDialog.getLeftButton().setText(getTranslation("cancel"));
+        commonDialog.getLeftButton().addThemeVariants(LUMO_ERROR);
+        commonDialog.getLeftButton()
                 .addClickListener(clickEvent -> closeDialog());
     }
 
     private void configureResetButton() {
-        wordDialog.getFirstRightButton().setText(getTranslation("reset"));
-        wordDialog.getFirstRightButton().addThemeVariants(LUMO_TERTIARY);
-        wordDialog.getFirstRightButton()
+        commonDialog.getFirstRightButton().setText(getTranslation("reset"));
+        commonDialog.getFirstRightButton().addThemeVariants(LUMO_TERTIARY);
+        commonDialog.getFirstRightButton()
                 .addClickListener(clickEvent -> wordTextFieldForm.getDetail().clear());
     }
 
@@ -68,7 +68,7 @@ public abstract class AddOperationTemplate extends OperationTemplate {
     }
 
     protected void createWordDialog() {
-        wordDialog = new WordDialog(wordTextFieldForm, getDescription());
+        commonDialog = new CommonDialog(wordTextFieldForm, getDescription());
     }
 
     protected abstract void createBinderAndSave(TextArea detail) throws ValidationException;

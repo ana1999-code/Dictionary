@@ -1,0 +1,3 @@
+INSERT INTO "dictionary" (id, "name", url) VALUES(nextval('dictionary_id_seq'::regclass), 'dexonline.ro', 'https://dexonline.ro/definitie/');
+INSERT INTO "dictionary" (id, "name", url) VALUES(nextval('dictionary_id_seq'::regclass), 'dex.ro', 'https://m.dex.ro/?word=');
+INSERT INTO "dictionary" (id, "name", url) VALUES(nextval('dictionary_id_seq'::regclass), 'dex.md', 'https://www.dex.md/definitie/');

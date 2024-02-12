@@ -1,15 +1,15 @@
-package com.example.dictionary.ui.words;
+package com.example.dictionary.ui.words.common;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 
-public class WordDialog extends Div {
+public class CommonDialog extends Div {
 
     private Dialog dialog;
 
-    private Component wordForm;
+    private Component form;
 
     private Button secondRightButton = new Button();
 
@@ -17,13 +17,13 @@ public class WordDialog extends Div {
 
     private Button firstRightButton = new Button();
 
-    public WordDialog(Component wordForm, String description) {
-        this.wordForm = wordForm;
+    public CommonDialog(Component form, String description) {
+        this.form = form;
         dialog = new Dialog();
 
         dialog.setHeaderTitle(description);
         dialog.setWidth("30%");
-        dialog.add(wordForm);
+        dialog.add(form);
 
         leftButton.getStyle().set("margin-right", "auto");
 

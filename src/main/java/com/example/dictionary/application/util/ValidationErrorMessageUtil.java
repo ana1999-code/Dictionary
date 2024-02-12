@@ -8,18 +8,14 @@ import java.util.regex.Pattern;
 public class ValidationErrorMessageUtil {
 
     private static final Pattern ERROR_PATTERN = Pattern.compile(
-            "Field error in object '([^']+)' on field '([^']+)':.*?message \\[([^']+)].*?message ([^']+)");
+            ".*?message \\[([^']+)].*?message \\[([^']+)]");
 
     public static String extractValidationErrorMessage(ValidationException validationException) {
         String errorMessage = validationException.getMessage();
         Matcher matcher = ERROR_PATTERN.matcher(errorMessage);
 
         if (matcher.find()) {
-            String objectName = matcher.group(1);
-            String fieldName = matcher.group(2);
-            String message = matcher.group(4);
-
-            return String.format("Field error in object '%s' on field '%s': message %s", objectName, fieldName, message);
+            return matcher.group(2);
         }
 
         return errorMessage.trim();

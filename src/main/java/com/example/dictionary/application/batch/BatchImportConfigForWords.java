@@ -50,11 +50,11 @@ import java.io.File;
 public class BatchImportConfigForWords {
 
     private static final String[] WORD_INFO_FIELDS = new String[]{
-            "name", "category", "definition", "example"
+            "name", "category", "definition", "example", "source", "url"
     };
 
     private static final String[] FAILED_WORD_INFO_FIELDS = new String[]{
-            "name", "category", "definition", "example", "error"
+            "name", "category", "definition", "example", "source", "url", "error"
     };
 
     public static final String SUCCESS = "SUCCESS_";

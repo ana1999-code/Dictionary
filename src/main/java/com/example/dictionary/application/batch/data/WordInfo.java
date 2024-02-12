@@ -6,16 +6,21 @@ import jakarta.validation.constraints.Pattern;
 public class WordInfo {
 
     @Pattern(regexp = "^[a-zA-Z]+$",
-            message = "Word must not be empty and must contain only letters")
+            message = "{word.error.empty}")
     private String name;
 
-    @NotEmpty
+    @NotEmpty(message = "{word.category.error.message}")
     private String category;
 
-    @NotEmpty
+    @NotEmpty(message = "{word.definition.error.empty}")
     private String definition;
 
     private String example;
+
+    @NotEmpty(message = "{word.source.error.message}")
+    private String source;
+
+    private String url;
 
     public String getName() {
         return name;
@@ -49,6 +54,22 @@ public class WordInfo {
         this.example = example;
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     @Override
     public String toString() {
         return "WordInfo{" +
@@ -56,6 +77,8 @@ public class WordInfo {
                 ", category='" + category + '\'' +
                 ", definition='" + definition + '\'' +
                 ", example='" + example + '\'' +
+                ", source='" + source + '\'' +
+                ", url='" + url + '\'' +
                 '}';
     }
 }

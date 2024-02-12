@@ -13,9 +13,15 @@ public class WordInfoSetMapper implements FieldSetMapper<WordInfo> {
         wordInfo.setName(fieldSet.readString("name"));
         wordInfo.setCategory(fieldSet.readString("category"));
         wordInfo.setDefinition(fieldSet.readString("definition"));
+        wordInfo.setSource(fieldSet.readString("source"));
+
+        if (!fieldSet.readString("url").isEmpty()) {
+            wordInfo.setUrl(fieldSet.readString("url"));
+        }
         if (!fieldSet.readString("example").isEmpty()) {
             wordInfo.setExample(fieldSet.readString("example"));
         }
+
         return wordInfo;
     }
 }

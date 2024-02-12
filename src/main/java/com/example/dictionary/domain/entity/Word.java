@@ -82,6 +82,15 @@ public class Word {
     @Temporal(value = TIMESTAMP)
     private LocalDateTime addedAt;
 
+    @ManyToMany(fetch = LAZY)
+    @JoinTable(
+            name = "word_dictionary",
+            joinColumns = @JoinColumn(name = "word_id"),
+            inverseJoinColumns = @JoinColumn(name = "dictionary_id")
+    )
+    @Cascade(value = CascadeType.PERSIST)
+    private final Set<Dictionary> dictionaries = new HashSet<>();
+
     public Word() {
     }
 
@@ -149,6 +158,7 @@ public class Word {
     public void addDefinition(Definition definition) {
         definitions.add(definition);
         definition.addWord(this);
+        dictionaries.addAll(definition.getDictionaries());
     }
 
     public void removeDefinition(Definition definition) {
@@ -160,6 +170,7 @@ public class Word {
         if (!synonyms.contains(synonym)) {
             synonyms.add(synonym);
             synonym.addSynonym(this);
+            dictionaries.addAll(synonym.getDictionaries());
         }
     }
 
@@ -174,6 +185,7 @@ public class Word {
         if (!antonyms.contains(antonym)) {
             antonyms.add(antonym);
             antonym.addAntonym(this);
+            dictionaries.addAll(antonym.getDictionaries());
         }
     }
 
@@ -206,6 +218,20 @@ public class Word {
     public void removeComment(Comment comment) {
         getComments().remove(comment);
         comment.setWord(null);
+    }
+
+    public Set<Dictionary> getDictionaries() {
+        return dictionaries;
+    }
+
+    public void addDictionary(Dictionary dictionary){
+        dictionaries.add(dictionary);
+        dictionary.addWord(this);
+    }
+
+    public void removeDictionary(Dictionary dictionary) {
+        getDictionaries().remove(dictionary);
+        dictionary.getWords().remove(this);
     }
 
     @Override

@@ -1,9 +1,13 @@
 package com.example.dictionary.application.mapper;
 
 import com.example.dictionary.application.dto.CommentDto;
+import com.example.dictionary.application.dto.DefinitionDto;
+import com.example.dictionary.application.dto.DictionaryDto;
 import com.example.dictionary.application.dto.UserDto;
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.domain.entity.Comment;
+import com.example.dictionary.domain.entity.Definition;
+import com.example.dictionary.domain.entity.Dictionary;
 import com.example.dictionary.domain.entity.User;
 import com.example.dictionary.domain.entity.Word;
 import org.mapstruct.Mapper;
@@ -26,6 +30,8 @@ public interface WordMapper {
     @Mapping(target = "antonyms", source = "antonyms", qualifiedByName = "wordsToWordsName")
     @Mapping(target = "contributors", source = "contributors", qualifiedByName = "userToUserDtoNames")
     @Mapping(target = "comments", source = "comments", qualifiedByName = "commentsToCommentsDetails")
+    @Mapping(target = "dictionaries", source = "dictionaries", qualifiedByName = "dictionariesToDictionariesDtoDetails")
+    @Mapping(target = "definitions", source = "definitions", qualifiedByName = "definitionsToDefinitionsDtoDetails")
     WordDto wordToWordDto(Word word);
 
     @Named("userToUserDtoNames")
@@ -70,5 +76,34 @@ public interface WordMapper {
                 }
         );
         return commentDtos;
+    }
+
+    @Named("dictionariesToDictionariesDtoDetails")
+    static Set<DictionaryDto> dictionariesToDictionariesDtoDetails(Set<Dictionary> dictionaries) {
+        Set<DictionaryDto> dictionaryDtos = new HashSet<>();
+        dictionaries.forEach(
+                dictionary -> {
+                    DictionaryDto dictionaryDto = new DictionaryDto();
+                    dictionaryDto.setName(dictionary.getName());
+                    dictionaryDto.setUrl(dictionary.getUrl());
+                    dictionaryDtos.add(dictionaryDto);
+                }
+        );
+
+        return dictionaryDtos;
+    }
+
+    @Named("definitionsToDefinitionsDtoDetails")
+    static Set<DefinitionDto> definitionsToDefinitionsDtoDetails(Set<Definition> definitions) {
+        Set<DefinitionDto> definitionDtos = new HashSet<>();
+        definitions.forEach(
+                definition -> {
+                    DefinitionDto definitionDto = new DefinitionDto();
+                    definitionDto.setText(definition.getText());
+                    definitionDtos.add(definitionDto);
+                }
+        );
+
+        return definitionDtos;
     }
 }

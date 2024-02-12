@@ -10,6 +10,10 @@ public class FailedWordInfo {
 
     private String example;
 
+    private String source;
+
+    private String url;
+
     private String error;
 
     public String getName() {
@@ -44,6 +48,22 @@ public class FailedWordInfo {
         this.example = example;
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public String getError() {
         return error;
     }
@@ -59,6 +79,8 @@ public class FailedWordInfo {
                 ", category='" + category + '\'' +
                 ", definition='" + definition + '\'' +
                 ", example='" + example + '\'' +
+                ", source='" + source + '\'' +
+                ", url='" + url + '\'' +
                 ", error='" + error + '\'' +
                 '}';
     }

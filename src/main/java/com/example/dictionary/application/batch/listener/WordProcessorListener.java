@@ -55,6 +55,8 @@ public class WordProcessorListener implements ItemProcessListener<WordInfo, Word
         failedWordInfo.setCategory(item.getCategory());
         failedWordInfo.setDefinition(item.getDefinition());
         failedWordInfo.setExample(item.getExample());
+        failedWordInfo.setSource(item.getSource());
+        failedWordInfo.setUrl(item.getUrl());
 
         if (exception instanceof ValidationException) {
             String errorMessage = ValidationErrorMessageUtil

@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
@@ -27,6 +29,14 @@ public class Definition {
 
     @ManyToMany(mappedBy = "definitions", fetch = LAZY)
     private Set<Word> words = new HashSet<>();
+
+    @ManyToMany(fetch = LAZY)
+    @JoinTable(
+            name = "definition_dictionary",
+            joinColumns = @JoinColumn(name = "definition_id"),
+            inverseJoinColumns = @JoinColumn(name = "dictionary_id")
+    )
+    private final Set<Dictionary> dictionaries = new HashSet<>();
 
     public Definition() {
     }
@@ -61,6 +71,20 @@ public class Definition {
 
     public void addWord(Word word) {
         this.words.add(word);
+    }
+
+    public Set<Dictionary> getDictionaries() {
+        return dictionaries;
+    }
+
+    public void removeDictionary(Dictionary dictionary) {
+        getDictionaries().remove(dictionary);
+        dictionary.getDefinitions().remove(this);
+    }
+
+    public void addDictionary(Dictionary dictionary){
+        getDictionaries().add(dictionary);
+        dictionary.addDefinition(this);
     }
 
     @Override

@@ -19,11 +19,11 @@ public class DuplicatedWordValidator {
         this.messageSource = messageSource;
     }
 
-    public void addProcessedWord(String word){
+    public void addProcessedWord(String word) {
         wordNames.add(word);
     }
 
-    public void validateWordPresence(String word){
+    public void validateWordPresence(String word) {
         if (wordNames.contains(word)) {
             throw new DuplicateResourceException(
                     messageSource.getMessage("word.file.duplicated", null, Locale.getDefault())

@@ -16,6 +16,7 @@ public class WordDto {
 
     @Pattern(regexp = "^[a-zA-Z]+$",
             message = "{word.error.empty}")
+    @NotNull
     private String name;
 
     private final Set<DefinitionDto> definitions = new HashSet<>();
@@ -27,13 +28,15 @@ public class WordDto {
     private final Set<WordDto> antonyms = new HashSet<>();
 
     @NotNull(message = "{word.category.error.message}")
-    private CategoryDto category = new CategoryDto();
+    private CategoryDto category;
 
     private final Set<UserDto> contributors = new HashSet<>();
 
     private final List<CommentDto> comments = new ArrayList<>();
 
     private LocalDateTime addedAt;
+
+    private final Set<DictionaryDto> dictionaries = new HashSet<>();
 
     public WordDto() {
     }
@@ -106,6 +109,10 @@ public class WordDto {
 
     public void setAddedAt(LocalDateTime addedAt) {
         this.addedAt = addedAt;
+    }
+
+    public Set<DictionaryDto> getDictionaries() {
+        return dictionaries;
     }
 
     @Override

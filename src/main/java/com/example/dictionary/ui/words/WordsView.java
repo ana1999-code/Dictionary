@@ -2,10 +2,12 @@ package com.example.dictionary.ui.words;
 
 import com.example.dictionary.application.dto.WordDto;
 import com.example.dictionary.application.facade.CategoryFacade;
+import com.example.dictionary.application.facade.DictionaryFacade;
 import com.example.dictionary.application.facade.UserFacade;
 import com.example.dictionary.application.facade.WordFacade;
 import com.example.dictionary.ui.MainLayout;
 import com.example.dictionary.ui.security.CurrentUserPermissionService;
+import com.example.dictionary.ui.words.common.CommonDialog;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -51,12 +53,13 @@ import static com.example.dictionary.ui.util.UiUtils.DD_MM_YYYY;
 import static com.example.dictionary.ui.util.UiUtils.FILE_LOCATION;
 import static com.example.dictionary.ui.util.UiUtils.JSON;
 import static com.example.dictionary.ui.util.UiUtils.PROCESSED;
+import static com.example.dictionary.ui.util.UiUtils.getCancelButton;
 import static com.example.dictionary.ui.util.UiUtils.getConfiguredSearchField;
+import static com.example.dictionary.ui.util.UiUtils.getResetButton;
+import static com.example.dictionary.ui.util.UiUtils.getSaveButton;
 import static com.example.dictionary.ui.util.UiUtils.showNotification;
 import static com.example.dictionary.ui.util.UiUtils.showSuccess;
-import static com.vaadin.flow.component.button.ButtonVariant.LUMO_ERROR;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_PRIMARY;
-import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.grid.ColumnTextAlign.CENTER;
 
 @Route(value = "words", layout = MainLayout.class)
@@ -68,7 +71,7 @@ public class WordsView extends VerticalLayout {
 
     private WordForm wordForm;
 
-    private WordDialog dialogForm;
+    private CommonDialog dialogForm;
 
     private Dialog dialog;
 
@@ -79,6 +82,8 @@ public class WordsView extends VerticalLayout {
     private final UserFacade userFacade;
 
     private final CategoryFacade categoryFacade;
+
+    private final DictionaryFacade dictionaryFacade;
 
     private Set<String> userFavoriteWords;
 
@@ -93,11 +98,13 @@ public class WordsView extends VerticalLayout {
     public WordsView(CurrentUserPermissionService permissionService,
                      WordFacade wordFacade,
                      UserFacade userFacade,
-                     CategoryFacade categoryFacade) {
+                     CategoryFacade categoryFacade,
+                     DictionaryFacade dictionaryFacade) {
         this.permissionService = permissionService;
         this.wordFacade = wordFacade;
         this.userFacade = userFacade;
         this.categoryFacade = categoryFacade;
+        this.dictionaryFacade = dictionaryFacade;
 
         setupWordsGrid();
         setupSearchField();
@@ -170,8 +177,8 @@ public class WordsView extends VerticalLayout {
         addWord.addThemeVariants(LUMO_PRIMARY);
         addWord.setIcon(new Icon(VaadinIcon.PLUS));
 
-        wordForm = new WordForm(wordFacade, categoryFacade);
-        dialogForm = new WordDialog(wordForm, getTranslation("words.new"));
+        wordForm = new WordForm(wordFacade, categoryFacade, dictionaryFacade);
+        dialogForm = new CommonDialog(wordForm, getTranslation("words.new"));
         dialog = dialogForm.getDialog();
 
         addWord.addClickListener(event -> dialog.open());
@@ -184,9 +191,7 @@ public class WordsView extends VerticalLayout {
     }
 
     private void setupSaveButton() {
-        Button saveButton = dialogForm.getSecondRightButton();
-        saveButton.setText(getTranslation("save"));
-        saveButton.addThemeVariants(LUMO_PRIMARY);
+        Button saveButton = getSaveButton(dialogForm);
         saveButton.addClickListener(event -> {
             try {
                 wordForm.saveWord();
@@ -196,23 +201,20 @@ public class WordsView extends VerticalLayout {
             } catch (ValidationException ignored) {
             } catch (RuntimeException exception) {
                 showNotification(exception.getMessage());
+                exception.printStackTrace();
             }
         });
     }
 
     private void setupCancelButton() {
-        Button cancelButton = dialogForm.getLeftButton();
-        cancelButton.setText(getTranslation("cancel"));
-        cancelButton.addThemeVariants(LUMO_ERROR);
+        Button cancelButton = getCancelButton(dialogForm);
         cancelButton.addClickListener(event -> {
             refreshWordForm();
         });
     }
 
     private void setupResetButton() {
-        Button resetButton = dialogForm.getFirstRightButton();
-        resetButton.setText(getTranslation("reset"));
-        resetButton.addThemeVariants(LUMO_TERTIARY);
+        Button resetButton = getResetButton(dialogForm);
         resetButton.addClickListener(event -> wordForm.reset());
     }
 

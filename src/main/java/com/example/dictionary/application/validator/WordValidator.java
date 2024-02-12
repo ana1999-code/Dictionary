@@ -27,12 +27,16 @@ public class WordValidator {
 
         if (wordService.getWordByName(name).isPresent()) {
             throw new DuplicateResourceException(
-                    messageSource.getMessage("word.error.exists.message", new Object[]{name}, Locale.getDefault()));
+                    messageSource.getMessage("word.error.exists.message",
+                            new Object[]{name},
+                            Locale.getDefault()));
         }
 
         if (wordDto.getDefinitions().isEmpty()) {
             throw new ResourceNotFoundException(
-                    messageSource.getMessage("word.definition.error.message", new Object[]{name}, Locale.getDefault()));
+                    messageSource.getMessage("word.definition.error.message",
+                            new Object[]{name},
+                            Locale.getDefault()));
         }
 
         if (!wordDto.getExamples().isEmpty()) {

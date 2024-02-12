@@ -1,7 +1,7 @@
 package com.example.dictionary.ui.words.operation.remove;
 
 import com.example.dictionary.application.facade.WordFacade;
-import com.example.dictionary.ui.words.WordDialog;
+import com.example.dictionary.ui.words.common.CommonDialog;
 import com.example.dictionary.ui.words.WordView;
 import com.example.dictionary.ui.words.operation.OperationTemplate;
 import com.vaadin.flow.component.button.Button;
@@ -35,7 +35,7 @@ public abstract class RemoveOperationTemplate extends OperationTemplate {
             wordTextFieldForm.getDelete().setVisible(true);
         }
         wordTextFieldForm.getDelete().addClickListener(event -> {
-            wordDialog.getDialog().open();
+            commonDialog.getDialog().open();
             setVisibleFirstRightButtonToFalse();
             setupDeleteButton();
             setupCancelButtton();
@@ -44,8 +44,8 @@ public abstract class RemoveOperationTemplate extends OperationTemplate {
     }
 
     private void setupCancelButtton() {
-        wordDialog.getLeftButton().setText(getTranslation("cancel"));
-        wordDialog.getLeftButton().addClickListener(dialogEvent -> wordDialog.getDialog().close());
+        commonDialog.getLeftButton().setText(getTranslation("cancel"));
+        commonDialog.getLeftButton().addClickListener(dialogEvent -> commonDialog.getDialog().close());
     }
 
     private void setupDeleteButton() {
@@ -66,15 +66,15 @@ public abstract class RemoveOperationTemplate extends OperationTemplate {
     }
 
     private Button getDeleteButton() {
-        return wordDialog.getSecondRightButton();
+        return commonDialog.getSecondRightButton();
     }
 
     private void setVisibleFirstRightButtonToFalse() {
-        wordDialog.getFirstRightButton().setVisible(false);
+        commonDialog.getFirstRightButton().setVisible(false);
     }
 
     protected void createWordDialog() {
-        wordDialog = new WordDialog(getConfirmationMessage(), getDescription());
+        commonDialog = new CommonDialog(getConfirmationMessage(), getDescription());
     }
 
     protected abstract void createBinder();
