@@ -1,0 +1,39 @@
+services:
+  postgres:
+    container_name: dictionary-postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: ${PSQL_USERNAME}
+      POSTGRES_PASSWORD: ${PSQL_PASSWORD}
+      PGDATA: /data/postgres
+      POSTGRES_DB: ${PSQL_DATABASE}
+    volumes:
+      - dictionary-postgres-volume:/data/postgres
+    ports:
+      - "${PSQL_PORT}:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: dictionary-pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - dictionary-pgadmin-volume:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT}:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  dictionary-postgres-volume:
+  dictionary-pgadmin-volume:
