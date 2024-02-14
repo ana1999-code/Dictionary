@@ -19,7 +19,7 @@
 		<mapstruct.version>1.6.0.Beta1</mapstruct.version>
 		<flyway.user>${env.PSQL_USERNAME}</flyway.user>
 		<flyway.password>${env.PSQL_PASSWORD}</flyway.password>
-		<flyway.url>${env.PSQL_URL}</flyway.url>
+		<flyway.url>${env.PSQL_URL}:${env.PSQL_PORT}/${env.PSQL_DATABASE}</flyway.url>
 		<flyway.baselineOnMigrate>true</flyway.baselineOnMigrate>
 	</properties>
 	<dependencies>
