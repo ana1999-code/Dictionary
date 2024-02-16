@@ -38,4 +38,4 @@ To interact with the UI part of the application:
 2. Open your web browser and navigate to the specified URL: `http://localhost:{SERVER_PORT}/api/v1.0/wordcraft`
 3. To login, use one of the emails from the "users" table, password is the same for all users "Pass_1234". Or register a new user and login.
 
-For more information, refer to the WordCraft documentation.
+For more information, refer to the WordCraft documentation: https://github.com/Anisoara23/dictionary/tree/main/src/main/resources/documentation
