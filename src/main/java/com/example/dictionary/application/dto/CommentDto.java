@@ -11,7 +11,7 @@ public class CommentDto {
 
     private Integer id;
 
-    @NotBlank
+    @NotBlank(message = "{word.comment.error.empty}")
     private String text;
 
     private UserDto commenter;

@@ -15,8 +15,8 @@ public class WordDto {
     private Integer id;
 
     @Pattern(regexp = "^[a-zA-Z]+$",
-            message = "{word.error.empty}")
-    @NotNull
+            message = "{word.error.format}")
+    @NotNull(message = "{word.error.empty}")
     private String name;
 
     private final Set<DefinitionDto> definitions = new HashSet<>();
