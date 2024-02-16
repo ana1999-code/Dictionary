@@ -64,7 +64,7 @@ public class MainLayout extends AppLayout {
         languageSelect = new Select<>();
         languageSelect.setItems(i18NProvider.getProvidedLocales());
         languageSelect.setRenderer(languageRenderer);
-        languageSelect.setValue(UI.getCurrent().getLocale());
+        languageSelect.setValue(Locale.forLanguageTag(UI.getCurrent().getLocale().getLanguage()));
         languageSelect.addValueChangeListener(event -> saveLocalePreference(event.getValue()));
 
         languageSelect.getStyle().set("font-size", "var(--lumo-font-size-l)")
