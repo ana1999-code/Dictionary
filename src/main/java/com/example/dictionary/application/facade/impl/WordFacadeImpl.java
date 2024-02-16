@@ -387,7 +387,7 @@ public class WordFacadeImpl implements WordFacade {
                 new WordsStatisticReportGenerator(words, getCurrentUser());
 
         reportGenerator.setYear(year);
-        reportGenerator.setMonth(Month.valueOf(month));
+        reportGenerator.setMonth(Month.valueOf(month.toUpperCase()));
         reportGenerator.generate();
         openReportLocation(reportGenerator.getPath());
     }
