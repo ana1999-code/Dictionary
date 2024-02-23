@@ -28,7 +28,7 @@ public class UiUtils {
 
     public static final String APP_NAME = "WordCraft";
 
-    public static final String LOGOUT_SUCCESS_URL = "/api/dictionary/login";
+    public static final String LOGOUT_SUCCESS_URL = "/api/v1.0/wordcraft/login";
 
     public static final String APP_COLOR = "var(--_lumo-button-primary-background-color, var(--lumo-primary-color))";
 
