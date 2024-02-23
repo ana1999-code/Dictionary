@@ -9,6 +9,7 @@ import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ public interface WordController {
 
     ResponseEntity<List<WordDto>> getAllWords();
 
-    ResponseEntity<List<WordDto>> getAllWords(int page, int pageSize, String sortBy);
+    ResponseEntity<List<WordDto>> getAllWords(int page, int pageSize, Sort sort);
 
     ResponseEntity<WordDto> getWordByName(String name);
 

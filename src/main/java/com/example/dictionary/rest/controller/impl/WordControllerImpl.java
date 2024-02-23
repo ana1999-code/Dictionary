@@ -60,8 +60,8 @@ public class WordControllerImpl implements WordController {
     public ResponseEntity<List<WordDto>> getAllWords(
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "10", required = false) int pageSize,
-            @RequestParam(defaultValue = "addedAt", required = false) String sortBy) {
-        return new ResponseEntity<>(wordFacade.getAllWords(page, pageSize, Sort.by(Sort.Direction.DESC, sortBy)), OK);
+            @RequestParam(defaultValue = "addedAt,desc", required = false) Sort sort) {
+        return new ResponseEntity<>(wordFacade.getAllWords(page, pageSize, sort), OK);
     }
 
     @Override
