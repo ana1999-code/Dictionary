@@ -51,4 +51,13 @@ public class UserInfoDto {
     public void setFavorites(Set<WordDto> favorites) {
         this.favorites = favorites;
     }
+
+    @Override
+    public String toString() {
+        return "UserInfoDto{" +
+                "id=" + id +
+                ", progress=" + progress +
+                ", achievements=" + achievements +
+                '}';
+    }
 }

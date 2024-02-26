@@ -59,4 +59,13 @@ public class DictionaryDto {
     public void addDefinition(DefinitionDto definition) {
         definitions.add(definition);
     }
+
+    @Override
+    public String toString() {
+        return "DictionaryDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                '}';
+    }
 }

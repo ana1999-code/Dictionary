@@ -67,4 +67,13 @@ public class CommentDto {
     public void setWord(WordDto word) {
         this.word = word;
     }
+
+    @Override
+    public String toString() {
+        return "CommentDto{" +
+                "id=" + id +
+                ", text='" + text + '\'' +
+                ", commentedAt=" + commentedAt +
+                '}';
+    }
 }
