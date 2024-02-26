@@ -13,7 +13,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -58,10 +58,11 @@ public class WordControllerImpl implements WordController {
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_LEARNER', 'ROLE_EDITOR')")
     public ResponseEntity<List<WordDto>> getAllWords(
-            @RequestParam(defaultValue = "0", required = false) int page,
-            @RequestParam(defaultValue = "10", required = false) int pageSize,
-            @RequestParam(defaultValue = "addedAt,desc", required = false) Sort sort) {
-        return new ResponseEntity<>(wordFacade.getAllWords(page, pageSize, sort), OK);
+            Pageable pageable) {
+        return new ResponseEntity<>(wordFacade.getAllWords(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                pageable.getSort()), OK);
     }
 
     @Override
