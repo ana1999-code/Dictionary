@@ -6,8 +6,10 @@ import com.example.dictionary.application.exception.IncorrectUsernameException;
 import com.example.dictionary.application.exception.InvalidPasswordException;
 import com.example.dictionary.application.exception.ResourceNotFoundException;
 import net.sf.dynamicreports.report.exception.DRException;
+import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -18,14 +20,22 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestControllerAdvice
 public class ControllerExceptionHandler {
+
+    private final MessageSource messageSource;
+
+    public ControllerExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -108,5 +118,16 @@ public class ControllerExceptionHandler {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error", exception.getMessage());
         return new ResponseEntity<>(errorMap, BAD_REQUEST);
+    }
+
+    @ResponseStatus(FORBIDDEN)
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDeniedException(
+            AccessDeniedException exception
+    ) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error",
+                messageSource.getMessage("user.access.denied", new Object[]{}, Locale.getDefault()));
+        return new ResponseEntity<>(errorMap, FORBIDDEN);
     }
 }
