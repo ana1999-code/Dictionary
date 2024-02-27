@@ -61,7 +61,7 @@ public class TestUtils {
 
     public static final Definition DEFINITION = new Definition("Definition test");
 
-    public static final String INVALID_WORD = "Word must not be empty and must contain only letters";
+    public static final String INVALID_WORD = "Word must contain only letters";
 
     public static final UserDto USER_DTO =
             new UserDto("John", "Smith", "john1@mail.com", "Pass_1234");
